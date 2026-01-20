@@ -1,0 +1,112 @@
+# Mindspark Skills
+
+A collection of pattern-guided skills for building, improving, and analyzing AI prompts and skills. These skills help you create more reliable, maintainable, and effective AI interactions.
+
+## 📦 Skills Included
+
+### 1. [apply-patterns](skills/apply-patterns/)
+Adds reliability patterns to existing prompts or skills using a tiered pattern system.
+
+**Use when:** You want to improve determinism, debuggability, and scope control without changing core intent.
+
+**Quick start:**
+```
+apply-patterns path/to/file.md           # Lite mode (Tier 1)
+apply-patterns path/to/file.md mode:standard
+apply-patterns path/to/file.md mode:full
+```
+
+### 2. [build-with-patterns](skills/build-with-patterns/)
+Builds skills and prompts from scratch using a structured, example-driven approach.
+
+**Use when:** Creating new skills or prompts with a focus on testable outputs and clear execution steps.
+
+**Quick start:**
+```
+build-with-patterns
+# Follow interactive prompts to build a skill or prompt
+```
+
+### 3. [examine-skill](skills/examine-skill/)
+Analyzes skill files for problems, contradictions, redundancies, and structural issues.
+
+**Use when:** Auditing skills, reviewing quality, or preparing for improvements.
+
+**Quick start:**
+```
+examine-skill path/to/SKILL.md
+# Produces EXAMINATION-REPORT.md with detailed findings
+```
+
+## 🚀 Installation
+
+### For Claude Desktop
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/rayh1/mindspark-skills.git
+   ```
+
+2. Install as a plugin:
+   - Place the repository in your Claude plugins directory
+   - Or add each skill folder from `skills/` individually to your skills configuration
+
+### For Claude Projects
+
+1. Copy the skill folder(s) you want to use into your project
+2. Reference the skill in your project context
+
+## 📖 Documentation
+
+Each skill includes:
+- **SKILL.md** - Core skill definition with usage instructions
+- **references/** - Supporting documentation and guides
+- **workflows/** - Step-by-step workflow guides (where applicable)
+
+## 🎯 Use Cases
+
+- **Prompt Engineering:** Build reliable prompts with clear contracts
+- **Skill Development:** Create and refine Claude Desktop skills
+- **Quality Assurance:** Audit and improve existing skills
+- **Pattern Application:** Add reliability patterns systematically
+
+## 🔄 Workflow
+
+Common workflow for using these skills together:
+
+1. **Build** a new skill or prompt (`build-with-patterns`)
+2. **Examine** it for issues (`examine-skill`)
+3. **Apply** reliability patterns (`apply-patterns`)
+4. Iterate as needed
+
+## 📋 Requirements
+
+- Claude Desktop (for interactive skills)
+- Or any Claude interface with skill/prompt support
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request with clear description
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details
+
+## 🙋 Support
+
+For issues, questions, or suggestions:
+- Open an issue in this repository
+- Check individual skill documentation in their folders
+
+## 🔗 Links
+
+- GitHub: https://github.com/rayh1/mindspark-skills
+- Claude Documentation: https://claude.ai/docs
+
+---
+
+**Version:** 1.0.0  
+**Last Updated:** January 2026
