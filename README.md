@@ -27,7 +27,19 @@ build-with-patterns
 # Follow interactive prompts to build a skill or prompt
 ```
 
-### 3. [examine-skill](skills/examine-skill/)
+### 3. [assess-skill-value](skills/assess-skill-value/)
+Evaluates whether a proposed skill is worth building using a 7-dimension scoring framework (0-14 points).
+
+**Use when:** You want to avoid building redundant skills and focus effort on ideas that add real capability.
+
+**Quick start:**
+```
+assess-skill-value "A skill that helps users create morning routines"
+assess-skill-value path/to/SKILL.md
+assess-skill-value pdf
+```
+
+### 4. [examine-skill](skills/examine-skill/)
 Analyzes skill files for problems, contradictions, redundancies, and structural issues.
 
 **Use when:** Auditing skills, reviewing quality, or preparing for improvements.
