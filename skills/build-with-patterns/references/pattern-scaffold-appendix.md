@@ -4,6 +4,8 @@ This reference documents how all 22 reliability patterns map to the 7-pass creat
 
 **Key principle:** Required patterns build core structure. Optional patterns solve specific problems.
 
+**Trigger logic (authoritative):** See `patterns-when-needed.md`. This appendix focuses on templates and canonical tag names.
+
 ---
 
 ## Formatting Standards
@@ -56,7 +58,7 @@ For skills (YAML frontmatter), use these XML tags exactly:
 - Keep tags at the same "level" (no nested pattern tags).
 - XML tags must be balanced (opening and closing tags match).
 
-**Note on tiers:** Tier assignments (which patterns are "core" vs "optional") vary by context. When creating new skills (this document), see the pass-by-pass guidance below. When retrofitting existing skills, see `apply-patterns/references/minimal-templates.md`.
+**Note on tiers:** Tier assignments (which patterns are "core" vs "optional") vary by context. When creating new skills (this document), see the pass-by-pass guidance below. When retrofitting existing skills, see `../apply-patterns/references/minimal-templates.md`.
 
 ### Canonical Headings (Prompts)
 
@@ -151,7 +153,7 @@ validation: [how to verify output is valid]
 ### Optional Patterns
 
 #### 3. Addressable Output
-**When:** Output has multiple items needing follow-up discussion
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Enable precise references to output elements
 **Tier:** 2 (Recommended)
 **Examples:** Findings list, recommendations, error list
@@ -165,13 +167,9 @@ Use IDs in follow-up: "address F-1", "defer R-2"
 </addressable_output>
 ```
 
-**When to add:**
-- Reviews/audits with multiple findings
-- Analysis tasks with recommendations
-- Error reports with multiple issues
 
 #### 4. Mode Selection
-**When:** Skill supports multiple distinct workflows
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Present workflow choices upfront
 **Tier:** 3 (Situational)
 **Examples:** build vs debug, lite vs full, create vs modify
@@ -187,10 +185,6 @@ default: infer from context, else ask
 </mode_selection>
 ```
 
-**When to add:**
-- Multiple workflows (not just variations)
-- Different use cases need different steps
-- User needs to choose approach upfront
 
 ---
 
@@ -231,7 +225,7 @@ default: infer from context, else ask
 ### Optional Patterns
 
 #### 6. Clarifying Questions
-**When:** Skill needs to ask user when blocked or uncertain
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Define protocol for asking questions
 **Tier:** 2 (Recommended)
 **Examples:** Ambiguous requirements, low confidence decisions
@@ -249,10 +243,6 @@ fallback: use safe default, document assumption
 </clarifying_questions>
 ```
 
-**When to add:**
-- Requirements often ambiguous
-- High-stakes decisions need confirmation
-- Skill serves non-technical users
 
 ---
 
@@ -315,7 +305,7 @@ fallback: use safe default, document assumption
 ### Optional Patterns
 
 #### 9. Scope Fence
-**When:** Scope could expand beyond intended boundaries
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Explicitly bound what's in/out of scope
 **Tier:** 2 (Recommended)
 **Examples:** Editing unrelated files, adding unrelated features
@@ -331,13 +321,9 @@ If boundary is crossed: ask before proceeding
 </scope_fence>
 ```
 
-**When to add:**
-- File editing/modification tasks
-- Refactoring work
-- Any task where scope creep is likely
 
 #### 10. User Approval Gate
-**When:** Irreversible actions or significant changes
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Human oversight at checkpoints
 **Tier:** 2 (Recommended)
 **Examples:** Deleting files, deploying to production, modifying data
@@ -352,14 +338,9 @@ Options: [approve / select subset / cancel]
 </user_approval_gate>
 ```
 
-**When to add:**
-- Destructive operations
-- Production deployments
-- Data modifications
-- Any irreversible action
 
 #### 11. Confidence Signal
-**When:** High-stakes decisions where uncertainty should be surfaced
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Surface uncertainty explicitly
 **Tier:** 2 (Recommended)
 **Examples:** Security choices, irreversible actions, business logic
@@ -375,14 +356,9 @@ Include: assessment + reason + what would change it
 </confidence_signal>
 ```
 
-**When to add:**
-- Security-sensitive decisions
-- Business logic choices
-- Complex technical trade-offs
-- Medical/legal/financial domains
 
 #### 12. Fallback Chain
-**When:** External dependencies that might fail
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Recovery when primary approach fails
 **Tier:** 2 (Recommended)
 **Examples:** API calls, CLI tools, file dependencies
@@ -398,14 +374,9 @@ trigger: {conditions that activate fallback}
 </fallback_chain>
 ```
 
-**When to add:**
-- External API calls
-- Tool dependencies
-- Network operations
-- File system operations that might fail
 
 #### 13. Error Handling
-**When:** Failures need taxonomy or sensitive data redaction
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Structured error handling
 **Tier:** 3 (Situational)
 **Examples:** Logs contain secrets, compliance requirements
@@ -422,11 +393,6 @@ redaction: api_key, password → "[REDACTED]"
 </error_handling>
 ```
 
-**When to add:**
-- Handles sensitive data
-- Compliance/audit requirements
-- Complex error scenarios
-- Needs error categorization
 
 ---
 
@@ -464,7 +430,7 @@ If a gate fails: [recovery action]
 ### Optional Patterns
 
 #### 15. Review Step
-**When:** Output complex enough to need holistic coherence check
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Post-completion review for coherence
 **Tier:** 2 (Recommended)
 **Examples:** Multi-section documents, generated code with dependencies
@@ -478,14 +444,9 @@ If issues: revise once per cycle; stop at max_cycles
 </review_step>
 ```
 
-**When to add:**
-- Complex multi-part outputs
-- Generated code that must compile
-- Documents needing coherence
-- Outputs with cross-references
 
 #### 16. Lens
-**When:** Need multi-perspective analysis to avoid tunnel vision
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Analyze from multiple perspectives
 **Tier:** 2 (Recommended)
 **Examples:** Code review, security audit, design review
@@ -502,11 +463,6 @@ coverage: each lens must report
 </lens>
 ```
 
-**When to add:**
-- Review/audit tasks
-- Security analysis
-- Design reviews
-- Risk of missing important aspects
 
 ---
 
@@ -514,10 +470,10 @@ coverage: each lens must report
 
 ### All Patterns Optional
 
-**When to add any logging:** Only if workflow is long/complex (10+ steps), debugging needed, or audit trail required.
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 
 #### 17. Step Ledger
-**When:** Long/complex workflows need running state
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Track execution state
 **Tier:** 2 (Recommended for logging)
 
@@ -532,13 +488,9 @@ Update after each step:
 </step_ledger>
 ```
 
-**When to add:**
-- Workflows long enough to drift
-- Need to resume after interruption
-- Complex dependencies between steps
 
 #### 18. Observability
-**When:** Need debugging/comparison of runs
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Run metadata + step traces + artifacts
 **Tier:** 3 (Situational)
 
@@ -551,14 +503,9 @@ artifacts: named outputs per step
 </observability>
 ```
 
-**When to add:**
-- Debugging complex workflows
-- Comparing different runs
-- Production monitoring
-- Performance analysis
 
 #### 19. Assumption Registry
-**When:** Need to track assumptions for audit/compliance
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Log assumptions as made
 **Tier:** 3 (Situational)
 
@@ -571,14 +518,9 @@ Validate high-impact + low-confidence before proceeding
 </assumption_registry>
 ```
 
-**When to add:**
-- Regulated domains
-- Audit requirements
-- High-stakes decisions
-- Need assumption traceability
 
 #### 20. Context Window
-**When:** Very long tasks with shifting focus
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Explicit working memory management
 **Tier:** 3 (Situational)
 
@@ -592,11 +534,6 @@ refresh_trigger: re-read if stale (>2 steps)
 </context_window>
 ```
 
-**When to add:**
-- Multi-hour tasks
-- Working across many files
-- Context switching between domains
-- Memory management critical
 
 ---
 
@@ -628,7 +565,7 @@ Don't:
 ### Optional Patterns
 
 #### 22. Interpretation Check
-**When:** Task complex/ambiguous enough to need pre-flight verification
+**Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Verify understanding before starting
 **Tier:** 2 (Recommended)
 
@@ -643,11 +580,6 @@ If corrected: update understanding, re-confirm if significant
 </interpretation_check>
 ```
 
-**When to add:**
-- Vague requirements
-- Multiple interpretations possible
-- High-stakes work
-- First time working with user
 
 ---
 

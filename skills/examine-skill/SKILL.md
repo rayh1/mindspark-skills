@@ -7,38 +7,69 @@ description: Analyze skill files for problems, contradictions, redundancies, out
 Examine skill files thoroughly and produce a structured examination report. Identifies problems, contradictions, redundancies, outdated content, and structural issues that make skills confusing or ineffective.
 </objective>
 
+<interpretation_check>
+Before starting:
+- Restate the target skill(s) and scope (single vs multiple) in your own words
+- List key assumptions (if used)
+- If anything is ambiguous, ask the user to confirm before proceeding
+</interpretation_check>
+
 <quick_start>
 1. Get target skill path(s) from user
 2. Read all skill files (SKILL.md + references/, scripts/, assets/)
 3. Run the 10-part analysis framework
-4. Write report to file: `{skill-directory}/EXAMINATION-REPORT.md`
-5. Summarize key findings in chat (top 3 issues only)
+4. Produce outputs per `output_schema`
 </quick_start>
 
-<output_handling>
+<output_schema>
 **Write the full report to a file, not to chat.**
 
-- Single skill: Write to `{skill-directory}/EXAMINATION-REPORT.md`
-- Multiple skills: Write to `{skill-directory}/EXAMINATION-REPORT.md` for each skill
+Artifact:
+- Report file: `{skill-directory}/EXAMINATION-REPORT.md`
 
-**In chat, provide only:**
+In chat, provide only:
 - Confirmation that examination is complete
 - File path where report was written
 - Top 3 most urgent issues (one line each)
 - Prompt: "Read the full report for details and action items."
-</output_handling>
 
-<inputs>
+Validation:
+- Report file written for each examined skill
+- Chat summary includes file path + top 3 issues
+</output_schema>
+
+<inputs_first>
 **Required inputs:**
 - Target skill(s) to examine: file paths or folder path containing SKILL.md files
 - Scope: single skill or multiple skills
 
-**If inputs missing:** Ask up to 5 clarification questions. If still missing, state what is needed.
-
 **Assumptions (list explicitly if used):**
 - If given folder path, examine all SKILL.md files under it
 - If multiple skills provided, produce one report per skill
-</inputs>
+
+**Validation:**
+- Provided paths must exist and be readable
+- If a folder path is provided, it must contain at least one `SKILL.md`
+</inputs_first>
+
+<clarifying_questions>
+triggers:
+- Required inputs missing or ambiguous
+constraints:
+- max_per_phase: 5
+- batch_related: true
+fallback:
+- If still missing after questions: state what is needed and stop
+</clarifying_questions>
+
+<user_approval_gate>
+Before writing: if `{skill-directory}/EXAMINATION-REPORT.md` already exists, ask whether to overwrite.
+
+- If user approves overwrite: overwrite the existing report.
+- If user rejects overwrite or does not respond: do not overwrite; write to `{skill-directory}/EXAMINATION-REPORT.new.md` instead.
+
+If `{skill-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
+</user_approval_gate>
 
 <scope_fence>
 **In scope:**
@@ -61,7 +92,7 @@ Follow this exact sequence:
 1. Read inputs and enumerate target files
 2. For each skill, run Analysis Framework sections 1-10
 3. Write full report to `{skill-directory}/EXAMINATION-REPORT.md` (see references/output-format.md)
-4. Include Final Deliverable items in report (action list, rewritten SKILL.md or outline, migration notes)
+4. Include Final Deliverable items in report (action list, revised SKILL.md outline, migration notes)
 5. Summarize top 3 issues in chat with file path
 </step_contract>
 
@@ -71,7 +102,7 @@ Maintain and update after each major step:
 ```text
 Step Ledger:
 done: [ ... ]
-next: <step>
+next: {step}
 targets: [ ... ]
 assumptions: [ ... ]
 open_questions: [ ... ]
@@ -93,8 +124,20 @@ Before finalizing, verify:
 - **G3 Evidence Gate:** Contradictions cite specific quotes and locations from both sides
 - **G4 Scope Gate:** No recommendations beyond skill/prompt structure improvements unless directly required by identified issue
 
+Evidence capture guidance (for G2/G3):
+- Use `nl -ba {file}` to capture stable line numbers
+- Quote the exact relevant lines in the report (copy/paste), alongside file + line range
+
 **If any gate fails:** Fix once and re-check. If still fails, stop with: `ERROR: GATE_FAIL <GateName>`
 </quality_gates>
+
+<review_step>
+After writing the report and chat summary:
+- Verify all Output Format sections are present (or "None found")
+- Verify traceability/quotes/locations satisfy G2/G3
+- Verify no out-of-scope recommendations
+If issues found: fix once → re-check; else stop and report remaining issues.
+</review_step>
 
 <analysis_framework>
 Work through each section systematically:
@@ -173,7 +216,9 @@ Is SKILL.md trying to do too much? Are reference files clearly signposted?
 <stop_conditions>
 **Done when:**
 - Step Contract complete for all targets
-- All Quality Gates pass
+- All targets analyzed through the 10-part framework
+- Output artifacts + chat summary produced per `output_schema`
+- All Quality Gates pass (G1-G4)
 - Final Deliverable section produced
 
 **Don't:**
@@ -185,11 +230,3 @@ Is SKILL.md trying to do too much? Are reference files clearly signposted?
 <reference_index>
 **Output format:** references/output-format.md
 </reference_index>
-
-<success_criteria>
-Examination complete when:
-- All target skills analyzed through 10-part framework
-- Full report written to `{skill-directory}/EXAMINATION-REPORT.md`
-- All quality gates pass (G1-G4)
-- Chat summary provided with file path and top 3 issues
-</success_criteria>

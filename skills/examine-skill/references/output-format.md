@@ -87,7 +87,7 @@ skill-name/
 After the examination report, provide:
 
 1. **Prioritized action list** — numbered steps to fix the skill, ordered by impact
-2. **Rewritten SKILL.md** — a clean version incorporating all fixes (or outline if too long)
+2. **Revised SKILL.md outline** — an outline describing how to restructure/fix the skill (do not provide a full rewritten SKILL.md file)
 3. **Migration notes** — what to do with content being moved/deleted
 </final_deliverable>
 

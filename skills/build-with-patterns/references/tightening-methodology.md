@@ -1,5 +1,7 @@
 # The "Spec by Tightening" Methodology
 
+**Note:** This is a non-authoritative narrative deep-dive. The canonical, normative workflow is in `core-passes.md`.
+
 This reference documents the 9-step methodology for writing complex, executable specifications that stay understandable while becoming precise.
 
 The core insight: **build in layers** so structure emerges gradually, not all at once.
@@ -31,7 +33,7 @@ Starting with "this skill will handle X, Y, and Z cases" before showing even one
 Before rules, decide what the skill/prompt **delivers**.
 
 **Lock down:**
-- One artifact (e.g., `PLAN.md`) or a small fixed set
+- One artifact (e.g., `OUTPUT.md`) or a small fixed set
 - Required sections
 - Forbidden sections (to prevent bloat)
 - Formatting rules (headings, checklists, code fences, etc.)

@@ -3,50 +3,148 @@ name: build-with-patterns
 description: Builds skills and prompts by starting with one concrete example, then tightening into a small, testable output contract and 4–6 executable steps. Use when creating new skills or prompts from scratch, or when you want a structured approach to prompt engineering.
 ---
 
+<objective>
+Build reliable skills or prompts by starting from one concrete happy-path example, then tightening into a small, testable output contract and an executable step sequence.
+</objective>
+
 <essential_principles>
-## How This Skill Works
+**How this skill works**
 
-This skill guides you through building reliable skills and prompts using pattern-guided creation. Instead of writing freeform instructions, you'll:
+This skill guides you through building reliable skills and prompts by starting with one concrete example and tightening it into a small, testable contract.
 
-1. Start with one concrete example (happy path)
-2. Lock down the output contract (format, required sections, validation)
-3. Define inputs explicitly (required/optional, validation, defaults)
-4. Write 4–6 checkable steps from inputs to output
-5. Add minimal branching (decision points) and quality gates
+Use plain language with users.
 
-### Lite vs Full Mode
-
-- **Lite (default)**: 4–6 steps, ≤3 decision points, ≤3 gates. Fast, focused, sufficient for most cases.
-- **Full**: Removes caps and adds optional patterns only when triggered by measurable needs.
-
-Use plain language with users; pattern names are internal scaffolding.
+Note: XML tags in this file are **skill-spec structure** (to keep instructions checkable).
+- This skill will always run an internal approval checkpoint before finalizing.
+- Only add a `<user_approval_gate>` section to the *generated artifact* when the trigger in `references/patterns-when-needed.md` is met (destructive/irreversible or out-of-scope file touches).
+Generated artifacts should include only the sections required by the chosen format and the user’s request.
 </essential_principles>
 
-<intake>
+<inputs_first>
+**Required inputs:**
+- `target_type`: skill | prompt
+- `goal`: what this should do (1–2 sentences)
+- `happy_path_example`: Input → Output → what “good” looks like
+- `artifacts`: files to create/modify + required/forbidden sections
+
+**Optional inputs:**
+- `mode`: lite (default) | full
+- `constraints`: hard constraints (length, tone, safety)
+- `non_goals`: explicit exclusions
+
+**Validation:**
+- Required inputs must be non-empty.
+
+**Missing input handling:**
+- Ask up to ~5 intake questions in ONE message; if still missing, make safe defaults and list assumptions once.
+</inputs_first>
+
+<step_contract>
+1. Mode selection → get `target_type` + `mode`, then collect the remaining required inputs.
+2. Lock output contract → define format, required/forbidden sections, validation (confirm once).
+3. Define inputs → required/optional/defaults + missing-input behavior.
+4. Draft steps → 4–6 checkable steps (lite) or appropriate steps (full), plus minimal branching + gates.
+5. Assemble + validate → render final SKILL.md or prompt; run gates + edge tests.
+6. Present for approval → approve / targeted edits / switch mode.
+</step_contract>
+
+<scope_fence>
+**In scope:**
+- Building either a Claude Code **skill** (SKILL.md with YAML frontmatter + XML-tag sections) or a standalone **prompt** (markdown headings).
+- Producing a draft plus a single approval checkpoint.
+
+**Out of scope:**
+- Implementing the built skill/prompt in a repo.
+- Adding extra workflows beyond build-skill.md and build-prompt.md.
+
+If the user asks to extend beyond this scope: note it and ask before proceeding.
+</scope_fence>
+
+<output_schema>
+format: markdown
+artifacts:
+  - type: skill
+    filename: SKILL.md
+    required: [YAML frontmatter (name, description), XML-tag sections]
+  - type: prompt
+    filename: (copy/paste)
+    required: [markdown headings]
+
+notes:
+  - Skill artifacts are `SKILL.md` with YAML frontmatter (`name`, `description`) and XML-tag sections.
+  - Prompt artifacts are a single copy/paste prompt using compact markdown headings.
+
+validation:
+  - matches the selected `target_type`
+  - required sections present and non-empty
+  - no forbidden sections
+</output_schema>
+
+<quality_gates>
+G1 (after Step 1): required inputs captured and user-confirmed (or assumptions listed once)?
+G2 (after Step 2): output contract explicitly defined (format + required/forbidden + validation)?
+G3 (after Step 5): produced artifact matches the output schema?
+If a gate fails: fix once → re-check; else stop and report what’s missing.
+</quality_gates>
+
+<interpretation_check>
+Before drafting the final artifact:
+- Restate what the user wants to build (skill vs prompt) and what “good” looks like.
+- Confirm the chosen mode (lite vs full).
+- Confirm target artifacts (file names / sections) and any non-goals.
+Proceed only after user confirms or corrects these.
+</interpretation_check>
+
+<user_approval_gate>
+Before finalizing:
+- Present the draft once.
+- Ask for: approve / targeted edits / switch mode.
+If user rejects: do not continue drafting; ask what to change.
+</user_approval_gate>
+
+<review_step>
+criteria: completeness, consistency, format, no contradictions
+max_cycles: 1 (lite) / 2 (full)
+</review_step>
+
+<mode_selection>
 What would you like to build?
 
 1. **Skill** - A Claude Code skill (SKILL.md with YAML frontmatter)
 2. **Prompt** - A standalone prompt (markdown headings)
 
 **Mode (optional):**
-- Lite (default) - 4–6 steps, ≤3 decision points, ≤3 gates
-- Full - Lift caps, add patterns when needed
+- Lite (default)
+- Full
 
 **Wait for response before proceeding.**
-</intake>
 
-<routing>
-| Response | Workflow |
-|----------|----------|
-| 1, "skill", "SKILL.md" | `workflows/build-skill.md` |
-| 2, "prompt", "standalone" | `workflows/build-prompt.md` |
+**Lite mode (default)**
+Use plain language with the user; treat pattern names as internal.
+
+- Ask in ONE message (max ~5 questions):
+  - What should this do? (1–2 sentences)
+  - One happy-path example: **Input → Output → what “good” looks like**
+  - What artifact(s) should be created/modified? (filenames + required/forbidden sections)
+  - What inputs will the user provide? (required/optional + defaults)
+  - Any hard constraints or non-goals?
+- Enforce lite hard caps: see `references/shared-checklists.md`.
+- Add optional add-ons only when a measurable trigger is met: `references/patterns-when-needed.md`.
+
+**Full mode**
+Lift caps as needed and add optional add-ons only when a measurable trigger is met (only if requested).
+Add-ons include: scope fences, mode selection, addressable IDs, approval gates, fallback chains, review steps.
+See: `references/patterns-when-needed.md` for triggers.
+</mode_selection>
+
+<decision_points>
+- If the user chose **Skill** (or says "skill" / "SKILL.md") → follow `workflows/build-skill.md`.
+- Else if the user chose **Prompt** (or says "prompt" / "standalone") → follow `workflows/build-prompt.md`.
 
 **Mode handling:**
-- If user says "full" or "full mode" → set mode=full, pass to workflow
-- Otherwise → default to lite mode
-
-**After reading the workflow, follow it exactly.**
-</routing>
+- If user says "full" or "full mode" → set mode=full.
+- Otherwise → default to lite mode.
+</decision_points>
 
 <workflows_index>
 | Workflow | Purpose |
@@ -66,84 +164,11 @@ All domain knowledge in `references/`:
 **Author notes:** methodology-notes-for-authors.md
 </reference_index>
 
-<worked_example>
-**User request:** "Create a skill that turns a pasted block of text into a short study sheet."
-
-**Example output (what “good” looks like):**
-
-```markdown
----
-name: study-sheet
-description: Creates a compact study sheet from pasted notes (key terms, questions, and a 5-line summary).
----
-
-<objective>
-Turn raw notes into a study sheet that is quick to review and easy to quiz from.
-</objective>
-
-<quick_start>
-Input: paste your notes
-Output: STUDY_SHEET.md
-</quick_start>
-
-<inputs_first>
-**Required inputs:**
-- `notes`: the raw text to summarize
-
-**Optional inputs:**
-- `audience`: who this is for (default: "me")
-- `tone`: terse|friendly (default: terse)
-
-**Validation:**
-- notes must be non-empty
-
-**Missing input handling:**
-- If `notes` missing → ask user to paste notes
-</inputs_first>
-
-<step_contract>
-1. Parse notes → extract 5–10 key terms.
-2. Summarize notes → 5-line summary.
-3. Generate questions → 5 recall questions.
-4. Produce STUDY_SHEET.md → in the required schema.
-</step_contract>
-
-<decision_points>
-- If notes length < ~150 words → use 3–5 key terms.
-- If notes are highly structured (bullets/headings) → preserve headings in summary.
-- Else → treat as free text.
-</decision_points>
-
-<quality_gates>
-G1 (after Step 1): key terms count is between 3 and 10.
-G2 (after Step 2): summary is exactly 5 lines.
-G3 (after Step 4): STUDY_SHEET.md includes all required sections.
-</quality_gates>
-
-<output_schema>
-format: markdown
-filename: STUDY_SHEET.md
-required_sections:
-  - Title (H1)
-  - Summary (exactly 5 lines)
-  - Key Terms (3–10 bullets)
-  - Recall Questions (5 numbered)
-forbidden_sections:
-  - Future Work
-validation:
-  - all required sections present
-  - counts match the constraints
-</output_schema>
-
-<stop_conditions>
-Done when:
-- STUDY_SHEET.md is produced and all gates pass
-Don’t:
-- add extra sections beyond schema
-- rewrite user notes
-</stop_conditions>
-```
-</worked_example>
+<example_anchor>
+For full worked examples, see:
+- `references/worked-example-skill.md`
+- `references/worked-example-prompt.md`
+</example_anchor>
 
 <quick_start>
 **Quick invocations:**
@@ -152,49 +177,9 @@ Don’t:
 - `build-with-patterns prompt` → build a standalone prompt (headings)
 
 **Modes:**
-- **lite** (default): 4–6 steps, ≤3 decision points, ≤3 gates
+- **lite** (default): see `references/shared-checklists.md`
 - **full**: lift caps + add optional add-ons only when triggered
 </quick_start>
-
-<lite_path>
-Use plain language with the user; treat pattern names as internal.
-
-1) **Intake (ask in ONE message, max ~5 questions)**
-   - What should this do? (1–2 sentences)
-   - One happy-path example: **Input → Output → what “good” looks like**
-   - What artifact(s) should be created/modified? (filenames + required/forbidden sections)
-   - What inputs will the user provide? (required/optional + defaults)
-   - Any hard constraints or non-goals?
-
-2) **Lock the output contract**
-   - format, filename(s), required sections/fields, forbidden sections, and how to validate.
-   - Confirm once: “Is this the output you want?”
-
-3) **Define inputs (inputs-first)**
-   - required / optional+defaults / validation / missing-input behavior.
-
-4) **Write the step contract (4–6 steps)**
-   - numbered steps from inputs → output; each step must be checkable and produce a visible deliverable.
-
-5) **Add minimal branching + gates, then assemble + validate**
-   - Decision points: **max 3** (If/Else format)
-   - Quality gates: **max 3** (one line each; include what to do if a gate fails)
-   - Run 2 edge tests: (a) missing required input, (b) conflicting/ambiguous requirement
-   - Produce the final artifact (skill or prompt) in the required structure
-
-**Lite hard caps (enforce):** 4–6 steps, ≤3 decision points, ≤3 gates, skip logging/traceability.
-</lite_path>
-
-<full_mode>
-Lift caps as needed and add optional add-ons only when a measurable trigger is met (only if requested).
-Add-ons include: scope fences, mode selection, addressable IDs, approval gates, fallback chains, review steps.
-See: `references/patterns-when-needed.md` for triggers.
-</full_mode>
-
-<format_notes>
-- **Skill:** `SKILL.md` with YAML frontmatter (`name`, `description`) and XML-tag sections.
-- **Prompt:** a single prompt using compact markdown headings.
-</format_notes>
 
 <stop_conditions>
 Done when:

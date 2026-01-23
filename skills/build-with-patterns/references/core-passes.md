@@ -4,9 +4,8 @@ This file is the **canonical, shared workflow logic** for building either:
 - a **Claude Code skill** (SKILL.md with YAML frontmatter + XML tags), or
 - a **standalone prompt** (copy/paste headings).
 
-The per-format differences live in:
-- workflows/build-skill.md
-- workflows/build-prompt.md
+Format differences are just **rendering**. Canonical mapping is below (and in `../SKILL.md` `<output_schema>`).
+The `workflows/build-skill.md` and `workflows/build-prompt.md` files are thin pointers that apply these rules.
 
 ---
 
@@ -25,13 +24,7 @@ The per-format differences live in:
 ### Lite mode (default)
 Lite mode is designed to be **fast and non-bloated**.
 
-**Hard caps (enforce these):**
-- **Steps:** 4–6 total in Step Contract
-- **Quality gates:** **max 3** (each 1 line)
-- **Decision points:** **max 3** branches
-- **Per section length:** aim ≤ ~15 lines; if you exceed, **summarize** or ask to switch to full
-- **Edge cases to test:** 2 (one missing input, one conflicting/ambiguous)
-- **Skip Pass 6** (logging/traceability)
+**Lite mode hard caps (authoritative):** see `shared-checklists.md`.
 
 **If the user asks for more:** either (a) switch to **full**, or (b) agree a scoped expansion (e.g. “add 2 more steps only”).
 
@@ -70,7 +63,7 @@ Define a compact input schema:
 - validation rules
 - missing-input behavior (ask vs safe default vs stop)
 
-**Lite guidance:** if any required input is missing, prefer **ask 1–3 questions** and proceed.
+**Lite guidance:** if any required input is missing, ask **up to ~5 intake questions** in one batch; if still blocked, make safe defaults and list assumptions once.
 
 Confirm:
 - “Are these the inputs you can provide?”
@@ -85,7 +78,7 @@ Constraints:
 - each step must produce a **visible deliverable** (a list, a file section, a decision)
 - steps must be checkable
 
-**Lite hard cap:** 4–6 steps.
+**Lite hard cap:** see `shared-checklists.md`.
 
 ---
 
@@ -98,7 +91,7 @@ Format:
 - Else if …
 - Else → fallback
 
-**Lite hard cap:** max 3 decision points.
+**Lite hard caps:** see `shared-checklists.md`.
 
 If external dependencies exist, define at least:
 - primary approach
@@ -111,7 +104,7 @@ If external dependencies exist, define at least:
 
 Define 3–7 checkpoints that catch mistakes early.
 
-**Lite hard cap:** max 3 gates.
+**Lite hard caps:** see `shared-checklists.md`.
 
 Each gate should say:
 - when (after which step)

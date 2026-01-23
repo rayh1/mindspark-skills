@@ -175,6 +175,29 @@ Simple question: "Could I get 80% of this value by just asking Claude directly?"
 - If NO → Genuinely new capability
 </evaluation_framework>
 
+<clarifying_questions>
+Triggers:
+- If text description is consequential but underspecified (who is user, what inputs/outputs, what tools?)
+- If confidence < 60% on a scoring decision that would materially change the verdict
+- If multiple plausible interpretations exist for the proposed skill
+
+Constraints:
+- max_per_phase: 3
+- batch_related: true
+
+Fallback:
+- use safe defaults and document assumptions in rationales
+</clarifying_questions>
+
+<addressable_output>
+id_format: "[D-{number}]"
+items:
+- D-1..D-7 map to the 7 evaluation dimensions in order
+usage:
+- In report: label each row as [D-1]..[D-7]
+- In follow-up: user can say "revise D-3" / "explain D-6" / "improve D-2 score"
+</addressable_output>
+
 <confidence_signal>
 **When scoring each dimension:**
 - If score is clear and unambiguous (e.g., skill explicitly integrates MCP tools) → proceed with confidence
@@ -292,13 +315,13 @@ Based on your description, I understand this proposed skill as:
 
 | Dimension | Score | Rationale |
 |-----------|-------|-----------|
-| Knowledge Gap | 0/2 | General knowledge about routines; no specialized data |
-| Structural Process | 1/2 | Provides some structure but LLM can do this casually |
-| Tool Integration | 0/2 | No external tools mentioned |
-| Consistency & Guardrails | 0/2 | No enforcement mechanisms |
-| Complexity Management | 0/2 | Simple one-shot analysis |
-| User Experience | 1/2 | Saves a few messages but minimal UX improvement |
-| Specialization Depth | 0/2 | Same depth as general LLM advice |
+| [D-1] Knowledge Gap | 0/2 | General knowledge about routines; no specialized data |
+| [D-2] Structural Process | 1/2 | Provides some structure but LLM can do this casually |
+| [D-3] Tool Integration | 0/2 | No external tools mentioned |
+| [D-4] Consistency & Guardrails | 0/2 | No enforcement mechanisms |
+| [D-5] Complexity Management | 0/2 | Simple one-shot analysis |
+| [D-6] User Experience | 1/2 | Saves a few messages but minimal UX improvement |
+| [D-7] Specialization Depth | 0/2 | Same depth as general LLM advice |
 
 ### Total Score: 2/14
 
@@ -341,13 +364,13 @@ To make this skill worth building, consider:
 
 | Dimension | Score | Rationale |
 |-----------|-------|-----------|
-| Knowledge Gap | 1/2 | Synthesizes PDF manipulation knowledge systematically |
-| Structural Process | 2/2 | Enforces systematic PDF processing workflows |
-| Tool Integration | 2/2 | Orchestrates multiple PDF libraries and tools |
-| Consistency & Guardrails | 2/2 | Mandatory validation of PDF operations |
-| Complexity Management | 2/2 | Manages multi-page, multi-format complexity |
-| User Experience | 2/2 | Transforms complex PDF tasks into simple invocations |
-| Specialization Depth | 2/2 | Deep PDF manipulation expertise beyond general knowledge |
+| [D-1] Knowledge Gap | 1/2 | Synthesizes PDF manipulation knowledge systematically |
+| [D-2] Structural Process | 2/2 | Enforces systematic PDF processing workflows |
+| [D-3] Tool Integration | 2/2 | Orchestrates multiple PDF libraries and tools |
+| [D-4] Consistency & Guardrails | 2/2 | Mandatory validation of PDF operations |
+| [D-5] Complexity Management | 2/2 | Manages multi-page, multi-format complexity |
+| [D-6] User Experience | 2/2 | Transforms complex PDF tasks into simple invocations |
+| [D-7] Specialization Depth | 2/2 | Deep PDF manipulation expertise beyond general knowledge |
 
 ### Total Score: 13/14
 

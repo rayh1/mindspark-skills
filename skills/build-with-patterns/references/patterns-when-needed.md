@@ -8,7 +8,7 @@ If **none** of these triggers match, do **not** add the pattern.
 | Mode Selection | User describes **2+** distinct workflows (“create AND update”, “summarize OR quiz”), **or** asks for multiple modes/variants | Upfront choice list + routing |
 | Clarifying Questions | Any required input is missing, **or** constraints conflict (e.g., “ultra short” + “include everything”) | 1–3 focused questions, asked in one batch |
 | Addressable Output (IDs) | Output contains a list of **5+** items that the user is likely to iterate on individually | Stable IDs like `[Q-1]`, `[TERM-3]` |
-| User Approval Gate | Action is **destructive/irreversible** (overwriting files, deleting content), **or** touches files outside the requested artifact | “Approve / edit / cancel” checkpoint |
+| User Approval Gate | Action is **destructive/irreversible** (overwriting files, deleting content), **or** touches files outside the requested artifact | Add a `<user_approval_gate>` section to the generated artifact (separately, `build-with-patterns` itself always asks for approval once before finalizing) |
 | Fallback Chain | Plan depends on an external tool/API/network, **or** parsing a format that may fail | primary → fallback → terminal error surface |
 | Review Step | Output is **150+ lines**, **or** spans **2+ files**, **or** user explicitly asks for “comprehensive” | Post-build coherence + constraint check |
 | Observability (trace) | Workflow is **10+** steps, **or** user wants debuggability/run comparison | step ledger + brief run header |

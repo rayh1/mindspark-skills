@@ -51,13 +51,11 @@ constraints:
 - no extra sections
 
 ## Stop Conditions:
-done when: output produced and all gates pass
+done when: output produced and all gates pass (user can copy tasks and execute tomorrow)
 don't: add long analysis or background
 
 ## Example:
 Input: "Today was chaotic..."
 Output: (shows the required sections)
 
-## Success Criteria:
-The user can copy the tasks and execute them tomorrow.
 ```

@@ -74,7 +74,7 @@ filename: PLAN.md
 
 required_sections:
   - Goal (1 paragraph: what and why)
-  - Success Criteria (3-7 bullets)
+  - Stop Conditions (3-7 bullets)
   - Approach (high-level strategy)
   - Steps (numbered, verifiable)
   - Risks (what could go wrong)
@@ -92,7 +92,7 @@ formatting_rules:
   - Steps numbered 1-N
   - Each step has clear completion criteria
   - Risks tagged as HIGH / MEDIUM / LOW
-  - Success criteria are checkboxes [ ]
+  - Stop conditions are checkboxes [ ]
 
 validation:
   - Goal is 1 paragraph (not 3 pages)

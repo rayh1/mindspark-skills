@@ -86,12 +86,6 @@ Don’t:
 - rewrite user notes
 </stop_conditions>
 
-<success_criteria>
-- [ ] Output file created: STUDY_SHEET.md
-- [ ] Summary is 5 lines
-- [ ] 3–10 key terms
-- [ ] 5 recall questions
-</success_criteria>
 ```
 
 Notes:
