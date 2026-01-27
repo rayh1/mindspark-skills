@@ -7,6 +7,8 @@ A collection of pattern-guided skills for building, improving, and analyzing AI 
 ### 1. [apply-patterns](skills/apply-patterns/)
 Adds reliability patterns to existing prompts or skills using a tiered pattern system.
 
+It reads your target file, identifies high-leverage reliability gaps (inputs, scope, output contracts, validation), and proposes a small set of tier-appropriate pattern insertions. Nothing is changed until you explicitly approve the proposed edits.
+
 **Use when:** You want to improve determinism, debuggability, and scope control without changing core intent.
 
 **Quick start:**
@@ -19,6 +21,8 @@ apply-patterns path/to/file.md mode:full
 ### 2. [build-with-patterns](skills/build-with-patterns/)
 Builds skills and prompts from scratch using a structured, example-driven approach.
 
+It starts from one concrete “happy path” example, tightens that into a testable output contract, and then produces an executable step sequence (typically 4–6 steps). Use it when you want repeatable results, clear acceptance criteria, and fewer ambiguous instructions.
+
 **Use when:** Creating new skills or prompts with a focus on testable outputs and clear execution steps.
 
 **Quick start:**
@@ -29,6 +33,8 @@ build-with-patterns
 
 ### 3. [assess-skill-value](skills/assess-skill-value/)
 Evaluates whether a proposed skill is worth building using a 7-dimension scoring framework (0-14 points).
+
+It outputs a scored table with rationales, a clear verdict (Build / Consider / Skip), and concrete improvement suggestions to increase uniqueness or reduce redundancy.
 
 **Use when:** You want to avoid building redundant skills and focus effort on ideas that add real capability.
 
@@ -41,6 +47,8 @@ assess-skill-value pdf
 
 ### 4. [examine-skill](skills/examine-skill/)
 Analyzes skill files for problems, contradictions, redundancies, and structural issues.
+
+It produces a written examination report (not just chat notes), with specific issues and actionable fixes, so you can confidently refactor or prepare a skill for pattern application.
 
 **Use when:** Auditing skills, reviewing quality, or preparing for improvements.
 
