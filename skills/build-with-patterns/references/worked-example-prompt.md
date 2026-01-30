@@ -1,14 +1,12 @@
-# Worked Example (Prompt) — Lite Mode
+# Worked Example (Prompt)
 
-This is a small, complete example of a **lite-mode** standalone prompt produced using the shared passes.
+This is a small, complete example of a standalone prompt produced using the shared passes.
 
 ---
 
 ## Scenario
 
-**User request:** “Given my daily journal entry, extract what I should do tomorrow.”
-
-**Mode:** lite
+**User request:** "Given my daily journal entry, extract what I should do tomorrow."
 
 ---
 

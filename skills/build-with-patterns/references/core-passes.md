@@ -19,20 +19,6 @@ The `workflows/build-skill.md` and `workflows/build-prompt.md` files are thin po
 
 ---
 
-## Mode: lite vs full
-
-### Lite mode (default)
-Lite mode is designed to be **fast and non-bloated**.
-
-**Lite mode hard caps (authoritative):** see `shared-checklists.md`.
-
-**If the user asks for more:** either (a) switch to **full**, or (b) agree a scoped expansion (e.g. “add 2 more steps only”).
-
-### Full mode
-Full mode allows optional patterns when justified, and may include Pass 6.
-
----
-
 ## Pass 1: Example Anchor + Output Contract
 
 **Goal:** lock a real example + what the artifact looks like.
@@ -46,9 +32,9 @@ Then define the **Output Schema / Artifact Contract**:
 - filename(s)
 - required sections/fields
 - forbidden sections (anti-bloat)
-- validation: how to check it’s correct
+- validation: how to check it's correct
 
-**Lite guidance:** keep schema minimal (3–7 required sections).
+Keep schema minimal and focused.
 
 Stop and confirm:
 - “Is this the output you want?”
@@ -63,7 +49,7 @@ Define a compact input schema:
 - validation rules
 - missing-input behavior (ask vs safe default vs stop)
 
-**Lite guidance:** if any required input is missing, ask **up to ~5 intake questions** in one batch; if still blocked, make safe defaults and list assumptions once.
+If any required input is missing, ask **up to ~5 intake questions** in one batch; if still blocked, make safe defaults and list assumptions once.
 
 Confirm:
 - “Are these the inputs you can provide?”
@@ -78,7 +64,7 @@ Constraints:
 - each step must produce a **visible deliverable** (a list, a file section, a decision)
 - steps must be checkable
 
-**Lite hard cap:** see `shared-checklists.md`.
+See `shared-checklists.md` for recommended guidelines.
 
 ---
 
@@ -91,7 +77,7 @@ Format:
 - Else if …
 - Else → fallback
 
-**Lite hard caps:** see `shared-checklists.md`.
+See `shared-checklists.md` for recommended guidelines.
 
 If external dependencies exist, define at least:
 - primary approach
@@ -102,9 +88,9 @@ If external dependencies exist, define at least:
 
 ## Pass 5: Quality Gates
 
-Define 3–7 checkpoints that catch mistakes early.
+Define checkpoints that catch mistakes early.
 
-**Lite hard caps:** see `shared-checklists.md`.
+See `shared-checklists.md` for recommended guidelines.
 
 Each gate should say:
 - when (after which step)
@@ -113,7 +99,7 @@ Each gate should say:
 
 ---
 
-## Pass 6: Logging & Traceability (Full mode only)
+## Pass 6: Logging & Traceability (Optional)
 
 Add logging only if:
 - workflow is long (10+ steps)
@@ -133,7 +119,7 @@ Validation checklist:
 - output matches the output schema
 - all required sections present
 - no forbidden sections
-- run edge-case tests (lite: 2 cases)
+- run edge-case tests (minimum: 2 cases)
 
 Stop conditions:
 - done when deliverables complete AND gates pass

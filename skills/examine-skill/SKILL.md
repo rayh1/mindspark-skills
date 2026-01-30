@@ -3,10 +3,6 @@ name: examine-skill
 description: Analyze skill files for problems, contradictions, redundancies, outdated content, and structural issues. Use when auditing skills, reviewing skill quality, or preparing skills for improvement.
 ---
 
-<objective>
-Examine skill files thoroughly and produce a structured examination report. Identifies problems, contradictions, redundancies, outdated content, and structural issues that make skills confusing or ineffective.
-</objective>
-
 <interpretation_check>
 Before starting:
 - Restate the target skill(s) and scope (single vs multiple) in your own words
@@ -14,28 +10,25 @@ Before starting:
 - If anything is ambiguous, ask the user to confirm before proceeding
 </interpretation_check>
 
-<quick_start>
-1. Get target skill path(s) from user
-2. Read all skill files (SKILL.md + references/, scripts/, assets/)
-3. Run the 10-part analysis framework
-4. Produce outputs per `output_schema`
-</quick_start>
-
 <output_schema>
 **Write the full report to a file, not to chat.**
 
 Artifact:
 - Report file: `{skill-directory}/EXAMINATION-REPORT.md`
 
-In chat, provide only:
+In chat, provide:
 - Confirmation that examination is complete
 - File path where report was written
-- Top 3 most urgent issues (one line each)
-- Prompt: "Read the full report for details and action items."
+- Health score with emoticon: "Health: Good 🟢" (use Critical 🔴, Needs Work 🟡, Good 🟢, or Excellent ✨)
+- The prioritized action list from the report
+- Prompt: "What actions do you want to execute?"
+- Then use AskUserQuestion to let the user select which actions to execute
+- Execute the selected actions
 
 Validation:
 - Report file written for each examined skill
-- Chat summary includes file path + top 3 issues
+- Chat summary includes file path, health score with emoticon, and action list
+- User is prompted to select actions to execute
 </output_schema>
 
 <inputs_first>
@@ -77,13 +70,28 @@ If `{skill-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
 - Producing examination reports (EXAMINATION-REPORT.md)
 - Identifying contradictions, redundancies, and outdated content
 - Providing actionable recommendations and outlines
+- Executing user-approved fixes from the prioritized action list
+
+**Permitted execution actions:**
+- Removing redundant sections from SKILL.md
+- Consolidating duplicate content within files
+- Fixing contradictions by aligning conflicting directives
+- Restructuring sections for clarity (merging, splitting, reordering)
+- Updating references between files
+- Deleting unnecessary files (README.md, CHANGELOG.md)
+
+**Execution guardrails:**
+- NEVER execute without explicit user approval via AskUserQuestion
+- NEVER add new features or capabilities beyond fixing identified issues
+- NEVER modify the core functionality or purpose of the skill
+- NEVER execute actions on files outside the examined skill directory
+- ALWAYS preserve all reference files, scripts, and assets unless explicitly approved for deletion
 
 **Out of scope:**
-- Fixing or implementing recommended changes (analysis only)
-- Rewriting SKILL.md files (report includes outline, user applies)
-- Creating new skills or adding features
-- Modifying reference files, scripts, or assets
-- Executing or testing the skill being examined
+- Creating entirely new skills or adding unrelated features
+- Executing or testing the skill being examined (only fix structure/content)
+- Making changes to skills other than the one being examined
+- Modifying user code or project files outside skill directories
 </scope_fence>
 
 <step_contract>
@@ -93,21 +101,10 @@ Follow this exact sequence:
 2. For each skill, run Analysis Framework sections 1-10
 3. Write full report to `{skill-directory}/EXAMINATION-REPORT.md` (see references/output-format.md)
 4. Include Final Deliverable items in report (action list, revised SKILL.md outline, migration notes)
-5. Summarize top 3 issues in chat with file path
+5. In chat, provide: confirmation, file path, health score with emoticon, and prioritized action list
+6. Ask user which actions to execute using AskUserQuestion
+7. Execute the selected actions (if any; if none selected, complete successfully)
 </step_contract>
-
-<step_ledger>
-Maintain and update after each major step:
-
-```text
-Step Ledger:
-done: [ ... ]
-next: {step}
-targets: [ ... ]
-assumptions: [ ... ]
-open_questions: [ ... ]
-```
-</step_ledger>
 
 <decision_points>
 - **File cannot be read or doesn't exist** → Record as critical issue under "Dead code identification", continue with remaining files
@@ -117,7 +114,7 @@ open_questions: [ ... ]
 </decision_points>
 
 <quality_gates>
-Before finalizing, verify:
+Before finalizing the report and chat summary, verify:
 
 - **G1 Coverage Gate:** All sections in Output Format present (even if empty with "None found")
 - **G2 Traceability Gate:** Every extracted directive includes file + line number
@@ -128,89 +125,105 @@ Evidence capture guidance (for G2/G3):
 - Use `nl -ba {file}` to capture stable line numbers
 - Quote the exact relevant lines in the report (copy/paste), alongside file + line range
 
-**If any gate fails:** Fix once and re-check. If still fails, stop with: `ERROR: GATE_FAIL <GateName>`
+**Verification process:**
+1. After writing the report, verify all gates above
+2. If any gate fails: fix once and re-check
+3. If still fails after one fix: stop with `ERROR: GATE_FAIL <GateName>`
+4. If issues found but fixable: fix once → re-check
+5. If issues persist: report remaining issues and stop
 </quality_gates>
 
-<review_step>
-After writing the report and chat summary:
-- Verify all Output Format sections are present (or "None found")
-- Verify traceability/quotes/locations satisfy G2/G3
-- Verify no out-of-scope recommendations
-If issues found: fix once → re-check; else stop and report remaining issues.
-</review_step>
+<lens>
+Analyze findings from multiple perspectives:
+- **Correctness lens:** Does this pattern/directive prevent errors or ambiguity?
+- **Integration lens:** Conflicts with existing structure? Duplicates content?
+- **ROI lens:** Does value (reliability gain) exceed overhead (token cost)?
+
+Per lens: findings + severity (critical/major/minor)
+Synthesis: merge findings, flag conflicts (e.g., high correctness but low ROI)
+Coverage: each lens must report for critical issues and contradictions
+</lens>
+
+<addressable_output>
+Assign unique IDs to output items for follow-up reference:
+- Format: `[{prefix}-{number}]`
+- Prefixes: Action items = A, Issues = I, Recommendations = R
+- Presentation: inline in report tables and action lists
+- Usage: User can reference specific items ("apply A-1 and A-3" or "explain I-2")
+</addressable_output>
 
 <analysis_framework>
 Work through each section systematically:
 
 **1. STRUCTURE ANALYSIS**
-- Correct anatomy? (SKILL.md with YAML frontmatter + optional scripts/, references/, assets/)
-- YAML frontmatter complete? (requires: name, description)
-- SKILL.md under 500 lines? If over, what should split into reference files?
-- Reference files properly organized and clearly named?
-- Unnecessary documentation (README.md, CHANGELOG.md) that should be removed?
+- [D-59] Correct anatomy? (SKILL.md with YAML frontmatter + optional scripts/, references/, assets/)
+- [D-60] YAML frontmatter complete? (requires: name, description)
+- [D-61] SKILL.md under 500 lines? If over, what should split into reference files?
+- [D-62] Reference files properly organized and clearly named?
+- [D-63] Unnecessary documentation (README.md, CHANGELOG.md) that should be removed?
 
 **2. TRIGGER & DESCRIPTION EXAMINATION**
-- Is `description` field comprehensive enough to trigger correctly?
-- Does it include BOTH what the skill does AND when to use it?
-- Are "When to Use" sections buried in body that should be in description? (Body loads AFTER triggering)
-- Would Claude know when to activate based solely on description?
+- [D-64] Is `description` field comprehensive enough to trigger correctly?
+- [D-65] Does it include BOTH what the skill does AND when to use it?
+- [D-66] Are "When to Use" sections buried in body that should be in description? (Body loads AFTER triggering)
+- [D-67] Would Claude know when to activate based solely on description?
 
 **3. DIRECTIVE EXTRACTION**
 Create numbered list of EVERY instruction/directive:
-- Extract each "do this" or "don't do this" statement
-- Note file and line number for each
-- Flag vague or ambiguous directives
+- [D-68] Extract each "do this" or "don't do this" statement
+- [D-69] Note file and line number for each
+- [D-70] Flag vague or ambiguous directives
 
 **4. CONTRADICTION DETECTION**
 Compare all extracted directives:
-- Identify conflicting pairs
-- Check if same topic addressed differently in multiple places
-- Check if reference files contradict SKILL.md
-- List each contradiction with specific quotes and locations
+- [D-71] Identify conflicting pairs
+- [D-72] Check if same topic addressed differently in multiple places
+- [D-73] Check if reference files contradict SKILL.md
+- [D-74] List each contradiction with specific quotes and locations
 
 **5. REDUNDANCY ANALYSIS**
-- Information appearing in multiple places
-- Explanations duplicating what Claude already knows
-- Verbose sections that could be condensed
-- Challenge each paragraph: "Does this justify its token cost?"
+- [D-75] Information appearing in multiple places
+- [D-76] Explanations duplicating what Claude already knows
+- [D-77] Verbose sections that could be condensed
+- [D-78] Challenge each paragraph: "Does this justify its token cost?"
 
 **6. TEMPORAL ANALYSIS (Outdated Content)**
-- References to specific dates, versions, or "new" features
-- Language suggesting currency that may be old ("recently", "now", "the latest")
-- Deprecated tools, APIs, or approaches
-- Instructions referencing features/behaviors that may have changed
+- [D-79] References to specific dates, versions, or "new" features
+- [D-80] Language suggesting currency that may be old ("recently", "now", "the latest")
+- [D-81] Deprecated tools, APIs, or approaches
+- [D-82] Instructions referencing features/behaviors that may have changed
 
 **7. FLOW MAPPING**
 For each major user scenario:
-- Trace complete decision path through all files
-- Identify dead ends or unclear branches
-- Find circular references or infinite loops
-- Map where user/Claude might get confused
+- [D-83] Trace complete decision path through all files
+- [D-84] Identify dead ends or unclear branches
+- [D-85] Find circular references or infinite loops
+- [D-86] Map where user/Claude might get confused
 
 **8. FREEDOM CALIBRATION**
 For each instruction, assess specificity level:
-- **HIGH freedom** (text guidance) — appropriate when multiple approaches valid
-- **MEDIUM freedom** (pseudocode/parameters) — appropriate when preferred pattern exists
-- **LOW freedom** (specific scripts) — appropriate when operations fragile
+- [D-87] **HIGH freedom** (text guidance) — appropriate when multiple approaches valid
+- [D-88] **MEDIUM freedom** (pseudocode/parameters) — appropriate when preferred pattern exists
+- [D-89] **LOW freedom** (specific scripts) — appropriate when operations fragile
 
 Flag mismatches:
-- Overly rigid instructions limiting valid approaches
-- Overly loose instructions leaving fragile operations undefined
+- [D-90] Overly rigid instructions limiting valid approaches
+- [D-91] Overly loose instructions leaving fragile operations undefined
 
 **9. PROGRESSIVE DISCLOSURE CHECK**
 Is information at right level?
-- Essential workflow → SKILL.md
-- Detailed references → references/
-- Executable code → scripts/
-- Output resources → assets/
+- [D-92] Essential workflow → SKILL.md
+- [D-93] Detailed references → references/
+- [D-94] Executable code → scripts/
+- [D-95] Output resources → assets/
 
-Is SKILL.md trying to do too much? Are reference files clearly signposted?
+[D-96] Is SKILL.md trying to do too much? Are reference files clearly signposted?
 
 **10. DEAD CODE IDENTIFICATION**
-- Instructions that can never be triggered
-- Conditional branches with impossible conditions
-- References to files or functions that don't exist
-- Parameters or options never used
+- [D-97] Instructions that can never be triggered
+- [D-98] Conditional branches with impossible conditions
+- [D-99] References to files or functions that don't exist
+- [D-100] Parameters or options never used
 </analysis_framework>
 
 <stop_conditions>
@@ -220,6 +233,8 @@ Is SKILL.md trying to do too much? Are reference files clearly signposted?
 - Output artifacts + chat summary produced per `output_schema`
 - All Quality Gates pass (G1-G4)
 - Final Deliverable section produced
+- User has been asked which actions to execute
+- Selected actions have been executed (if any)
 
 **Don't:**
 - Rewrite unrelated documentation

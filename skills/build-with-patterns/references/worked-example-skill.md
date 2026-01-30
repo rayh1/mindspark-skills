@@ -1,14 +1,12 @@
-# Worked Example (Skill) — Lite Mode
+# Worked Example (Skill)
 
-This is a small, complete example of a **lite-mode** skill produced using the shared passes.
+This is a small, complete example of a skill produced using the shared passes.
 
 ---
 
 ## Scenario
 
-**User request:** “Create a skill that turns a pasted block of text into a short study sheet.”
-
-**Mode:** lite
+**User request:** "Create a skill that turns a pasted block of text into a short study sheet."
 
 ---
 
@@ -89,4 +87,4 @@ Don’t:
 ```
 
 Notes:
-- This is intentionally small; full mode would add optional patterns only if needed.
+- This is intentionally small; additional optional patterns would be added only when triggers are met.

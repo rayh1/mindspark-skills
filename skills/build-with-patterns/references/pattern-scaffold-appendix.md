@@ -172,7 +172,7 @@ Use IDs in follow-up: "address F-1", "defer R-2"
 **Triggers:** See `patterns-when-needed.md` (authoritative).
 **Purpose:** Present workflow choices upfront
 **Tier:** 3 (Situational)
-**Examples:** build vs debug, lite vs full, create vs modify
+**Examples:** build vs debug, interactive vs automated, create vs modify
 
 **Template:**
 ```xml

@@ -24,7 +24,7 @@ These patterns apply to most non-trivial targets. Check all 8.
 | **Interpretation Check** | Complex/ambiguous requests; high-stakes | Trivially clear task |
 | **Output Schema** | Output needs parsing; consistency matters | Freeform output acceptable |
 
-**Lite mode:** Pick 2-4 from this tier based on target characteristics.
+**For simple targets:** Focus on critical gaps from this tier (typically 2-4 patterns).
 
 ---
 
@@ -43,7 +43,7 @@ Add these based on specific situational triggers.
 | **Review Step** | Complex outputs needing coherence; multi-step assembly | Simple output; inline gates sufficient |
 | **Step Ledger** | Long/complex enough to drift; audit trail needed | Short task; few steps |
 
-**Standard mode:** Consider all Tier 1 + Tier 2. Propose 3-6 recommended, 0-3 optional.
+**For moderate targets:** Consider patterns from both Tier 1 and Tier 2 based on detected gaps (typically 4-6 patterns).
 
 ---
 
@@ -60,39 +60,85 @@ Use only when specifically relevant. Justify ROI.
 | **Observability** | Debugging/comparison needed; reproducibility matters | One-off task; no replay needed |
 | **Error Handling** | Failures need taxonomy; sensitive data in logs | Simple errors; no sensitive data |
 
-**Full mode:** Audit all 22 patterns. Justify Tier 3 additions.
+**For complex targets:** Audit all tiers; Tier 3 patterns require explicit ROI justification (typically 6-8 patterns max).
 
 ---
 
-## Mode-Based Selection Flow
+## Gap-Driven Selection Flow
 
-### Lite Mode (default)
-
-```
-1. Check all Tier 1 patterns
-2. Mark applicable: yes/no
-3. Rank by impact for this target
-4. Propose top 2-4
-```
-
-### Standard Mode
+### Step 1: Detect Existing Patterns
 
 ```
-1. Check all Tier 1 patterns → mark applicable
-2. Check all Tier 2 patterns → mark applicable
-3. Tier 1 applicable = recommended
-4. Tier 2 applicable = recommended or optional (rank by ROI)
-5. Caps: 3-6 recommended, 0-3 optional; hard cap 8 total unless user requests more
+1. Read target file
+2. Detect patterns already present:
+   - Check for Tier 1 pattern tags/sections
+   - Check for Tier 2 pattern tags/sections
+   - Check for Tier 3 pattern tags/sections
+3. For each detected pattern, classify as:
+   - Present: Pattern fully implemented
+   - Partial: Pattern exists but incomplete
+   - Missing: Pattern not present
 ```
 
-### Full Mode
+### Step 2: Assess Target Complexity
 
 ```
-1. Audit all 22 patterns
-2. For each: present / partial / missing / N/A
-3. Categorize applicable as: must-have / should-have / optional
-4. Tier 3 patterns require explicit ROI note
+1. Measure indicators:
+   - Line count: <100 (simple), 100-300 (moderate), 300+ (complex)
+   - Step count: single-step (simple), 2-5 steps (moderate), 6+ steps (complex)
+   - Branching: linear (simple), some branches (moderate), extensive branching (complex)
+2. Classify target: simple | moderate | complex
 ```
+
+### Step 3: Identify Gap Severity
+
+For each missing pattern, assess impact:
+
+```
+**Critical gaps** (blocks correctness/clarity):
+- Missing Inputs First when target takes inputs
+- Missing Step Contract when multi-step workflow
+- Missing Quality Gates when errors propagate
+- Missing Stop Conditions when scope unbounded
+
+**High-value gaps** (significant reliability gain):
+- Tier 1 patterns applicable but missing
+- Tier 2 patterns with clear ROI for this target
+- Patterns that prevent common failure modes
+
+**Nice-to-have gaps** (incremental benefit):
+- Tier 2 patterns with moderate ROI
+- Tier 3 patterns with specific justification
+- Enhancements to solid targets
+```
+
+### Step 4: Propose Based on Gaps + Complexity
+
+```
+Simple targets with few gaps:
+  → Propose 2-4 critical patterns (Tier 1 focus)
+
+Moderate targets with several gaps:
+  → Propose 4-6 patterns (Tier 1 + applicable Tier 2)
+  → Prioritize: critical → high-value
+
+Complex targets with many gaps:
+  → Propose 6-8 patterns, strictly prioritized
+  → Include Tier 3 only with explicit ROI justification
+
+Solid targets with minimal gaps:
+  → Acknowledge quality ("94% pattern coverage")
+  → Suggest 0-2 optional improvements
+  → "No critical gaps found" is valid outcome
+```
+
+### Step 5: Present Gap Analysis to User
+
+Show:
+- Gap summary table (present/missing by tier)
+- Prioritized recommendations: critical → high-value → nice-to-have
+- ROI rationale for each proposed pattern
+- Estimated file length increase
 
 ---
 

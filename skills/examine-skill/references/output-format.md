@@ -4,7 +4,7 @@ Produce examination report in this structure:
 <executive_summary>
 **EXECUTIVE SUMMARY**
 
-- Overall health score: [Critical / Needs Work / Good / Excellent]
+- Overall health score: [Critical 🔴 / Needs Work 🟡 / Good 🟢 / Excellent ✨]
 - Top 3 most urgent issues
 - Estimated effort to fix: [Hours]
 </executive_summary>

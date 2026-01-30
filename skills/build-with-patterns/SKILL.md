@@ -1,6 +1,6 @@
 ---
 name: build-with-patterns
-description: Builds skills and prompts by starting with one concrete example, then tightening into a small, testable output contract and 4–6 executable steps. Use when creating new skills or prompts from scratch, or when you want a structured approach to prompt engineering.
+description: Builds skills and prompts by starting with one concrete example, then tightening into a small, testable output contract and an executable step sequence. Use when creating new skills or prompts from scratch, or when you want a structured approach to prompt engineering.
 ---
 
 <objective>
@@ -28,7 +28,6 @@ Generated artifacts should include only the sections required by the chosen form
 - `artifacts`: files to create/modify + required/forbidden sections
 
 **Optional inputs:**
-- `mode`: lite (default) | full
 - `constraints`: hard constraints (length, tone, safety)
 - `non_goals`: explicit exclusions
 
@@ -36,16 +35,16 @@ Generated artifacts should include only the sections required by the chosen form
 - Required inputs must be non-empty.
 
 **Missing input handling:**
-- Ask up to ~5 intake questions in ONE message; if still missing, make safe defaults and list assumptions once.
+- See <clarifying_questions> for the protocol when inputs are missing.
 </inputs_first>
 
 <step_contract>
-1. Mode selection → get `target_type` + `mode`, then collect the remaining required inputs.
+1. Target selection → get `target_type`, then collect the remaining required inputs.
 2. Lock output contract → define format, required/forbidden sections, validation (confirm once).
 3. Define inputs → required/optional/defaults + missing-input behavior.
-4. Draft steps → 4–6 checkable steps (lite) or appropriate steps (full), plus minimal branching + gates.
+4. Draft steps → appropriate steps as needed, plus minimal branching + gates.
 5. Assemble + validate → render final SKILL.md or prompt; run gates + edge tests.
-6. Present for approval → approve / targeted edits / switch mode.
+6. Present for approval → approve / targeted edits.
 </step_contract>
 
 <scope_fence>
@@ -89,61 +88,58 @@ If a gate fails: fix once → re-check; else stop and report what’s missing.
 
 <interpretation_check>
 Before drafting the final artifact:
-- Restate what the user wants to build (skill vs prompt) and what “good” looks like.
-- Confirm the chosen mode (lite vs full).
+- Restate what the user wants to build (skill vs prompt) and what "good" looks like.
 - Confirm target artifacts (file names / sections) and any non-goals.
 Proceed only after user confirms or corrects these.
 </interpretation_check>
 
+<clarifying_questions>
+Triggers:
+- Required inputs missing or incomplete
+- Ambiguous requirements (e.g., unclear scope, multiple valid interpretations)
+- Pattern applicability uncertain (confidence < 60% on which patterns to add)
+Constraints:
+- max_per_phase: 5 (batch related questions in ONE message)
+- ask_early: during intake (Step 1) to avoid rework
+- batch_related: true (group questions by topic)
+Fallback: use safe defaults (minimal/simpler options), document assumptions, proceed
+</clarifying_questions>
+
 <user_approval_gate>
 Before finalizing:
 - Present the draft once.
-- Ask for: approve / targeted edits / switch mode.
+- Ask for: approve / targeted edits.
 If user rejects: do not continue drafting; ask what to change.
 </user_approval_gate>
 
 <review_step>
 criteria: completeness, consistency, format, no contradictions
-max_cycles: 1 (lite) / 2 (full)
+max_cycles: 2
 </review_step>
 
-<mode_selection>
+<target_selection>
 What would you like to build?
 
 1. **Skill** - A Claude Code skill (SKILL.md with YAML frontmatter)
 2. **Prompt** - A standalone prompt (markdown headings)
 
-**Mode (optional):**
-- Lite (default)
-- Full
-
 **Wait for response before proceeding.**
 
-**Lite mode (default)**
 Use plain language with the user; treat pattern names as internal.
 
-- Ask in ONE message (max ~5 questions):
+- Ask intake questions in ONE message (see <clarifying_questions> for protocol):
   - What should this do? (1–2 sentences)
-  - One happy-path example: **Input → Output → what “good” looks like**
+  - One happy-path example: **Input → Output → what "good" looks like**
   - What artifact(s) should be created/modified? (filenames + required/forbidden sections)
   - What inputs will the user provide? (required/optional + defaults)
   - Any hard constraints or non-goals?
-- Enforce lite hard caps: see `references/shared-checklists.md`.
 - Add optional add-ons only when a measurable trigger is met: `references/patterns-when-needed.md`.
-
-**Full mode**
-Lift caps as needed and add optional add-ons only when a measurable trigger is met (only if requested).
-Add-ons include: scope fences, mode selection, addressable IDs, approval gates, fallback chains, review steps.
-See: `references/patterns-when-needed.md` for triggers.
-</mode_selection>
+- Add-ons include: scope fences, addressable IDs, approval gates, fallback chains, review steps.
+</target_selection>
 
 <decision_points>
 - If the user chose **Skill** (or says "skill" / "SKILL.md") → follow `workflows/build-skill.md`.
 - Else if the user chose **Prompt** (or says "prompt" / "standalone") → follow `workflows/build-prompt.md`.
-
-**Mode handling:**
-- If user says "full" or "full mode" → set mode=full.
-- Otherwise → default to lite mode.
 </decision_points>
 
 <workflows_index>
@@ -172,13 +168,11 @@ For full worked examples, see:
 
 <quick_start>
 **Quick invocations:**
-- `build-with-patterns` → ask what to build (skill/prompt) + mode
+- `build-with-patterns` → ask what to build (skill/prompt)
 - `build-with-patterns skill` → build a Claude Code skill (SKILL.md)
 - `build-with-patterns prompt` → build a standalone prompt (headings)
 
-**Modes:**
-- **lite** (default): see `references/shared-checklists.md`
-- **full**: lift caps + add optional add-ons only when triggered
+Add optional add-ons only when a measurable trigger is met: `references/patterns-when-needed.md`.
 </quick_start>
 
 <stop_conditions>
@@ -186,7 +180,7 @@ Done when:
 - output matches the output schema
 - all required sections are present and non-empty
 - no forbidden sections
-- gates pass and edge tests were run (lite: 2)
+- gates pass and edge tests were run (minimum: 2)
 </stop_conditions>
 
 <references>

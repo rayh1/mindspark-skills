@@ -24,7 +24,7 @@ Always consider these for any non-trivial task.
 | 7 | **Interpretation Check** | Verify understanding before starting | Complex/ambiguous requests |
 | 8 | **Output Schema** | Define required output structure | Output needs parsing/consistency |
 
-**Lite mode default priority:** Inputs First → Step Contract → Scope Fence → Output Schema
+**Gap analysis priority order:** When detecting gaps, consider patterns in this order: Inputs First → Step Contract → Scope Fence → Output Schema → Stop Conditions → Quality Gates → Interpretation Check → Decision Points
 
 ---
 
@@ -60,13 +60,18 @@ Use when specifically relevant. Require explicit justification.
 
 ---
 
-## Pattern Selection by Mode
+## Gap-Driven Selection Guidance
 
-| Mode | Source | Typical count |
-|------|--------|---------------|
-| **lite** | Tier 1 only | 2-4 patterns |
-| **standard** | Tier 1 + Tier 2 | 3-6 recommended, 0-3 optional |
-| **full** | All tiers | Comprehensive audit, prioritized |
+When proposing patterns based on gap analysis:
+- **Simple targets with few gaps:** Propose 2-4 patterns (usually Tier 1)
+- **Moderate targets with several gaps:** Propose 4-6 patterns (Tier 1 + applicable Tier 2)
+- **Complex targets with many gaps:** Propose up to 8 patterns, prioritized by severity
+- **Solid targets with minimal gaps:** Acknowledge quality, suggest 0-2 optional improvements
+
+**Gap severity categories:**
+- **Critical:** Missing pattern blocks correctness or clarity
+- **High-value:** Pattern significantly improves reliability
+- **Nice-to-have:** Pattern provides incremental benefit
 
 ---
 
