@@ -13,9 +13,10 @@ It reads your target file, identifies high-leverage reliability gaps (inputs, sc
 
 **Quick start:**
 ```
-apply-patterns path/to/file.md           # Lite mode (Tier 1)
-apply-patterns path/to/file.md mode:standard
-apply-patterns path/to/file.md mode:full
+apply-patterns path/to/file.md
+
+# Optional: add a short note to constrain the analysis, e.g.
+# "Tier 1 only" or "include Tier 2 if clearly justified".
 ```
 
 ### 2. [build-with-patterns](skills/build-with-patterns/)
