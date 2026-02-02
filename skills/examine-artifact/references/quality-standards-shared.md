@@ -176,6 +176,16 @@ Consistent voice improves clarity and scannability.
 ## Form Filling
 ```
 
+**Exception: Pattern Section Labels**
+Pattern section labels are intentionally noun phrases and should NOT be converted to imperative:
+```markdown
+## Inputs First        ✓ Correct (canonical pattern name)
+## Quality Gates       ✓ Correct (canonical pattern name)
+## User Approval Gate  ✓ Correct (canonical pattern name)
+```
+
+These follow the canonical pattern naming conventions defined in apply-patterns and build-with-patterns skills.
+
 ### Instructions
 
 **Prefer:**
@@ -256,7 +266,7 @@ Recommendation:
 - [ ] No repeated code snippets
 
 **Writing Voice:**
-- [ ] Section headings use imperative form
+- [ ] Section headings use imperative form (except canonical pattern labels)
 - [ ] Instructions use imperative form
 - [ ] Consistent voice throughout
 

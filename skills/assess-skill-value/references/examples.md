@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [Example 1: Text Description (Two-Step Interaction)](#example-1-text-description-two-step-interaction) - Lines 12-67
-- [Example 2: Existing Skill File](#example-2-existing-skill-file) - Lines 71-105
+- [Example 2: Existing Skill File](#example-2-existing-skill-file) - Lines 71-105  
 - [Example 3: Complete Flow with Steps 8-9 (Consider Verdict)](#example-3-complete-flow-with-steps-8-9-consider-verdict) - Lines 109-228
 
 ---

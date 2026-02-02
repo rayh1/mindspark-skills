@@ -212,13 +212,17 @@ Check consistency of voice and style (generally LOW severity, polish issue):
 
 - [D-108] **Section headings voice check:**
   - Extract all section headings (##, ###, etc.)
-  - Check form:
+  - **Exclude pattern section labels** (these are intentionally noun phrases):
+    - Load references/pattern-label-registry.md for canonical pattern names
+    - Skip headings matching any pattern from the registry (both XML tags and markdown headings)
+    - Skip headings ending with `:` that match pattern names (prompt format)
+  - Check form for remaining headings:
     - ✓ Imperative: "Extract Text", "Rotate Pages", "Fill Forms"
     - ❌ Gerund: "Extracting Text", "Rotating Pages", "Filling Forms"
     - ❌ Noun: "Text Extraction", "Page Rotation", "Form Filling"
-  - Count violations (non-imperative headings)
+  - Count violations (non-imperative headings, excluding pattern labels)
   - **LOW** severity if 3+ violations (consistency issue)
-  - Recommendation: Convert to imperative form
+  - Recommendation: Convert to imperative form (but preserve canonical pattern labels per registry)
 
 - [D-109] **Instruction steps voice check:**
   - Extract numbered step sequences

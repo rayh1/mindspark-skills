@@ -1,6 +1,6 @@
 ---
 name: examine-artifact
-description: Comprehensive examination of SKILL.md files and standalone prompts for contradictions, redundancies, structural issues, outdated content, and quality standards compliance. Automatically detects artifact type (skill vs prompt) via YAML frontmatter presence. Use when (1) auditing skill files before deployment, (2) identifying improvement opportunities in existing skills or prompts, (3) validating SKILL.md structure against quality standards, (4) reviewing prompt quality for clarity and efficiency, (5) preparing artifacts for refactoring or enhancement, or any other skill/prompt examination tasks. Produces detailed reports with severity-tagged issues and actionable recommendations.
+description: Examines SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations.
 ---
 
 <interpretation_check>
@@ -110,6 +110,7 @@ If `{artifact-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
 - NEVER add new features or capabilities beyond fixing identified issues
 - NEVER modify the core functionality or purpose of the artifact
 - NEVER execute actions on files outside the examined artifact directory
+- NEVER modify canonical pattern section labels (preserve exact names from apply-patterns/build-with-patterns)
 - ALWAYS preserve all reference files, scripts, and assets unless explicitly approved for deletion
 
 **Out of scope:**
@@ -238,20 +239,14 @@ After completing all steps, perform holistic review:
 <severity_framework>
 Assign severity to every identified issue based on impact.
 
-**This table is the authoritative source for severity assignments** (referenced throughout analysis frameworks):
+**Authoritative severity assignments** (see references/quality-standards-shared.md for details):
 
-| Severity | Impact | Key Examples |
-|----------|--------|--------------|
-| **CRITICAL** | Blocks correctness or triggering | Description missing "when to use" (skills); No clear purpose statement (prompts); Dead references; 3+ identical duplications |
-| **HIGH** | Significantly degrades quality/usability | SKILL.md >700 lines; Prompt >500 lines; Description <20 words; No section structure (prompts); Description matches "Bad" examples |
-| **MEDIUM** | Quality improvement needed | SKILL.md 500-700 lines; Prompt 300-500 lines; Description <50 or >200 words; Missing TOC in reference >100 lines; Inconsistent formatting |
-| **LOW** | Polish/consistency | Voice inconsistency; Vague file naming; Minor redundancy; Prose where bullets would work |
+- **CRITICAL:** Blocks correctness/triggering (missing "when to use", dead references, 3+ duplications)
+- **HIGH:** Significantly degrades quality (>700 lines, <20 words description, no structure)  
+- **MEDIUM:** Quality improvement needed (500-700 lines, <50/>200 words, missing TOC)
+- **LOW:** Polish/consistency (voice issues, vague naming, minor redundancy)
 
-**Health Score Calculation:**
-- 2+ CRITICAL → Critical 🔴
-- 0-1 CRITICAL, 3+ HIGH → Needs Work 🟡
-- 0 CRITICAL, 0-2 HIGH, any MEDIUM → Good 🟢
-- 0 CRITICAL, 0 HIGH, 0-2 MEDIUM → Excellent ✨
+**Health Score:** 2+ CRITICAL → Critical 🔴; 0-1 CRITICAL + 3+ HIGH → Needs Work 🟡; 0 CRITICAL + 0-2 HIGH → Good 🟢; 0 CRITICAL + 0 HIGH + 0-2 MEDIUM → Excellent ✨
 
 **In reports:** Tag every issue with severity [CRITICAL], [HIGH], [MEDIUM], or [LOW]
 </severity_framework>
@@ -300,6 +295,9 @@ Work through frameworks systematically, documenting findings per references/outp
 - references/quality-standards-shared.md (universal quality criteria)
 - references/skill-quality-standards.md (skill-specific quality criteria)
 - references/prompt-quality-standards.md (prompt-specific quality criteria)
+
+**Pattern detection:**
+- references/pattern-label-registry.md (canonical pattern names to preserve during voice checking)
 
 **Output format:**
 - references/output-format.md (report structure and formatting)

@@ -1,6 +1,6 @@
 ---
 name: assess-skill-value
-description: Evaluates whether a proposed skill is worth building using a 7-dimension scoring framework (0-14 points). Provides build/skip recommendation, improvement suggestions ranked by value, and optionally generates a complete specification document. Use when planning to create a new skill, questioning if a skill idea adds value, or auditing existing skills for redundancy.
+description: Evaluates whether a proposed skill is worth building using a 7-dimension scoring framework (0-14 points). Provides build/skip recommendation, improvement suggestions ranked by value, and optionally generates a complete specification document. Use when: (1) planning to create a new skill and need objective assessment, (2) questioning if a skill idea adds genuine value beyond Claude's base capabilities, (3) auditing existing skills for redundancy, or (4) applying systematic evaluation to prevent building superfluous capabilities.
 ---
 
 <objective>
@@ -35,8 +35,8 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - If description is vague or lacks key details (what it does, for whom, with what inputs) → ask user for clarification
 
 **Input type detection:**
-- If contains ".md" or "/" → treat as file path
-- If single word or hyphenated → treat as skill name
+- If contains ".md" or "/" → treat as file path (e.g., "/path/to/file.md")
+- If single word or hyphenated name → treat as skill name (e.g., "pdf", "assess-skill-value")
 - Otherwise → treat as text description
 </inputs_first>
 
@@ -47,13 +47,16 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
    - If skill name → Search `.claude/skills/{name}/SKILL.md` with Glob tool
      - If not found → Ask user: "Skill not found at `.claude/skills/{name}/SKILL.md`. Please provide either a full path or a text description."
 2. **Validate completeness** (if description) → Reformulate understanding, present to user, wait for confirmation
-3. **Evaluate all 7 dimensions** → Assign 0/1/2 score + rationale for each dimension
+3. **Evaluate all 7 dimensions** → Assign 0/1/2 score + rationale for each dimension (see references/evaluation-framework.md)
 4. **Calculate total & interpret** → Sum scores (0-14), determine verdict (Build/Consider/Skip)
 5. **Generate improvements** → If total score < 12, generate concrete suggestions to increase value. If score 12-14, include brief note: "Score already high; only minor refinements possible."
-6. **Compile report** → Produce final output with all required sections
+6. **Compile report** → Produce evaluation report with required sections
+   → If verdict = "skip" → STOP after Step 7
+   → If verdict ≠ "skip" → CONTINUE to Step 8
 7. **Review** → Check consistency, arithmetic, alignment before delivery
-8. **Show additional improvements** (if verdict ≠ skip) → Present ranked list of features and improvements by value impact, including potential score improvements
-9. **Offer specification generation** (if verdict ≠ skip) → Ask user if they want a complete specification document, which improvements to include
+8. **Show additional improvements** → Present ranked list of features and improvements by value impact [REQUIRED if verdict ≠ skip]
+   → CONTINUE to Step 9
+9. **Offer specification generation** → Ask user if they want a complete specification document [REQUIRED if verdict ≠ skip]
 </step_contract>
 
 <decision_points>
@@ -64,15 +67,15 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 **D2: Completeness validation (after Step 1)**
 - If text description AND lacks key details (what it does, for whom, with what inputs) → ask user for more detail
 - Else if text description AND complete → reformulate understanding, show to user, wait for confirmation before proceeding
-- Else (existing skill file/name) → skip interpretation check; proceed to Step 3 (evaluation)
+- Else (existing skill file/name) → skip interpretation check (content is unambiguous); proceed to Step 3 (evaluation)
 
 **D3: Improvement section inclusion (after Step 5)**
 - If total score < 12 → include "Improvement Suggestions" section with concrete suggestions
 - If score 12-14 → include brief note: "Score already high; only minor refinements possible"
 
 **D4: Additional improvements and specification offer (after Step 7)**
-- If verdict = "skip" → include initial improvement suggestions (Step 5) in report, stop after Step 7 (skip Steps 8-9)
-- If verdict ≠ skip (verdict = "build" or "consider") → proceed to Steps 8-9 (additional improvements + specification offer)
+- If verdict = "skip" → include initial improvement suggestions (Step 5) in report, STOP after Step 7
+- If verdict ≠ skip (verdict = "build" or "consider") → MUST proceed to Steps 8-9 (additional improvements + specification offer)
 </decision_points>
 
 <quality_gates>
@@ -84,7 +87,7 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 
 **G2 (after Step 4 - Calculate total):**
 - Total score must equal sum of 7 individual scores
-- Verdict must match interpretation rules defined in evaluation_framework
+- Verdict must match interpretation rules (see references/evaluation-framework.md)
 - If fail → Recalculate
 
 **G3 (after Step 6 - Compile report):**
@@ -93,33 +96,42 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - All improvement suggestions use [I-N] format per addressable_output section
 - If fail → Add missing sections
 
+**G3.5 (after Step 7 - Check next steps):**
+- If verdict ≠ skip → must proceed to Steps 8-9
+- If verdict = skip → may stop after Step 7
+- If fail → Execute remaining required steps
+
 **G4 (after Step 8 - Additional improvements):**
 - If verdict ≠ skip, verify additional improvements section present with ≥1 improvement ranked by value impact
 - All additional improvements use [I-N] format
 - If fail → Generate missing improvements
+
+**G5 (after Step 9 - Specification offer):**
+- If verdict ≠ skip, verify specification offer was made
+- If fail → Make specification offer
 </quality_gates>
 
 <scope_fence>
 **In scope:**
-- Reading and analyzing the target skill/prompt description
-- Evaluating against 7 dimensions using the framework
-- Generating evaluation report with scores and recommendations
+- Reading and analyzing target skill/prompt descriptions
+- Evaluating against 7 dimensions using framework
+- Generating evaluation reports with scores and recommendations
 - Proposing improvement suggestions (initial and additional)
-- Creating specification documents for skills that score "build" or "consider"
-- Including implementation notes in specification (architecture, tools, patterns, performance considerations)
+- Creating specification documents for "build" or "consider" verdicts
+- Including implementation notes in specifications (architecture, tools, patterns)
 
 **Out of scope:**
-- Writing actual SKILL.md implementation code for the assessed skill
+- Writing actual SKILL.md implementation code
 - Writing detailed step-by-step implementation instructions
 - Modifying existing skill files
-- Comparing to other skills in the ecosystem
+- Comparing to other skills in ecosystem
 - Making strategic decisions about whether user should build it
 
-**Clarification on "implementation details":**
-- Evaluation report: No implementation code or detailed implementation steps
-- Specification document: Implementation NOTES (architectural guidance, tool recommendations, integration points) are allowed and encouraged
+**Clarification on implementation details:**
+- Evaluation report: No implementation code or detailed steps
+- Specification document: Implementation notes (architectural guidance, tool recommendations) encouraged
 
-**If boundary crossed:** Note the desire, but return to pure evaluation mode.
+**If boundary crossed:** Note the desire, return to pure evaluation mode.
 </scope_fence>
 
 <interpretation_check>
@@ -135,63 +147,8 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - Proceed directly to evaluation
 </interpretation_check>
 
-<evaluation_framework>
-**The 7 Dimensions (0-2 points each)**
-
-**1. Knowledge Gap Test**
-**Question:** Does the skill contain specialized knowledge the Claude doesn't have?
-- **2 points:** Domain-specific databases, proprietary frameworks, niche methodologies, current data beyond training cutoff
-- **1 point:** Synthesizes existing knowledge in a novel way
-- **0 points:** General knowledge already available to Claude
-
-**2. Structural Process Test**
-**Question:** Does the skill provide a systematic, repeatable process the Claude would inconsistently apply?
-- **2 points:** Multi-step workflows with specific sequences, mandatory checkpoints, enforced order
-- **1 point:** Provides structure that improves consistency
-- **0 points:** Simple prompts that don't add systematic rigor
-
-**3. Tool Integration Test**
-**Question:** Does the skill orchestrate tools or external systems the Claude can't access directly?
-- **2 points:** MCP integrations, API calls, file system operations, database queries
-- **1 point:** Could integrate with tools but basic version works without them
-- **0 points:** Pure reasoning/analysis with no tool orchestration
-
-**4. Consistency & Guardrails Test**
-**Question:** Does the skill enforce discipline the Claude might skip under time pressure or ambiguity?
-- **2 points:** Mandatory steps, error checking, quality gates, "don't skip this" enforcement
-- **1 point:** Provides helpful structure but not strictly enforced
-- **0 points:** Suggestions the Claude would naturally make anyway
-
-**5. Complexity Management Test**
-**Question:** Does the skill manage complexity that overwhelms typical Claude context/attention?
-- **2 points:** Multi-stage workflows, state tracking, parallel analyses, synthesis of 5+ factors
-- **1 point:** Manages moderate complexity helpfully
-- **0 points:** Simple one-shot analysis
-
-**6. User Experience Test**
-**Question:** Does the skill significantly reduce friction or cognitive load for the user?
-- **2 points:** Transforms 10+ message conversation into 1-2 message invocation
-- **1 point:** Saves 3-5 messages or provides clearer interface
-- **0 points:** Minimal UX improvement (saves only 1-2 messages)
-
-**7. Specialization Depth Test**
-**Question:** Does the skill go significantly deeper than Claude's general knowledge?
-- **2 points:** 10x more detail, expert-level execution, domain mastery
-- **1 point:** Noticeably deeper than casual Claude response
-- **0 points:** Same depth as general Claude knowledge
-
-**Scoring Interpretation:**
-- **10-14 points:** Build this skill - significant value add
-- **6-9 points:** Moderate value - consider if strategic
-- **0-5 points:** Likely redundant - skip
-
-**Evaluation Tone:**
-Be brutally honest. Users benefit more from candid assessment now than discovering redundancy after building. If a skill is marginal, say so clearly.
-
-**The Acid Test:**
-Simple question: "Could I get 80% of this value by just asking Claude directly?"
-- If YES → Likely redundant
-- If NO → Genuinely new capability
+<Evaluation Framework>
+See references/evaluation-framework.md for the complete 7-dimension scoring framework, criteria, and evaluation guidelines.
 </evaluation_framework>
 
 <clarifying_questions>
@@ -306,10 +263,19 @@ Check for:
 **See references/specification-template.md for specification document structure and generation guidance.**
 
 <stop_conditions>
+**STOP immediately if:**
+- Verdict = "skip" AND Steps 1-7 completed
+- Verdict ≠ "skip" AND Steps 1-9 completed
+- User declines/completes specification generation
+
+**DO NOT STOP if:**
+- Verdict = "build" or "consider" but Steps 8-9 not completed
+- Any quality gates (G1-G5) have failed
+
 **Done when:**
 - All output_schema requirements met
-- All quality_gates (G1-G4) passed
-- Steps 8-9 completed if verdict ≠ skip (validated by G4)
+- All quality_gates (G1-G5) passed
+- Steps 8-9 completed if verdict ≠ skip (validated by G3.5, G4, G5)
 - Specification document generated if user requested
 
 **Don't:**
