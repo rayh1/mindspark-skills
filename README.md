@@ -46,8 +46,8 @@ assess-skill-value path/to/SKILL.md
 assess-skill-value pdf
 ```
 
-### 4. [examine-skill](skills/examine-skill/)
-Analyzes skill files for problems, contradictions, redundancies, and structural issues.
+### 4. [examine-artifact](skills/examine-artifact/)
+Analyzes skill files and standalone prompts for problems, contradictions, redundancies, structural issues, and outdated content. Automatically detects artifact type (skill vs prompt).
 
 It produces a written examination report (not just chat notes), with specific issues and actionable fixes, so you can confidently refactor or prepare a skill for pattern application.
 
@@ -55,7 +55,7 @@ It produces a written examination report (not just chat notes), with specific is
 
 **Quick start:**
 ```
-examine-skill path/to/SKILL.md
+examine-artifact path/to/SKILL.md
 # Produces EXAMINATION-REPORT.md with detailed findings
 ```
 
@@ -96,7 +96,7 @@ Each skill includes:
 Common workflow for using these skills together:
 
 1. **Build** a new skill or prompt (`build-with-patterns`)
-2. **Examine** it for issues (`examine-skill`)
+2. **Examine** it for issues (`examine-artifact`)
 3. **Apply** reliability patterns (`apply-patterns`)
 4. Iterate as needed
 
@@ -130,4 +130,4 @@ For issues, questions, or suggestions:
 ---
 
 **Version:** 1.0.0  
-**Last Updated:** January 2026
+**Last Updated:** February 2026

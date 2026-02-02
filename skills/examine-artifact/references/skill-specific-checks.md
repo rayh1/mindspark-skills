@@ -1,34 +1,17 @@
-# Analysis Framework
+# Skill-Specific Checks
 
-Detailed 12-section framework for examining skills systematically.
+Checks that apply only to SKILL.md files (artifacts with YAML frontmatter containing name + description).
 
 ## Table of Contents
 
-1. [Structure Analysis](#1-structure-analysis) - Lines 30-90
-2. [Trigger & Description Examination](#2-trigger--description-examination) - Lines 92-215
-3. [Directive Extraction](#3-directive-extraction) - Lines 217-230
-4. [Contradiction Detection](#4-contradiction-detection) - Lines 232-250
-5. [Redundancy Analysis](#5-redundancy-analysis) - Lines 252-380
-6. [Temporal Analysis](#6-temporal-analysis) - Lines 382-400
-7. [Flow Mapping](#7-flow-mapping) - Lines 402-425
-8. [Freedom Calibration](#8-freedom-calibration) - Lines 427-455
-9. [Progressive Disclosure Check](#9-progressive-disclosure-check) - Lines 457-640
-10. [Dead Code Identification](#10-dead-code-identification) - Lines 642-665
-11. [Writing Voice](#11-writing-voice) - Lines 667-720
-12. [Context Efficiency](#12-context-efficiency) - Lines 722-790
+1. [Structure Analysis](#1-structure-analysis) - Lines 20-90
+2. [Trigger & Description Examination](#2-trigger--description-examination) - Lines 92-180
+3. [Cross-File Redundancy](#3-cross-file-redundancy) - Lines 182-260
+4. [Progressive Disclosure Check](#4-progressive-disclosure-check) - Lines 262-400
 
 ---
 
-## Note
-
-For detailed quality criteria and assessment standards, consult **skill-quality-standards.md**.
-The framework below provides the structure; the standards provide the criteria.
-
----
-
-## Work Through Each Section Systematically
-
-**1. STRUCTURE ANALYSIS**
+## 1. STRUCTURE ANALYSIS
 
 - [D-59] **Correct anatomy?**
   - Required: SKILL.md with YAML frontmatter
@@ -69,11 +52,11 @@ The framework below provides the structure; the standards provide the criteria.
 
 ---
 
-**2. TRIGGER & DESCRIPTION EXAMINATION**
+## 2. TRIGGER & DESCRIPTION EXAMINATION
 
 (See references/skill-quality-standards.md § Description Field Excellence for detailed criteria)
 
-Critical checks with severity guidance:
+**Critical checks with severity guidance:**
 
 - [D-64] **Description size:** Target ~50-150 words
   - Count words in description field
@@ -133,28 +116,9 @@ Beyond structural checks, assess description excellence:
 
 ---
 
-**3. DIRECTIVE EXTRACTION**
+## 3. CROSS-FILE REDUNDANCY
 
-Create numbered list of EVERY instruction/directive:
-- [D-68] Extract each "do this" or "don't do this" statement
-- [D-69] Note file and line number for each
-- [D-70] Flag vague or ambiguous directives
-
----
-
-**4. CONTRADICTION DETECTION**
-
-Compare all extracted directives:
-- [D-71] Identify conflicting pairs
-- [D-72] Check if same topic addressed differently in multiple places
-- [D-73] Check if reference files contradict SKILL.md
-- [D-74] List each contradiction with specific quotes and locations
-
----
-
-**5. REDUNDANCY ANALYSIS**
-
-(See references/skill-quality-standards.md § Context Window Philosophy and § Duplication Rule)
+(See references/quality-standards-shared.md § Duplication Rule)
 
 Apply the Challenge Test to all content:
 
@@ -202,8 +166,6 @@ Apply the Challenge Test to all content:
 
 **Systematic Cross-File Duplication Check:**
 
-Specific check for SKILL.md ↔ references/ duplication (beyond general redundancy):
-
 - [D-104] **Systematic cross-file duplication check:**
   - **Step 1:** Extract distinct examples from SKILL.md (code snippets, workflows, patterns)
   - **Step 2:** For each example, search all references/ files for same/similar content
@@ -225,39 +187,7 @@ Specific check for SKILL.md ↔ references/ duplication (beyond general redundan
 
 ---
 
-**6. TEMPORAL ANALYSIS (Outdated Content)**
-
-- [D-79] References to specific dates, versions, or "new" features
-- [D-80] Language suggesting currency that may be old ("recently", "now", "the latest")
-- [D-81] Deprecated tools, APIs, or approaches
-- [D-82] Instructions referencing features/behaviors that may have changed
-
----
-
-**7. FLOW MAPPING**
-
-For each major user scenario:
-- [D-83] Trace complete decision path through all files
-- [D-84] Identify dead ends or unclear branches
-- [D-85] Find circular references or infinite loops
-- [D-86] Map where user/Claude might get confused
-
----
-
-**8. FREEDOM CALIBRATION**
-
-For each instruction, assess specificity level:
-- [D-87] **HIGH freedom** (text guidance) — appropriate when multiple approaches valid
-- [D-88] **MEDIUM freedom** (pseudocode/parameters) — appropriate when preferred pattern exists
-- [D-89] **LOW freedom** (specific scripts) — appropriate when operations fragile
-
-Flag mismatches:
-- [D-90] Overly rigid instructions limiting valid approaches
-- [D-91] Overly loose instructions leaving fragile operations undefined
-
----
-
-**9. PROGRESSIVE DISCLOSURE CHECK**
+## 4. PROGRESSIVE DISCLOSURE CHECK
 
 (See references/skill-quality-standards.md § Progressive Disclosure and § Resource Type Selection)
 
@@ -318,8 +248,6 @@ Verify information is at the right level (3-level loading model):
 
 **Reference Quality Assessment:**
 
-Detailed assessment of references/ organization and quality:
-
 - [D-105] **Table of contents check for large references:**
   - For each file in references/, count lines
   - Files >100 lines should have table of contents at top
@@ -364,77 +292,3 @@ Detailed assessment of references/ organization and quality:
     - List all files in each directory with extensions
     - Apply decision tree from § Resource Type Selection
     - Flag mismatches
-
----
-
-**10. DEAD CODE IDENTIFICATION**
-
-- [D-97] Instructions that can never be triggered
-- [D-98] Conditional branches with impossible conditions
-- [D-99] References to files or functions that don't exist
-- [D-100] Parameters or options never used
-
----
-
-**11. WRITING VOICE**
-
-Check consistency of voice and style (polish issue, generally LOW severity):
-
-- [D-108] **Section headings voice check:**
-  - Extract all section headings (##, ###, etc.) from SKILL.md
-  - Check form:
-    - ✓ Imperative: "Extract Text", "Rotate Pages", "Fill Forms"
-    - ❌ Gerund: "Extracting Text", "Rotating Pages", "Filling Forms"
-    - ❌ Noun: "Text Extraction", "Page Rotation", "Form Filling"
-  - Count violations (non-imperative headings)
-  - **LOW** severity if 3+ violations (consistency issue)
-  - Recommendation: Convert to imperative form
-  - See § Writing Voice Guidelines for rationale
-
-- [D-109] **Instruction steps voice check:**
-  - Extract numbered step sequences from SKILL.md
-  - Check form for each step:
-    - ✓ Imperative: "1. Open the PDF", "2. Extract tables", "3. Export to CSV"
-    - ❌ Gerund: "1. Opening the PDF", "2. Extracting tables", "3. Exporting to CSV"
-  - Count violations
-  - **LOW** severity if 5+ violations
-  - Note: This is polish, not functional, but improves clarity and scannability
-
----
-
-**12. CONTEXT EFFICIENCY**
-
-Assess whether skill uses context efficiently (examples vs prose):
-
-- [D-110] **Verbose explanations vs examples:**
-  - Scan SKILL.md for explanation blocks >50 words
-  - For each block, ask: "Could this be replaced with a code example?"
-  - Look for patterns:
-    - Multi-paragraph explanation of how to use a library
-    - Detailed prose describing a function call
-    - Long explanation where 5-line example would suffice
-  - Count instances where example would be more efficient
-  - **MEDIUM** severity if 5+ instances found
-  - **LOW** severity if 2-4 instances
-  - Apply principle from § Context Window Philosophy: "Prefer concise examples over verbose explanations"
-
-- [D-111] **Prose paragraphs vs bulleted lists:**
-  - Scan for prose paragraphs that list multiple items/steps
-  - Example anti-pattern:
-    ```
-    The skill supports multiple operations. You can extract text from PDFs,
-    rotate pages, merge multiple documents, split documents into parts, and
-    fill PDF forms. Each operation has specific requirements.
-    ```
-  - Should be:
-    ```
-    The skill supports:
-    - Extract text from PDFs
-    - Rotate pages
-    - Merge multiple documents
-    - Split documents
-    - Fill PDF forms
-    ```
-  - Count instances where bullets would improve scannability
-  - **LOW** severity if 3+ instances (scannability improvement)
-  - Note: Bulleted lists are more scannable and context-efficient

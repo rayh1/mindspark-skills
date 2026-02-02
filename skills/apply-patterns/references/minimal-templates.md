@@ -84,13 +84,15 @@ Notes:
 
 ## Canonical Headings (raw prompts)
 
-For raw prompts, use these headings (exact spelling) near the top:
+For raw prompts, use these markdown H2 headings (exact spelling):
 
-**Tier 1:** Inputs First: | Step Contract: | Decision Points: | Quality Gates: | Stop Conditions: | Scope Fence: | Interpretation Check: | Output Schema:
+**Tier 1:** `## Inputs First:` | `## Step Contract:` | `## Decision Points:` | `## Quality Gates:` | `## Stop Conditions:` | `## Scope Fence:` | `## Interpretation Check:` | `## Output Schema:`
 
-**Tier 2:** User Approval Gate: | Clarifying Questions: | Confidence Signal: | Fallback Chain: | Lens: | Addressable Output: | Review Step: | Step Ledger:
+**Tier 2:** `## User Approval Gate:` | `## Clarifying Questions:` | `## Confidence Signal:` | `## Fallback Chain:` | `## Lens:` | `## Addressable Output:` | `## Review Step:` | `## Step Ledger:`
 
-**Tier 3:** Mode Selection: | Example Anchor: | Assumption Registry: | Context Window: | Observability: | Error Handling:
+**Tier 3:** `## Mode Selection:` | `## Example Anchor:` | `## Assumption Registry:` | `## Context Window:` | `## Observability:` | `## Error Handling:`
+
+Note: Pattern sections in prompts are treated as H2 sections for organizational consistency with overall prompt structure.
 
 ---
 
@@ -126,10 +128,10 @@ Hard rule: **Never add a second section for the same pattern.**
 </inputs_first>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Inputs First:
+```markdown
+## Inputs First:
 required: target_path
 optional: mode=lite
 validation: target_path exists and readable
@@ -150,10 +152,10 @@ validation: target_path exists and readable
 </step_contract>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Step Contract:
+```markdown
+## Step Contract:
 1) Read inputs
 2) Do the work
 3) Verify
@@ -174,10 +176,10 @@ Step Contract:
 </decision_points>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Decision Points:
+```markdown
+## Decision Points:
 If condition_a → action_a
 Else if condition_b → action_b
 Record: chosen branch
@@ -197,10 +199,10 @@ If a gate fails: fix once → re-check; else stop and report.
 </quality_gates>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Quality Gates:
+```markdown
+## Quality Gates:
 G1 after step 1: inputs validated?
 G2 after step 2: output matches format?
 fail → retry once; else stop and report
@@ -223,10 +225,10 @@ Don't:
 </stop_conditions>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Stop Conditions:
+```markdown
+## Stop Conditions:
 done when: deliverables complete + gates pass
 don't: expand scope or refactor unrelated code
 ```
@@ -247,10 +249,10 @@ If boundary is crossed: ask before proceeding.
 </scope_fence>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Scope Fence:
+```markdown
+## Scope Fence:
 in: {what to touch}
 out: {what not to touch}
 if out-of-scope: ask first
@@ -272,10 +274,10 @@ If corrected: update understanding, re-confirm if significant.
 </interpretation_check>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Interpretation Check:
+```markdown
+## Interpretation Check:
 restatement: {paraphrase the request}
 assumptions: {key interpretations}
 confirm: "Is this correct?"
@@ -299,10 +301,10 @@ validation: all sections present before output
 </output_schema>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Output Schema:
+```markdown
+## Output Schema:
 format: markdown
 sections: Summary, Changes, Notes
 validation: all sections present
@@ -324,10 +326,10 @@ On rejection: analysis-only; no edits.
 </user_approval_gate>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-User Approval Gate:
+```markdown
+## User Approval Gate:
 pause before edits; show proposal
 options: approve / select subset / cancel
 ```
@@ -350,10 +352,10 @@ fallback: use safe default, document assumption
 </clarifying_questions>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Clarifying Questions:
+```markdown
+## Clarifying Questions:
 trigger: low confidence or ambiguity
 max: 3 per phase, batch related
 fallback: safe default + document
@@ -375,10 +377,10 @@ Include: assessment + reason + what would change it
 </confidence_signal>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Confidence Signal:
+```markdown
+## Confidence Signal:
 high (>85%): proceed
 medium (60-85%): proceed + flag
 low (<60%): ask first
@@ -400,10 +402,10 @@ trigger: {conditions that activate fallback}
 </fallback_chain>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Fallback Chain:
+```markdown
+## Fallback Chain:
 primary: preferred approach
 fallback_1: if primary fails
 terminal: ERROR - surface to user
@@ -426,10 +428,10 @@ coverage: each lens must report
 </lens>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Lens:
+```markdown
+## Lens:
 perspectives: [lens_1, lens_2, lens_3]
 per_lens: findings + severity
 synthesis: merge, flag conflicts
@@ -450,10 +452,10 @@ Use IDs in follow-up: "address F-1", "defer R-2"
 </addressable_output>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Addressable Output:
+```markdown
+## Addressable Output:
 format: [F-1], [R-1], etc.
 use in follow-up: "fix F-1", "defer R-2"
 ```
@@ -472,10 +474,10 @@ If issues: revise once per cycle; stop at max_cycles.
 </review_step>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Review Step:
+```markdown
+## Review Step:
 criteria: completeness + consistency + format
 max_cycles: 2
 ```
@@ -496,10 +498,10 @@ Update after each step:
 </step_ledger>
 ```
 
-**Prompt (text):**
+**Prompt (markdown):**
 
-```text
-Step Ledger:
+```markdown
+## Step Ledger:
 done: [...]
 next: {step}
 decisions: [...]

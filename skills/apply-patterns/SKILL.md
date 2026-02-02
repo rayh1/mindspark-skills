@@ -24,7 +24,7 @@ Patterns are organized into three tiers by priority. See [pattern-catalog.md](re
 - Load for comprehensive: llmprog.md + pattern-catalog.md (when gaps are complex)
 
 **Structure-Only Improvements:**
-Patterns add reliability structure (inputs, contracts, validation) without changing the target's core intent or behavior.
+Patterns add reliability structure (inputs, contracts, validation) without changing the target's core intent or behavior. When patterns are added, remove any original prose content that duplicates or is superseded by the structured patterns to eliminate redundancy.
 
 **User Approval Gate:**
 All pattern applications require explicit user approval before file modification.
@@ -44,9 +44,11 @@ Skills use progressive disclosure (metadata → SKILL.md body → bundled resour
 - [pattern-catalog.md](references/pattern-catalog.md) - Tiered pattern list with applicability
 - [minimal-templates.md](references/minimal-templates.md) - Canonical tags + minimal insertion templates
 - [llmprog.md](references/llmprog.md) - Full pattern details (22 patterns, ~800 lines)
-- [applicability-guide.md](references/applicability-guide.md) - Tier-aware applicability rules
+- [applicability-guide.md](references/applicability-guide.md) - Tier-aware applicability rules + proposal counts
 - [integration-guide.md](references/integration-guide.md) - Pattern formatting and ordering
 - [examples.md](references/examples.md) - Good/bad integration examples
+- [approval-templates.md](references/approval-templates.md) - Presentation formats for user approval
+- [output-templates.md](references/output-templates.md) - Report format specifications
 - [error-taxonomy.md](references/error-taxonomy.md) - Error codes and recovery (load after Error Handling pattern is approved)
 </reference_guides>
 
@@ -98,17 +100,13 @@ Before analyzing the target:
 
 **Pattern selection scope:**
 
-Tier structure: See <essential_principles> for tier definitions.
+See [pattern-catalog.md](references/pattern-catalog.md) for tier definitions, complete pattern list, and canonical priority ordering.
 
 **Gap-driven proposal guidelines:**
-- **Simple targets:** Propose 2-4 patterns addressing critical gaps (usually Tier 1)
-- **Moderate targets:** Propose 4-6 patterns (Tier 1 + applicable Tier 2)
-- **Complex targets:** Propose up to 8 patterns, prioritized by impact
-- **Solid targets:** Acknowledge quality, suggest 0-2 optional improvements
+For proposal counts by target complexity (simple/moderate/complex/solid), see [applicability-guide.md](references/applicability-guide.md) § Gap-Driven Selection Flow.
 
 **Tier 1 patterns (consider first):**
-See [pattern-catalog.md](references/pattern-catalog.md) for canonical priority ordering. Focus on patterns addressing detected gaps:
-- Inputs First, Step Contract, Scope Fence, Output Schema, Stop Conditions, Quality Gates, Interpretation Check, Decision Points
+See [pattern-catalog.md](references/pattern-catalog.md) § Tier 1 - Core for complete list and applicability criteria. Focus on patterns addressing detected gaps.
 
 **Tier 2/3 patterns:** Propose only when:
 - Tier 1 gaps addressed (or present)
@@ -148,93 +146,35 @@ See [pattern-catalog.md](references/pattern-catalog.md) for canonical priority o
 4. Load additional references if needed (applicability-guide.md for complex gaps).
 5. Propose patterns based on gaps (prioritized, with rationale) and wait for approval.
 6. Apply approved patterns to the target file.
-7. Review (bounded by `max_cycles`).
-8. Report results.
+7. Remove superseded content: Identify and remove original content that duplicates or is made redundant by the newly added patterns. Document removed sections.
+8. Review (bounded by `max_cycles`).
+9. Report results.
 </step_contract>
 
 <quality_gates>
 G1 (after Step 3): Are gaps correctly identified and prioritized for the target's characteristics?
 G2 (after Step 5): Does proposal address critical gaps without over-engineering (generally 2-8 patterns)?
 G3 (after Step 6): Integration introduces no duplicates, conflicts, or broken XML tags?
-G4 (after Step 7): All approved patterns present and properly formatted?
-G5 (skills only): Content added uses imperative/infinitive form (not past tense or present continuous)?
-G6 (skills only): SKILL.md stays under 500 lines OR proposal includes moving content to references/?
+G4 (after Step 7): Original content that duplicates newly added patterns has been removed?
+G5 (after Step 8): All approved patterns present and properly formatted?
+G6 (skills only): Content added uses imperative/infinitive form (not past tense or present continuous)?
+G7 (skills only): SKILL.md stays under 500 lines OR proposal includes moving content to references/?
 If gate fails: fix once → re-check; else ERROR: GATE_FAIL - report issue.
 
 Note: Quality Gates run inline during step execution. Review Step (see <review_step>) runs holistically after all steps complete.
 </quality_gates>
 
 <user_approval_gate>
-Before editing, require explicit approval.
+Before editing, require explicit approval using standard gap analysis format.
 
-**Presentation format:**
-```
-**Pattern Proposal - Gap Analysis**
+**Presentation:**
+Show gap summary table with tier coverage (present/missing/N/A), categorized recommendations (Critical Gaps, High-Value Improvements, Optional Enhancements), ROI rationale for each pattern, and estimated impact.
 
-Target: {target_path}
-Type: {skill|prompt}
-Complexity: {simple|moderate|complex}
+For complete presentation templates (standard proposal format and solid target format), see [approval-templates.md](references/approval-templates.md).
 
-**Gap Summary:**
-| Tier | Present | Missing | N/A |
-|------|---------|---------|-----|
-| 1    | {n}     | {n}     | {n} |
-| 2    | {n}     | {n}     | {n} |
-| 3    | {n}     | {n}     | {n} |
+**Options:** [approve all] [select subset: P-1, P-3...] [analysis only]
 
-**Critical Gaps** (blocks correctness/clarity)
-| ID | Pattern | Tier | Rationale |
-|----|---------|------|-----------|
-| [P-1] | {name} | 1 | {why critical} |
-
-**High-Value Improvements** (significant reliability gain)
-| ID | Pattern | Tier | Rationale |
-|----|---------|------|-----------|
-| [P-3] | {name} | 1/2 | {why valuable} |
-
-**Optional Enhancements** (nice to have)
-| ID | Pattern | Tier | Rationale |
-|----|---------|------|-----------|
-| [P-5] | {name} | 2/3 | {lower priority benefit} |
-
-⚠️ **Considerations:**
-- Proposing {n} total patterns
-- Estimated length increase: {percent}% (warn if >50%)
-- Poor fits flagged: {list any patterns inappropriate for skill type}
-- **Skills only:** Current line count: {n}/500 guideline {if approaching limit, suggest references/ offload}
-- **Skills only:** Description field completeness: {complete with triggers | missing "when to use" info}
-
-**Recommendation:** {Apply critical + high-value | Target already solid, optional only | etc.}
-
-[approve all] [select subset: P-1, P-3...] [analysis only]
-```
-
-**For solid targets (few/no gaps):**
-```
-**Pattern Analysis - Target Quality Assessment**
-
-Target: {target_path}
-Type: {skill|prompt}
-
-✓ **Existing Coverage:**
-- {List patterns already present}
-
-**Gap Analysis:**
-No critical gaps detected. Target demonstrates:
-- {strength 1}
-- {strength 2}
-
-**Optional Improvements** (low priority)
-| ID | Pattern | Tier | Rationale |
-|----|---------|------|-----------|
-| [P-1] | {name} | 2 | {minor benefit} |
-
-**Recommendation:** No changes needed. Target is well-structured.
-
-[apply optional] [analysis only]
-```
-
-On analysis only: produce analysis output; do not modify files.
+**On analysis only:** produce analysis output; do not modify files.
 </user_approval_gate>
 
 <clarifying_questions>
@@ -293,6 +233,8 @@ After integration, perform holistic review:
 Criteria:
 - All approved patterns present and properly formatted
 - No duplicate sections (same pattern added twice)
+- Original content that duplicates newly added patterns has been removed
+- No redundant prose instructions remaining that restate structured pattern content
 - XML tags balanced (for skills)
 - Tier 1 patterns before Tier 2, Tier 2 before Tier 3
 - Integration doesn't change target's core intent (see <essential_principles>)
@@ -315,57 +257,27 @@ Document all assumptions in analysis output for auditability.
 </assumption_registry>
 
 <output_schema>
-Return a concise report.
+Return a concise report with:
+- Target info (path, type, complexity)
+- Gap analysis summary (before/after state for Tier 1 and Tier 2)
+- Patterns applied (with addressable IDs and 1-sentence outcomes)
+- Superseded content removed (what was cleaned up to eliminate redundancy)
+- Patterns deferred (user-rejected patterns)
+- Remaining gaps (if any)
+- Notes (caveats, follow-ups, observations)
 
-**Standard output format:**
-```
-**Pattern Application Report**
-
-Target: {target_path}, {skill|prompt}
-Complexity: {simple|moderate|complex}
-
-**Gap Analysis:**
-- Tier 1: {present}/{total} present before → {present}/{total} after
-- Tier 2: {present}/{applicable} present before → {present}/{applicable} after
-- Critical gaps addressed: {n}
-
-**Patterns Applied:**
-- [P-1] {Pattern Name} (Tier {n}) - {1-sentence outcome}
-- [P-2] {Pattern Name} (Tier {n}) - {1-sentence outcome}
-
-**Patterns Deferred:**
-- [P-5] {Pattern Name} - {reason user skipped}
-
-**Remaining Gaps (if any):**
-- {Pattern Name} (Tier {n}) - {why not applied}
-
-**Notes:** {caveats, follow-ups, or observations}
-```
-
-**For analysis-only mode (no changes applied):**
-```
-**Pattern Analysis Report (Analysis Only)**
-
-Target: {target_path}, {skill|prompt}
-
-**Coverage Assessment:**
-{gap summary table}
-
-**Recommended Improvements:**
-{list with rationale}
-
-No changes applied (analysis only requested).
-```
+For detailed format specifications (standard report format and analysis-only format), see [output-templates.md](references/output-templates.md).
 </output_schema>
 
 <stop_conditions>
 Done when:
 - All approved patterns integrated into target file
-- Quality gates pass (G1-G6)
+- Superseded/duplicate content removed
+- Quality gates pass (G1-G7)
 - Review cycle complete (no issues OR max_cycles reached)
 - Report generated per output schema
 Don't:
-- Change target's core intent/behavior (structure only)
+- Change target's core intent/behavior (but DO remove content made redundant by pattern additions)
 - Add patterns user rejected
 - Edit files other than target_path
 - Propose 10+ patterns without clear justification (guideline: 2-8)
