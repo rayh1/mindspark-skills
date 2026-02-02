@@ -1,6 +1,6 @@
 ---
 name: apply-patterns
-description: Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when improving determinism, debuggability, and scope control without changing core intent. Requires user approval before any modifications.
+description: Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when (1) improving prompt determinism with quality gates and contracts, (2) adding scope control and stop conditions to skills, (3) analyzing pattern coverage gaps in existing SKILL.md files, or other reliability engineering tasks. Does not change core intent. Requires user approval before modifications.
 ---
 
 <quick_start>
@@ -10,10 +10,7 @@ description: Adds reliability patterns to a prompt or skill using gap-driven ana
 
 <essential_principles>
 **Tiered Pattern System:**
-Patterns are organized into three tiers by priority:
-- **Tier 1 - Core (8 patterns):** High-yield, low-overhead. Always consider.
-- **Tier 2 - Recommended (8 patterns):** Valuable when situation warrants.
-- **Tier 3 - Situational (6 patterns):** Specific use cases. Require justification.
+Patterns are organized into three tiers by priority. See [pattern-catalog.md](references/pattern-catalog.md) for tier definitions and full pattern list.
 
 **Gap-Driven Analysis:**
 1. Read target file and detect existing patterns
@@ -31,6 +28,15 @@ Patterns add reliability structure (inputs, contracts, validation) without chang
 
 **User Approval Gate:**
 All pattern applications require explicit user approval before file modification.
+
+**Skill-Specific Context Efficiency:**
+Skills use progressive disclosure (metadata → SKILL.md body → bundled resources) and share the context window with system prompts, conversation history, and other skills. When improving skills:
+- Keep SKILL.md lean (<500 lines guideline); suggest moving detailed content to references/ when approaching limit
+- Skills have scripts/ (executable code), references/ (documentation loaded as needed), assets/ (output files)
+- Avoid duplication: content lives in SKILL.md OR references/, not both
+- Frontmatter description is the PRIMARY triggering mechanism—must include "when to use" information (body loads AFTER triggering)
+- Use imperative/infinitive form when adding content to skills
+- Only add context Claude doesn't already have; prefer concise examples over verbose explanations
 </essential_principles>
 
 <reference_guides>
@@ -79,6 +85,9 @@ Before analyzing the target:
 - `target_complexity`: `simple` (<100 lines, single-step) | `moderate` (100-300 lines, multi-step) | `complex` (300+ lines, branching logic)
 - `existing_patterns`: List of patterns already present
 - `gap_severity`: Critical gaps (missing core structure) vs nice-to-have improvements
+- `skill_line_count` (skills only): Current SKILL.md line count (warn if approaching 500)
+- `has_references_dir` (skills only): Whether references/ directory exists for content offloading
+- `description_completeness` (skills only): Does frontmatter description include "when to use" triggers?
 </inputs_first>
 
 <scope_fence>
@@ -124,6 +133,9 @@ See [pattern-catalog.md](references/pattern-catalog.md) for canonical priority o
 - **Conversational skills:** Flag patterns that check "user engagement" or track state user is actively participating in (poor fit)
 - **Length warning:** If pattern additions would increase file length >50%, warn before approval
 - **Solid targets:** Don't force improvements. "No critical gaps found" is a valid outcome
+- **Skills approaching 500 lines:** Recommend moving detailed content (examples, reference material) to references/ directory instead of adding patterns to SKILL.md
+- **Skills with "when to use" sections in body:** Flag as ineffective (body loads AFTER triggering); recommend moving to frontmatter description field
+- **Duplicate content in SKILL.md and references/:** Flag violation of anti-duplication rule; recommend consolidating to references/
 </decision_points>
 
 <step_contract>
@@ -145,6 +157,8 @@ G1 (after Step 3): Are gaps correctly identified and prioritized for the target'
 G2 (after Step 5): Does proposal address critical gaps without over-engineering (generally 2-8 patterns)?
 G3 (after Step 6): Integration introduces no duplicates, conflicts, or broken XML tags?
 G4 (after Step 7): All approved patterns present and properly formatted?
+G5 (skills only): Content added uses imperative/infinitive form (not past tense or present continuous)?
+G6 (skills only): SKILL.md stays under 500 lines OR proposal includes moving content to references/?
 If gate fails: fix once → re-check; else ERROR: GATE_FAIL - report issue.
 
 Note: Quality Gates run inline during step execution. Review Step (see <review_step>) runs holistically after all steps complete.
@@ -187,6 +201,8 @@ Complexity: {simple|moderate|complex}
 - Proposing {n} total patterns
 - Estimated length increase: {percent}% (warn if >50%)
 - Poor fits flagged: {list any patterns inappropriate for skill type}
+- **Skills only:** Current line count: {n}/500 guideline {if approaching limit, suggest references/ offload}
+- **Skills only:** Description field completeness: {complete with triggers | missing "when to use" info}
 
 **Recommendation:** {Apply critical + high-value | Target already solid, optional only | etc.}
 
@@ -280,6 +296,9 @@ Criteria:
 - XML tags balanced (for skills)
 - Tier 1 patterns before Tier 2, Tier 2 before Tier 3
 - Integration doesn't change target's core intent (see <essential_principles>)
+- **Skills only:** Content uses imperative/infinitive form (not declarative or past tense)
+- **Skills only:** SKILL.md line count within reasonable bounds (<500 lines guideline)
+- **Skills only:** No content duplication between SKILL.md and references/
 Max_cycles: default 1 (override via max_cycles input if needed)
 Per cycle: identify issues → revise → re-check
 Exit: no issues found OR max_cycles reached
@@ -342,7 +361,7 @@ No changes applied (analysis only requested).
 <stop_conditions>
 Done when:
 - All approved patterns integrated into target file
-- Quality gates pass (G1-G4)
+- Quality gates pass (G1-G6)
 - Review cycle complete (no issues OR max_cycles reached)
 - Report generated per output schema
 Don't:
@@ -352,4 +371,8 @@ Don't:
 - Propose 10+ patterns without clear justification (guideline: 2-8)
 - Force improvements on solid targets (0-2 optional patterns is valid)
 - Apply patterns that check "user engagement" to conversational skills (poor fit)
+- **Skills:** Add verbose content when concise examples suffice (context efficiency)
+- **Skills:** Push SKILL.md beyond 500 lines without recommending references/ offload
+- **Skills:** Duplicate content between SKILL.md and references/
+- **Skills:** Add "when to use" sections to body (belongs in frontmatter description)
 </stop_conditions>

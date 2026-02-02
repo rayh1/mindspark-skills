@@ -2,20 +2,21 @@
 
 <required_reading>
 **Recommended reading (pointer-only):**
-1. `../references/core-passes.md` (canonical procedure)
-2. `../references/patterns-when-needed.md` (authoritative triggers for optional add-ons)
-3. `../references/worked-example-skill.md` (example)
-4. `../references/tightening-methodology.md` (optional narrative)
+1. `./core-passes.md` (canonical procedure)
+2. `./skill-architecture.md` (bundled resources, progressive disclosure, triggers)
+3. `./patterns-when-needed.md` (authoritative triggers for optional add-ons)
+4. `./worked-example-skill.md` (example)
+5. `./tightening-methodology.md` (optional narrative)
 </required_reading>
 
 <process>
 **Goal:**
-Build a Claude Code skill by following the canonical procedure in `../references/core-passes.md`, then applying skill-specific formatting.
+Build a Claude Code skill by following the canonical procedure in `./core-passes.md`, then applying skill-specific formatting.
 
 **Procedure (authoritative):**
 - Target type is already **skill**.
-- Follow `../references/core-passes.md`.
-- Use optional add-ons only when triggered: `../references/patterns-when-needed.md`.
+- Follow `./core-passes.md`.
+- Use optional add-ons only when triggered: `./patterns-when-needed.md`.
 
 **Skill-specific output**:
 Render `SKILL.md`:

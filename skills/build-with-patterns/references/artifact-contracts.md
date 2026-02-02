@@ -6,6 +6,23 @@ An **artifact contract** specifies exactly what files/sections get produced, the
 
 ---
 
+## Table of Contents
+
+- [Why Artifact Contracts Matter](#why-artifact-contracts-matter) - Lines 21-38
+- [Template 1: Analysis Report](#template-1-analysis-report) - Lines 40-76
+- [Template 2: Implementation Plan](#template-2-implementation-plan) - Lines 78-118
+- [Template 3: Configuration/Setup Output](#template-3-configurationsetup-output) - Lines 120-156
+- [Template 4: Code Generation](#template-4-code-generation) - Lines 158-200
+- [Template 5: Multi-File Output](#template-5-multi-file-output) - Lines 202-250
+- [Template 6: Structured Data Output](#template-6-structured-data-output) - Lines 252-296
+- [Template 7: Documentation Output](#template-7-documentation-output) - Lines 298-342
+- [How to Use These Templates](#how-to-use-these-templates) - Lines 344-362
+- [Creating Custom Contracts](#creating-custom-contracts) - Lines 364-382
+- [Anti-Patterns](#anti-patterns) - Lines 384-415
+- [Summary](#summary) - Lines 417-429
+
+---
+
 ## Why Artifact Contracts Matter
 
 **Problem:** "It produces a report" is too vague.

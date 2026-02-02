@@ -146,6 +146,17 @@ Show:
 
 ### Skills (YAML frontmatter)
 
+**Skills use progressive disclosure:**
+- Metadata (name + description) always in context (~100 words)
+- SKILL.md body loaded when triggered (<5k words, <500 lines guideline)
+- Bundled resources (scripts/, references/, assets/) loaded as needed
+
+**When proposing patterns for skills:**
+- Check current line count against 500-line guideline
+- If approaching limit, recommend moving detailed content to references/
+- Prefer concise additions; skills compete for context with other system components
+- Avoid duplication between SKILL.md and references/
+
 **Almost always applicable:**
 - Inputs First (skills always have inputs)
 - Step Contract (skills are multi-step)

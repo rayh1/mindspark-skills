@@ -15,7 +15,7 @@ This is a small, complete example of a skill produced using the shared passes.
 ```markdown
 ---
 name: study-sheet
-description: Creates a compact study sheet from pasted notes (key terms, questions, and a 5-line summary).
+description: Creates a compact study sheet from pasted notes (key terms, questions, and a 5-line summary). Use when you want to turn lecture notes into study materials, create review sheets from textbook content, generate flashcard content, or prepare for exams from raw notes.
 ---
 
 <objective>

@@ -8,6 +8,22 @@ This reference documents how all 22 reliability patterns map to the 7-pass creat
 
 ---
 
+## Table of Contents
+
+- [Formatting Standards](#formatting-standards) - Line 11
+- [Quick Reference: All 22 Patterns by Pass](#quick-reference-all-22-patterns-by-pass) - Line 93
+- [Pass 1: Happy Path + Artifact Contract](#pass-1-happy-path--artifact-contract) - Line 109
+- [Pass 2: Inputs Schema](#pass-2-inputs-schema) - Line 191
+- [Pass 3: Step Contract](#pass-3-step-contract) - Line 249
+- [Pass 4: Decision Points + Failure Modes](#pass-4-decision-points--failure-modes) - Line 281
+- [Pass 5: Quality Gates](#pass-5-quality-gates) - Line 399
+- [Pass 6: Logging & Traceability](#pass-6-logging--traceability) - Line 469
+- [Pass 7: Refactor & Validate](#pass-7-refactor--validate) - Line 540
+- [Pattern Selection Decision Tree](#pattern-selection-decision-tree) - Line 586
+- [Summary](#summary) - Line 613
+
+---
+
 ## Formatting Standards
 
 This section standardizes **how** patterns are written so that `build-with-patterns` produces consistent, minimal, repeatable structure.

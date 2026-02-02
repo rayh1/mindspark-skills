@@ -9,6 +9,8 @@ See [minimal-templates.md](minimal-templates.md) for canonical tag names and min
 - Use XML tags: `<inputs_first>`, `<step_contract>`, `<decision_points>`, etc.
 - Place patterns after frontmatter, before `<objective>` or main content
 - Preserve existing skill structure
+- **Use imperative/infinitive form** (e.g., "Read file" not "Reading file" or "Reads file")
+- Keep additions concise; skills share context budget with system prompt and conversation history
 
 Merge rule:
 - If a section already exists (same tag), edit it in place. **Do not duplicate pattern sections.**

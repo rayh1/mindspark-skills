@@ -9,6 +9,19 @@ The `workflows/build-skill.md` and `workflows/build-prompt.md` files are thin po
 
 ---
 
+## Table of Contents
+
+- [Format Mapping](#format-mapping) - Lines 24-32
+- [Pass 1: Example Anchor + Output Contract](#pass-1-example-anchor--output-contract) - Lines 34-54
+- [Pass 2: Inputs First](#pass-2-inputs-first) - Lines 56-70
+- [Pass 3: Step Contract](#pass-3-step-contract) - Lines 72-82
+- [Pass 4: Decision Points](#pass-4-decision-points--minimal-failure-modes) - Lines 84-100
+- [Pass 5: Quality Gates](#pass-5-quality-gates) - Lines 102-113
+- [Pass 6: Logging & Traceability](#pass-6-logging--traceability-optional) - Lines 115-124
+- [Pass 7: Assemble + Validate](#pass-7-assemble--validate) - Lines 126-141
+
+---
+
 ## Format Mapping
 
 | Concept | Skill format | Prompt format |
@@ -64,7 +77,7 @@ Constraints:
 - each step must produce a **visible deliverable** (a list, a file section, a decision)
 - steps must be checkable
 
-See `shared-checklists.md` for recommended guidelines.
+See `validation-checklists.md` for recommended guidelines.
 
 ---
 
@@ -77,7 +90,7 @@ Format:
 - Else if …
 - Else → fallback
 
-See `shared-checklists.md` for recommended guidelines.
+See `validation-checklists.md` for recommended guidelines.
 
 If external dependencies exist, define at least:
 - primary approach
@@ -90,7 +103,7 @@ If external dependencies exist, define at least:
 
 Define checkpoints that catch mistakes early.
 
-See `shared-checklists.md` for recommended guidelines.
+See `validation-checklists.md` for recommended guidelines.
 
 Each gate should say:
 - when (after which step)

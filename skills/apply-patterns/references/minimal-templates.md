@@ -1,5 +1,39 @@
 # Minimal Templates + Canonical Tags
 
+## Table of Contents
+
+- [Canonical Tag Names (skills)](#canonical-tag-names-skills) - Line 15
+- [Canonical Headings (raw prompts)](#canonical-headings-raw-prompts) - Line 53
+- [Merge Strategy](#merge-strategy) - Line 65
+- **Tier 1 Templates (Core)** - Lines 78-277
+  - [Inputs First](#inputs-first) - Line 80
+  - [Step Contract](#step-contract) - Line 108
+  - [Decision Points](#decision-points) - Line 133
+  - [Quality Gates](#quality-gates) - Line 156
+  - [Stop Conditions](#stop-conditions) - Line 179
+  - [Scope Fence](#scope-fence) - Line 204
+  - [Interpretation Check](#interpretation-check) - Line 229
+  - [Output Schema](#output-schema) - Line 255
+- **Tier 2 Templates (Recommended)** - Lines 281-475
+  - [User Approval Gate](#user-approval-gate) - Line 283
+  - [Clarifying Questions](#clarifying-questions) - Line 305
+  - [Confidence Signal](#confidence-signal) - Line 332
+  - [Fallback Chain](#fallback-chain) - Line 357
+  - [Lens](#lens) - Line 382
+  - [Addressable Output](#addressable-output) - Line 409
+  - [Review Step](#review-step) - Line 431
+  - [Step Ledger](#step-ledger) - Line 453
+- **Tier 3 Templates (Situational)** - Lines 479-575
+  - [Mode Selection](#mode-selection) - Line 481
+  - [Example Anchor](#example-anchor) - Line 497
+  - [Assumption Registry](#assumption-registry) - Line 519
+  - [Context Window](#context-window) - Line 533
+  - [Observability](#observability) - Line 548
+  - [Error Handling](#error-handling) - Line 562
+- [Notes on "Minimal"](#notes-on-minimal) - Line 579
+
+---
+
 This page standardizes **how** patterns are written so that `apply-patterns` produces consistent, minimal, repeatable structure.
 
 Use this as the **default insertion form**.

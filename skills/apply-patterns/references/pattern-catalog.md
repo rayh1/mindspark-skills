@@ -60,22 +60,9 @@ Use when specifically relevant. Require explicit justification.
 
 ---
 
-## Gap-Driven Selection Guidance
-
-When proposing patterns based on gap analysis:
-- **Simple targets with few gaps:** Propose 2-4 patterns (usually Tier 1)
-- **Moderate targets with several gaps:** Propose 4-6 patterns (Tier 1 + applicable Tier 2)
-- **Complex targets with many gaps:** Propose up to 8 patterns, prioritized by severity
-- **Solid targets with minimal gaps:** Acknowledge quality, suggest 0-2 optional improvements
-
-**Gap severity categories:**
-- **Critical:** Missing pattern blocks correctness or clarity
-- **High-value:** Pattern significantly improves reliability
-- **Nice-to-have:** Pattern provides incremental benefit
-
----
-
 ## Quick Applicability Checklist
+
+For gap-driven selection guidance (proposal counts by target complexity), see SKILL.md `<scope_fence>` section.
 
 **Always applicable (Tier 1):**
 - [ ] Takes inputs? → Inputs First

@@ -1,6 +1,6 @@
 ---
 name: build-with-patterns
-description: Builds skills and prompts by starting with one concrete example, then tightening into a small, testable output contract and an executable step sequence. Use when creating new skills or prompts from scratch, or when you want a structured approach to prompt engineering.
+description: Builds reliable skills and prompts using spec-by-tightening methodology - start with one concrete example, then tighten into a small testable output contract and executable step sequence. Use when (1) Creating new Claude Code skills (SKILL.md with YAML frontmatter and XML structure), (2) Building standalone prompts with markdown headings, (3) Applying structured prompt engineering with output contracts and quality gates, (4) Need guidance on progressive disclosure, step sequences, and validation patterns, or any other skill/prompt development task following reliability best practices.
 ---
 
 <objective>
@@ -39,6 +39,8 @@ Generated artifacts should include only the sections required by the chosen form
 </inputs_first>
 
 <step_contract>
+**High-level contract** (detailed implementation in `references/core-passes.md`):
+
 1. Target selection → get `target_type`, then collect the remaining required inputs.
 2. Lock output contract → define format, required/forbidden sections, validation (confirm once).
 3. Define inputs → required/optional/defaults + missing-input behavior.
@@ -138,26 +140,27 @@ Use plain language with the user; treat pattern names as internal.
 </target_selection>
 
 <decision_points>
-- If the user chose **Skill** (or says "skill" / "SKILL.md") → follow `workflows/build-skill.md`.
-- Else if the user chose **Prompt** (or says "prompt" / "standalone") → follow `workflows/build-prompt.md`.
+- If the user chose **Skill** (or says "skill" / "SKILL.md") → follow `references/workflow-build-skill.md`.
+- Else if the user chose **Prompt** (or says "prompt" / "standalone") → follow `references/workflow-build-prompt.md`.
 </decision_points>
 
 <workflows_index>
 | Workflow | Purpose |
 |----------|---------|
-| build-skill.md | Build a Claude Code skill with YAML frontmatter and XML structure |
-| build-prompt.md | Build a standalone prompt with markdown headings |
+| workflow-build-skill.md | Build a Claude Code skill with YAML frontmatter and XML structure |
+| workflow-build-prompt.md | Build a standalone prompt with markdown headings |
 </workflows_index>
 
 <reference_index>
 All domain knowledge in `references/`:
 
+**Workflows:** workflow-build-skill.md, workflow-build-prompt.md
 **Core methodology:** patterns-when-needed.md, tightening-methodology.md
-**Pattern details:** pattern-scaffold.md, pattern-scaffold-appendix.md
-**Contracts & validation:** artifact-contracts.md, core-passes.md, shared-checklists.md
+**Skill architecture:** skill-architecture.md (bundled resources, progressive disclosure, 500-line guideline)
+**Pattern details:** pattern-catalog.md, pattern-catalog-appendix.md
+**Contracts & validation:** artifact-contracts.md, core-passes.md, validation-checklists.md
 **Examples:** worked-example-skill.md, worked-example-prompt.md
-**Format guidance:** format-differences.md
-**Author notes:** methodology-notes-for-authors.md
+**Format guidance:** core-passes.md (lines 12-18: format mapping)
 </reference_index>
 
 <example_anchor>

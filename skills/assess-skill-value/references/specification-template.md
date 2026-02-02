@@ -1,5 +1,14 @@
 # Specification Template
 
+## Table of Contents
+
+- [Specification Offer (Step 9)](#step-9-specification-document-offer-if-verdict--skip) - Lines 10-27
+- [Specification Structure](#specification-structure) - Lines 29-91
+- [Specification Principles](#specification-principles) - Lines 93-99
+- [File Naming](#file-naming) - Lines 101-103
+
+---
+
 **Step 9: Specification Document Offer (if verdict ≠ skip)**
 
 After presenting additional improvements, ask the user:

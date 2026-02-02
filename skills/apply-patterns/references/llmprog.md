@@ -1,5 +1,38 @@
 # LLM Programming: Patterns for Reliable AI Workflows
 
+## Table of Contents
+
+- [Pattern Overview](#pattern-overview) - Lines 17-53
+- **Tier 1 - Core Patterns** - Lines 56-274
+  - [1) Step Contract](#1-step-contract) - Line 58
+  - [2) Inputs First](#2-inputs-first) - Line 85
+  - [3) Decision Points](#3-decision-points) - Line 110
+  - [4) Quality Gates](#4-quality-gates) - Line 135
+  - [5) Stop Conditions](#5-stop-conditions) - Line 162
+  - [6) Scope Fence](#6-scope-fence) - Line 186
+  - [7) Interpretation Check](#7-interpretation-check) - Line 216
+  - [8) Output Schema](#8-output-schema) - Line 247
+- **Tier 2 - Recommended Patterns** - Lines 276-540
+  - [9) User Approval Gate](#9-user-approval-gate) - Line 278
+  - [10) Clarifying Questions](#10-clarifying-questions) - Line 312
+  - [11) Confidence Signal](#11-confidence-signal) - Line 343
+  - [12) Fallback Chain](#12-fallback-chain) - Line 373
+  - [13) Lens](#13-lens) - Line 401
+  - [14) Addressable Output](#14-addressable-output) - Line 447
+  - [15) Review Step](#15-review-step) - Line 479
+  - [16) Step Ledger](#16-step-ledger) - Line 515
+- **Tier 3 - Situational Patterns** - Lines 542-762
+  - [17) Mode Selection](#17-mode-selection) - Line 544
+  - [18) Example Anchor](#18-example-anchor) - Line 578
+  - [19) Assumption Registry](#19-assumption-registry) - Line 627
+  - [20) Context Window](#20-context-window) - Line 655
+  - [21) Observability](#21-observability) - Line 681
+  - [22) Error Handling](#22-error-handling) - Line 722
+- [Applying Patterns: Quick Guide](#applying-patterns-quick-guide) - Lines 764-791
+- [Example: Hardened Prompt](#example-hardened-prompt) - Line 793
+
+---
+
 LLM programming treats a language model as a **runtime** for **structured instructions**. You write "programs" in natural language that specify inputs, steps, decisions, checks, and outputs. The goal: produce results that are **repeatable enough**, **correct enough**, and **maintainable enough** to rely on—despite inherent probabilistic behavior.
 
 This catalog organizes 22 patterns into three tiers:

@@ -1,5 +1,14 @@
 # Flow Diagram: assess-skill-value
 
+## Table of Contents
+
+- [Flow Diagram](#flow-diagram-assess-skill-value) - Lines 1-163
+- [Common Flow Paths](#common-flow-paths) - Lines 184-206
+- [Clarifying Questions Triggers](#clarifying-questions-triggers) - Lines 208-214
+- [Notes](#notes) - Lines 216-221
+
+---
+
 This diagram shows the complete execution flow from input to final output, including all decision points.
 
 ```
@@ -163,25 +172,9 @@ This diagram shows the complete execution flow from input to final output, inclu
         └───────────────────────────┘
 ```
 
-## Key Decision Points Summary
-
-| Decision Point | Location | Condition | Outcomes |
-|----------------|----------|-----------|----------|
-| **D1** | After Step 1 | Input type detection | File path → Read tool<br>Skill name → Glob tool<br>Text → Store as-is |
-| **D2** | After Step 1 | Text description completeness | Lacks details → Ask for more<br>Complete → Reformulate & confirm<br>Existing skill → Skip to Step 3 |
-| **D3** | After Step 5 | Total score threshold | Score < 12 → Generate improvements<br>Score 12-14 → Note about high score |
-| **D4** | After Step 7 | Verdict type | Skip → Stop after Step 7<br>Build/Consider → Continue to Steps 8-9 |
-
-## Quality Gates Summary
-
-| Gate | Trigger | Validation |
-|------|---------|------------|
-| **G1** | After Step 3 | All 7 dimensions scored 0/1/2 with rationales |
-| **G2** | After Step 4 | Total = sum; verdict matches rules |
-| **G3** | After Step 6 | All sections present; [I-N] format used |
-| **G4** | After Step 8 | Additional improvements present (if verdict ≠ skip) |
-
 ## Common Flow Paths
+
+(See `decision_points` and `quality_gates` sections in SKILL.md for authoritative definitions of D1-D4 and G1-G4.)
 
 ### Path 1: High-Scoring Existing Skill (e.g., pdf skill)
 ```

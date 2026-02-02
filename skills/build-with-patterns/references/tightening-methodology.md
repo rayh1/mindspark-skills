@@ -8,6 +8,24 @@ The core insight: **build in layers** so structure emerges gradually, not all at
 
 ---
 
+## Table of Contents
+
+- [The 9 Steps](#the-9-steps) - Line 11
+  - [1) Start with One Concrete "Happy Path"](#1-start-with-one-concrete-happy-path) - Line 13
+  - [2) Define the Artifact Contract Early (and Keep It Small)](#2-define-the-artifact-contract-early-and-keep-it-small) - Line 31
+  - [3) Write "Inputs First" Like a Form, Not Prose](#3-write-inputs-first-like-a-form-not-prose) - Line 49
+  - [4) Add a Step Contract That Is Short and Enforceable](#4-add-a-step-contract-that-is-short-and-enforceable) - Line 68
+  - [5) Encode Decision Points as Explicit Branches](#5-encode-decision-points-as-explicit-branches) - Line 86
+  - [6) Introduce "Quality Gates" Sparingly](#6-introduce-quality-gates-sparingly) - Line 103
+  - [7) Add Logging Only After the Workflow Is Stable](#7-add-logging-only-after-the-workflow-is-stable) - Line 120
+  - [8) Stress-Test the Spec with Adversarial Examples](#8-stress-test-the-spec-with-adversarial-examples) - Line 137
+  - [9) Refactor for Readability (The Underrated Part)](#9-refactor-for-readability-the-underrated-part) - Line 155
+- [A Human-Friendly Outline You Can Reuse](#a-human-friendly-outline-you-can-reuse) - Line 170
+- [A Practical Writing Tactic: Build in Passes](#a-practical-writing-tactic-build-in-passes) - Line 197
+- [Why This Works](#why-this-works) - Line 213
+
+---
+
 ## The 9 Steps
 
 ### 1) Start with One Concrete "Happy Path"

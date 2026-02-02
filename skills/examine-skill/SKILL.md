@@ -1,6 +1,6 @@
 ---
 name: examine-skill
-description: Analyze skill files for problems, contradictions, redundancies, outdated content, and structural issues. Use when auditing skills, reviewing skill quality, or preparing skills for improvement.
+description: Comprehensive SKILL.md examination for contradictions, redundancies, structural issues, outdated content, and quality standards compliance. Analyzes skill anatomy, description field quality, progressive disclosure, reference organization, and context efficiency. Use when (1) auditing skill files before deployment, (2) identifying improvement opportunities in existing skills, (3) validating SKILL.md structure against quality standards, (4) preparing skills for refactoring or enhancement, (5) reviewing skill quality for production readiness, or any other skill examination tasks. Produces detailed reports with severity-tagged issues and actionable recommendations.
 ---
 
 <interpretation_check>
@@ -19,15 +19,19 @@ Artifact:
 In chat, provide:
 - Confirmation that examination is complete
 - File path where report was written
-- Health score with emoticon: "Health: Good 🟢" (use Critical 🔴, Needs Work 🟡, Good 🟢, or Excellent ✨)
-- The prioritized action list from the report
+- Health score with emoticon and severity breakdown:
+  - "Health: Good 🟢 (0 Critical, 1 High, 3 Medium, 2 Low)"
+  - Use emoticons: Critical 🔴, Needs Work 🟡, Good 🟢, Excellent ✨
+  - Calculate using severity_framework formula
+- The prioritized action list from the report (with severity tags)
 - Prompt: "What actions do you want to execute?"
 - Then use AskUserQuestion to let the user select which actions to execute
 - Execute the selected actions
 
 Validation:
 - Report file written for each examined skill
-- Chat summary includes file path, health score with emoticon, and action list
+- All issues tagged with [CRITICAL], [HIGH], [MEDIUM], or [LOW]
+- Chat summary includes file path, health score with severity breakdown, and action list
 - User is prompted to select actions to execute
 </output_schema>
 
@@ -62,6 +66,8 @@ Before writing: if `{skill-directory}/EXAMINATION-REPORT.md` already exists, ask
 - If user rejects overwrite or does not respond: do not overwrite; write to `{skill-directory}/EXAMINATION-REPORT.new.md` instead.
 
 If `{skill-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
+
+**When examining multiple skills:** Check each report file independently; mix of overwrites and new files is acceptable.
 </user_approval_gate>
 
 <scope_fence>
@@ -98,10 +104,11 @@ If `{skill-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
 Follow this exact sequence:
 
 1. Read inputs and enumerate target files
-2. For each skill, run Analysis Framework sections 1-10
+2. For each skill, run Analysis Framework sections 1-12
+   - If multiple skills: iterate sequentially, produce complete report per skill before proceeding to next
 3. Write full report to `{skill-directory}/EXAMINATION-REPORT.md` (see references/output-format.md)
 4. Include Final Deliverable items in report (action list, revised SKILL.md outline, migration notes)
-5. In chat, provide: confirmation, file path, health score with emoticon, and prioritized action list
+5. In chat, provide: confirmation, file path, health score with severity breakdown, and prioritized action list
 6. Ask user which actions to execute using AskUserQuestion
 7. Execute the selected actions (if any; if none selected, complete successfully)
 </step_contract>
@@ -114,19 +121,37 @@ Follow this exact sequence:
 </decision_points>
 
 <quality_gates>
-Before finalizing the report and chat summary, verify:
+Before finalizing the report and chat summary, verify all gates:
 
+**Structural Gates:**
 - **G1 Coverage Gate:** All sections in Output Format present (even if empty with "None found")
 - **G2 Traceability Gate:** Every extracted directive includes file + line number
 - **G3 Evidence Gate:** Contradictions cite specific quotes and locations from both sides
 - **G4 Scope Gate:** No recommendations beyond skill/prompt structure improvements unless directly required by identified issue
 
+**Standards Compliance Gates:**
+- **G5 Severity Gate:** Every identified issue has assigned severity [CRITICAL], [HIGH], [MEDIUM], or [LOW]
+  - Check: All issues in Critical Issues, Contradictions, Redundancies, etc. are tagged
+  - Verify: Health score calculation uses severity counts correctly
+
+- **G6 Criteria Gate:** Assessments reference specific standard criteria, not just opinions
+  - Check: Issues cite relevant sections from skill-quality-standards.md when applicable
+  - Example: "Description is 15 words [CRITICAL] - below ~50-150 word target (§ Description Field Excellence)"
+  - Verify: Not just "description is bad" but WHY based on standards
+
+- **G7 Examples Gate:** Critical/High issues include guidance from standards
+  - Check: For CRITICAL/HIGH issues, provide:
+    - What's wrong (specific)
+    - Why it's wrong (reference to standard)
+    - How to fix (concrete recommendation)
+  - Example pattern shown when helpful (good vs bad from standards)
+
 Evidence capture guidance (for G2/G3):
 - Use `nl -ba {file}` to capture stable line numbers
 - Quote the exact relevant lines in the report (copy/paste), alongside file + line range
 
-**Verification process:**
-1. After writing the report, verify all gates above
+**Verification process (authoritative - referenced in output-format.md):**
+1. After writing the report, verify G1-G7
 2. If any gate fails: fix once and re-check
 3. If still fails after one fix: stop with `ERROR: GATE_FAIL <GateName>`
 4. If issues found but fixable: fix once → re-check
@@ -135,13 +160,19 @@ Evidence capture guidance (for G2/G3):
 
 <lens>
 Analyze findings from multiple perspectives:
-- **Correctness lens:** Does this pattern/directive prevent errors or ambiguity?
-- **Integration lens:** Conflicts with existing structure? Duplicates content?
-- **ROI lens:** Does value (reliability gain) exceed overhead (token cost)?
 
-Per lens: findings + severity (critical/major/minor)
-Synthesis: merge findings, flag conflicts (e.g., high correctness but low ROI)
-Coverage: each lens must report for critical issues and contradictions
+- **Correctness lens:** Does this pattern/directive prevent errors or ambiguity?
+  - Report: findings + severity (critical/major/minor)
+
+- **Integration lens:** Conflicts with existing structure? Duplicates content?
+  - Report: findings + severity (critical/major/minor)
+
+- **ROI lens:** Does value (reliability gain) exceed overhead (token cost)?
+  - Report: findings + severity (critical/major/minor)
+
+**Synthesis:** Merge findings across lenses, flag conflicts (e.g., high correctness but low ROI)
+
+**Coverage requirement:** Each lens must report for critical issues and contradictions
 </lens>
 
 <addressable_output>
@@ -152,86 +183,41 @@ Assign unique IDs to output items for follow-up reference:
 - Usage: User can reference specific items ("apply A-1 and A-3" or "explain I-2")
 </addressable_output>
 
+<severity_framework>
+Assign severity to every identified issue based on impact.
+
+**This table is the authoritative source for severity assignments** (referenced throughout analysis-framework.md):
+
+| Severity | Impact | Key Examples |
+|----------|--------|--------------|
+| **CRITICAL** | Blocks correctness or triggering | Description missing "when to use" (D-65); Essential workflow in references/ not SKILL.md (D-92); Dead references (D-99); 3+ identical duplications (D-104) |
+| **HIGH** | Significantly degrades quality/usability | SKILL.md >700 lines (D-61); Description <20 words (D-64); No navigation logic for references/ (D-96); Description matches "Bad" examples (D-101) |
+| **MEDIUM** | Quality improvement needed | SKILL.md 500-700 lines (D-61); Description <50 or >200 words (D-64); Missing TOC in reference >100 lines (D-105); References nested >1 level (D-106); Details in SKILL.md should be in references/ (D-93) |
+| **LOW** | Polish/consistency | Voice inconsistency (D-108, D-109); Vague file naming (D-62); Minor redundancy (D-75); Prose where bullets would work (D-111) |
+
+**Health Score Calculation:**
+- 2+ CRITICAL → Critical 🔴
+- 0-1 CRITICAL, 3+ HIGH → Needs Work 🟡
+- 0 CRITICAL, 0-2 HIGH, any MEDIUM → Good 🟢
+- 0 CRITICAL, 0 HIGH, 0-2 MEDIUM → Excellent ✨
+
+**In reports:** Tag every issue with severity [CRITICAL], [HIGH], [MEDIUM], or [LOW]
+</severity_framework>
+
 <analysis_framework>
-Work through each section systematically:
+Work through each section systematically using the 12-part framework: Structure Analysis, Trigger & Description Examination, Description Quality Depth, Directive Extraction, Contradiction Detection, Redundancy Analysis, Cross-File Duplication, Temporal Analysis, Flow Mapping, Freedom Calibration, Progressive Disclosure Check, Reference Quality, Dead Code Identification, Writing Voice, and Context Efficiency.
 
-**1. STRUCTURE ANALYSIS**
-- [D-59] Correct anatomy? (SKILL.md with YAML frontmatter + optional scripts/, references/, assets/)
-- [D-60] YAML frontmatter complete? (requires: name, description)
-- [D-61] SKILL.md under 500 lines? If over, what should split into reference files?
-- [D-62] Reference files properly organized and clearly named?
-- [D-63] Unnecessary documentation (README.md, CHANGELOG.md) that should be removed?
-
-**2. TRIGGER & DESCRIPTION EXAMINATION**
-- [D-64] Is `description` field comprehensive enough to trigger correctly?
-- [D-65] Does it include BOTH what the skill does AND when to use it?
-- [D-66] Are "When to Use" sections buried in body that should be in description? (Body loads AFTER triggering)
-- [D-67] Would Claude know when to activate based solely on description?
-
-**3. DIRECTIVE EXTRACTION**
-Create numbered list of EVERY instruction/directive:
-- [D-68] Extract each "do this" or "don't do this" statement
-- [D-69] Note file and line number for each
-- [D-70] Flag vague or ambiguous directives
-
-**4. CONTRADICTION DETECTION**
-Compare all extracted directives:
-- [D-71] Identify conflicting pairs
-- [D-72] Check if same topic addressed differently in multiple places
-- [D-73] Check if reference files contradict SKILL.md
-- [D-74] List each contradiction with specific quotes and locations
-
-**5. REDUNDANCY ANALYSIS**
-- [D-75] Information appearing in multiple places
-- [D-76] Explanations duplicating what Claude already knows
-- [D-77] Verbose sections that could be condensed
-- [D-78] Challenge each paragraph: "Does this justify its token cost?"
-
-**6. TEMPORAL ANALYSIS (Outdated Content)**
-- [D-79] References to specific dates, versions, or "new" features
-- [D-80] Language suggesting currency that may be old ("recently", "now", "the latest")
-- [D-81] Deprecated tools, APIs, or approaches
-- [D-82] Instructions referencing features/behaviors that may have changed
-
-**7. FLOW MAPPING**
-For each major user scenario:
-- [D-83] Trace complete decision path through all files
-- [D-84] Identify dead ends or unclear branches
-- [D-85] Find circular references or infinite loops
-- [D-86] Map where user/Claude might get confused
-
-**8. FREEDOM CALIBRATION**
-For each instruction, assess specificity level:
-- [D-87] **HIGH freedom** (text guidance) — appropriate when multiple approaches valid
-- [D-88] **MEDIUM freedom** (pseudocode/parameters) — appropriate when preferred pattern exists
-- [D-89] **LOW freedom** (specific scripts) — appropriate when operations fragile
-
-Flag mismatches:
-- [D-90] Overly rigid instructions limiting valid approaches
-- [D-91] Overly loose instructions leaving fragile operations undefined
-
-**9. PROGRESSIVE DISCLOSURE CHECK**
-Is information at right level?
-- [D-92] Essential workflow → SKILL.md
-- [D-93] Detailed references → references/
-- [D-94] Executable code → scripts/
-- [D-95] Output resources → assets/
-
-[D-96] Is SKILL.md trying to do too much? Are reference files clearly signposted?
-
-**10. DEAD CODE IDENTIFICATION**
-- [D-97] Instructions that can never be triggered
-- [D-98] Conditional branches with impossible conditions
-- [D-99] References to files or functions that don't exist
-- [D-100] Parameters or options never used
+For detailed analysis criteria, section-by-section checks (D-59 through D-111), and quality standards, see:
+- **references/analysis-framework.md** (detailed 12-section examination framework)
+- **references/skill-quality-standards.md** (quality criteria and examples)
 </analysis_framework>
 
 <stop_conditions>
 **Done when:**
 - Step Contract complete for all targets
-- All targets analyzed through the 10-part framework
+- All targets analyzed through the 12-part framework (sections 1-12)
 - Output artifacts + chat summary produced per `output_schema`
-- All Quality Gates pass (G1-G4)
+- All Quality Gates pass (G1-G7)
 - Final Deliverable section produced
 - User has been asked which actions to execute
 - Selected actions have been executed (if any)
@@ -243,5 +229,7 @@ Is information at right level?
 </stop_conditions>
 
 <reference_index>
-**Output format:** references/output-format.md
+**Analysis framework:** references/analysis-framework.md (detailed 12-section examination framework)
+**Output format:** references/output-format.md (report structure and formatting)
+**Quality standards:** references/skill-quality-standards.md (domain expertise for what makes skills excellent)
 </reference_index>
