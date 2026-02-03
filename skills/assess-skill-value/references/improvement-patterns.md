@@ -33,11 +33,12 @@ After presenting the initial evaluation report, generate additional features and
 4. Strategic fit with skill ecosystem
 
 **Format:**
-Present as a numbered list with:
+Present as a list with [I-N] identifiers:
+- Each improvement labeled [I-N] for addressability
 - Improvement name and description
-- Estimated score impact (e.g., "+2 points" or "+1-2 points")
-- Dimension(s) affected
-- Priority level (High/Medium/Low)
+- Estimated score impact using (↑ D-X by +N) notation
+- Priority level (High/Medium/Low) included in brackets
+- Rationale explaining the value
 
 **Example output:**
 ```
@@ -45,17 +46,20 @@ Present as a numbered list with:
 
 Based on the evaluation, here are further enhancements ranked by value impact:
 
-1. **[High Priority] Add real-time data integration** (+2 points on D-1, D-3)
-   - Integrate with live APIs to fetch current data beyond training cutoff
-   - Addresses Knowledge Gap and Tool Integration dimensions
+[I-1] **[High Priority] Add real-time data integration** (↑ D-1 by +2, D-3 by +1)
+- Integrate with live APIs to fetch current data beyond training cutoff
+- Addresses Knowledge Gap and Tool Integration dimensions
+- Estimated total impact: +3 points
 
-2. **[High Priority] Implement multi-stage workflow** (+2 points on D-5)
-   - Break complex process into 5+ distinct phases with state tracking
-   - Dramatically improves Complexity Management
+[I-2] **[High Priority] Implement multi-stage workflow** (↑ D-5 by +2)
+- Break complex process into 5+ distinct phases with state tracking
+- Dramatically improves Complexity Management
+- Estimated total impact: +2 points
 
-3. **[Medium Priority] Add validation checkpoints** (+1 point on D-4)
-   - Mandatory quality gates between each major step
-   - Strengthens Consistency & Guardrails
+[I-3] **[Medium Priority] Add validation checkpoints** (↑ D-4 by +1)
+- Mandatory quality gates between each major step
+- Strengthens Consistency & Guardrails
+- Estimated total impact: +1 point
 
-**Potential improved score:** 12/14 (Build) if all high-priority items implemented
+**Potential improved score:** 12/14 (Build) if items I-1 and I-2 implemented
 ```

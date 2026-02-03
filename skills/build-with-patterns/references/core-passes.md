@@ -5,20 +5,21 @@ This file is the **canonical, shared workflow logic** for building either:
 - a **standalone prompt** (copy/paste headings).
 
 Format differences are just **rendering**. Canonical mapping is below (and in `../SKILL.md` `<output_schema>`).
-The `workflows/build-skill.md` and `workflows/build-prompt.md` files are thin pointers that apply these rules.
+The `workflow-build-skill.md` and `workflow-build-prompt.md` files are thin pointers that apply these rules.
 
 ---
 
 ## Table of Contents
 
 - [Format Mapping](#format-mapping) - Lines 24-32
-- [Pass 1: Example Anchor + Output Contract](#pass-1-example-anchor--output-contract) - Lines 34-54
-- [Pass 2: Inputs First](#pass-2-inputs-first) - Lines 56-70
-- [Pass 3: Step Contract](#pass-3-step-contract) - Lines 72-82
-- [Pass 4: Decision Points](#pass-4-decision-points--minimal-failure-modes) - Lines 84-100
-- [Pass 5: Quality Gates](#pass-5-quality-gates) - Lines 102-113
-- [Pass 6: Logging & Traceability](#pass-6-logging--traceability-optional) - Lines 115-124
-- [Pass 7: Assemble + Validate](#pass-7-assemble--validate) - Lines 126-141
+- [Pass 0: Input Mode Detection](#pass-0-input-mode-detection) - Lines 34-112
+- [Pass 1: Example Anchor + Output Contract](#pass-1-example-anchor--output-contract) - Lines 114-134
+- [Pass 2: Inputs First](#pass-2-inputs-first) - Lines 136-150
+- [Pass 3: Step Contract](#pass-3-step-contract) - Lines 152-162
+- [Pass 4: Decision Points](#pass-4-decision-points--minimal-failure-modes) - Lines 164-180
+- [Pass 5: Quality Gates](#pass-5-quality-gates) - Lines 182-193
+- [Pass 6: Logging & Traceability](#pass-6-logging--traceability-optional) - Lines 195-204
+- [Pass 7: Assemble + Validate](#pass-7-assemble--validate) - Lines 206-221
 
 ---
 
@@ -29,6 +30,97 @@ The `workflows/build-skill.md` and `workflows/build-prompt.md` files are thin po
 | Sections | XML tags (e.g. `<inputs_first>`) | Headings (e.g. `## Inputs First:`) |
 | Output artifact | `SKILL.md` (YAML frontmatter + XML body) | A single prompt text |
 | “No bloat” rule | No markdown headings in XML body | Keep headings compact |
+
+---
+
+## Pass 0: Input Mode Detection
+
+**Goal:** Determine how inputs will be provided (interactive or design file).
+
+**Detection logic:**
+- If `--from-design <file>` flag present → **Design file mode**
+- Else → **Interactive mode** (default)
+
+**Design file mode (forgiving extraction):**
+
+1. **Read file:**
+   - Read entire file content
+   - File should be markdown format
+   - If read fails: show error, exit
+
+2. **Check for required information:**
+   - Look for `## Specification` section
+   - Look for required subsections:
+     - `### Goal`
+     - `### Happy Path Example`
+     - `### Artifact Contract`
+     - `### User Inputs`
+   - Approach: Extract content, don't validate format strictly
+
+3. **Handle missing information:**
+
+   If `## Specification` section missing:
+   ```
+   I couldn't find a ## Specification section in this file.
+
+   Would you like to:
+   1. Provide specification details interactively
+   2. Switch to full interactive mode
+
+   Your choice (1/2):
+   ```
+
+   If specific subsections missing:
+   ```
+   I found the Specification section but couldn't extract: {missing_items}
+
+   Please provide:
+   - {missing_item_1}: {what it should contain}
+   - {missing_item_2}: {what it should contain}
+
+   Or type 'interactive' to switch to full interactive mode.
+   ```
+
+   If information is unclear or ambiguous:
+   ```
+   I found a Goal section but it's unclear: "{extracted_text}"
+
+   Please clarify: What should this skill do? (1-2 sentences)
+   ```
+
+4. **Confirm understanding:**
+   - Extract skill name from first heading (if present)
+   - Extract goal (first paragraph of Goal section)
+   - If metadata present, extract verdict
+   - Show summary:
+     ```
+     Reading design from {filename}...
+
+     Skill: {skill_name}
+     Goal: {goal}
+     {Verdict: {verdict} (score {score}/14) if metadata present}
+
+     Is this understanding correct? (yes/no)
+     ```
+   - If yes: proceed to Pass 1 with extracted content
+   - If no: ask for corrections or offer interactive mode
+
+5. **Make extracted content available:**
+   - Store extracted sections for use in subsequent passes
+   - Treat as context, not strict schema
+   - When drafting, reference Goal, Example, Contract, Inputs naturally
+
+**Interactive mode:**
+- Proceed directly to Pass 1 (ask questions)
+
+**Error handling:**
+- Design file not found → `File not found: {path}. Please check the path.`, exit
+- File not readable → `Could not read file: {error}. Please check permissions.`, exit
+- Completely unparseable → `Could not extract specification from this file. Switch to interactive mode? (yes/no)`
+- Missing pieces → Ask for them interactively, continue with design file mode for rest
+- Format variations → Tolerate and extract content anyway
+
+**Key principle:** Extract what you can, ask for what you need, tolerate format variations.
 
 ---
 

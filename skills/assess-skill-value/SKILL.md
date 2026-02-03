@@ -25,10 +25,14 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
   - Name of an existing skill (e.g., "pdf", "commit")
   - Path to a SKILL.md file
 
+**Optional flags:**
+- `--output <path>`: Save design file to specified path (e.g., `--output my-skill.skill-design.md`)
+
 **Validation:**
 - `skill_input` must be non-empty
 - If text description: must include what it does, for whom, and what inputs/outputs it uses
 - If path: file must exist and be readable
+- If `--output` provided: path must be writable
 
 **Missing input handling:**
 - If `skill_input` missing → ask user: "Please provide either a skill description, skill name, or path to a SKILL.md file"
@@ -38,25 +42,25 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - If contains ".md" or "/" → treat as file path (e.g., "/path/to/file.md")
 - If single word or hyphenated name → treat as skill name (e.g., "pdf", "assess-skill-value")
 - Otherwise → treat as text description
+
+**Flag handling:**
+- If `--output` present: generate design file, validate format, save to path, show next steps, exit
+- If not present: offer to save design file at Step 9 (interactive)
 </inputs_first>
 
 <step_contract>
-1. **Parse input** → Identify input type (description/name/path) and extract/load skill content
-   - If text description → store as-is
-   - If file path → Read with Read tool
-   - If skill name → Search `.claude/skills/{name}/SKILL.md` with Glob tool
-     - If not found → Ask user: "Skill not found at `.claude/skills/{name}/SKILL.md`. Please provide either a full path or a text description."
+1. **Parse input** → Identify type (description/name/path), extract/load skill content (see inputs_first for routing logic)
 2. **Validate completeness** (if description) → Reformulate understanding, present to user, wait for confirmation
 3. **Evaluate all 7 dimensions** → Assign 0/1/2 score + rationale for each dimension (see references/evaluation-framework.md)
 4. **Calculate total & interpret** → Sum scores (0-14), determine verdict (Build/Consider/Skip)
-5. **Generate improvements** → If total score < 12, generate concrete suggestions to increase value. If score 12-14, include brief note: "Score already high; only minor refinements possible."
+5. **Generate improvements** → Concrete suggestions if score < 12; brief note if score 12-14
 6. **Compile report** → Produce evaluation report with required sections
    → If verdict = "skip" → STOP after Step 7
    → If verdict ≠ "skip" → CONTINUE to Step 8
 7. **Review** → Check consistency, arithmetic, alignment before delivery
-8. **Show additional improvements** → Present ranked list of features and improvements by value impact [REQUIRED if verdict ≠ skip]
+8. **Show additional enhancements** → Present ranked list by value impact [REQUIRED if verdict ≠ skip]
    → CONTINUE to Step 9
-9. **Offer specification generation** → Ask user if they want a complete specification document [REQUIRED if verdict ≠ skip]
+9. **Offer design file generation** → Interactive or auto-save if --output flag [REQUIRED if verdict ≠ skip]
 </step_contract>
 
 <decision_points>
@@ -73,9 +77,15 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - If total score < 12 → include "Improvement Suggestions" section with concrete suggestions
 - If score 12-14 → include brief note: "Score already high; only minor refinements possible"
 
-**D4: Additional improvements and specification offer (after Step 7)**
+**D4: Additional enhancements and design file offer (after Step 7)**
 - If verdict = "skip" → include initial improvement suggestions (Step 5) in report, STOP after Step 7
-- If verdict ≠ skip (verdict = "build" or "consider") → MUST proceed to Steps 8-9 (additional improvements + specification offer)
+- If verdict ≠ skip (verdict = "build" or "consider") → MUST proceed to Steps 8-9 (additional enhancements + design file offer)
+
+**D5: Design file generation mode (at Step 9)**
+- If `--output` flag present → generate design file automatically, validate, save, show next steps, EXIT
+- If no `--output` flag → ask user if they want design file saved
+  - If yes: ask for filename (default: {skill-name}.skill-design.md), generate, validate, save, show next steps
+  - If no: EXIT
 </decision_points>
 
 <quality_gates>
@@ -101,14 +111,22 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - If verdict = skip → may stop after Step 7
 - If fail → Execute remaining required steps
 
-**G4 (after Step 8 - Additional improvements):**
-- If verdict ≠ skip, verify additional improvements section present with ≥1 improvement ranked by value impact
-- All additional improvements use [I-N] format
-- If fail → Generate missing improvements
+**G4 (after Step 8 - Additional enhancements):**
+- If verdict ≠ skip, verify additional enhancements section present with ≥1 enhancement ranked by value impact
+- All additional enhancements use [I-N] format
+- If fail → Generate missing enhancements
 
-**G5 (after Step 9 - Specification offer):**
-- If verdict ≠ skip, verify specification offer was made
-- If fail → Make specification offer
+**G5 (after Step 9 - Design file offer):**
+- If verdict ≠ skip, verify design file offer was made (or auto-generated if --output flag)
+- If fail → Make design file offer
+
+**G6 (if design file generated - Format validation):**
+- Metadata format correct (Created by, Created at, Total Score, Verdict)
+- Timestamp in ISO 8601 format
+- Verdict matches score (0-5=Skip, 6-9=Consider, 10-14=Build)
+- All required sections present (# Skill Design, ## Evaluation Summary, ## Specification)
+- Specification is integrated (no "Base concept:" or "Recommended features:" in Specification section)
+- If fail → Fix validation errors before saving
 </quality_gates>
 
 <scope_fence>
@@ -117,8 +135,9 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - Evaluating against 7 dimensions using framework
 - Generating evaluation reports with scores and recommendations
 - Proposing improvement suggestions (initial and additional)
-- Creating specification documents for "build" or "consider" verdicts
-- Including implementation notes in specifications (architecture, tools, patterns)
+- Generating design files (integrated specifications) for "build" or "consider" verdicts
+- Validating design file format before saving
+- Including implementation notes in design files (architecture, tools, patterns)
 
 **Out of scope:**
 - Writing actual SKILL.md implementation code
@@ -147,9 +166,45 @@ Determine if a skill adds genuine new capabilities to Claude or is redundant wit
 - Proceed directly to evaluation
 </interpretation_check>
 
-<Evaluation Framework>
-See references/evaluation-framework.md for the complete 7-dimension scoring framework, criteria, and evaluation guidelines.
+<evaluation_framework>
+Apply 7-dimension scoring framework (0-2 points each):
+<!-- Dimension names align with references/evaluation-framework.md -->
+- **D-1: Knowledge Gap** - Does it contain specialized knowledge Claude doesn't have?
+- **D-2: Structural Process** - Does it provide systematic, repeatable process Claude would apply inconsistently?
+- **D-3: Tool Integration** - Does it orchestrate tools or external systems Claude can't access directly?
+- **D-4: Consistency & Guardrails** - Does it enforce discipline Claude might skip under time pressure or ambiguity?
+- **D-5: Complexity Management** - Does it manage complexity that overwhelms typical Claude context/attention?
+- **D-6: User Experience** - Does it significantly reduce friction or cognitive load for the user?
+- **D-7: Specialization Depth** - Does it go significantly deeper than Claude's general knowledge?
+
+See references/evaluation-framework.md for complete criteria and evaluation guidelines.
 </evaluation_framework>
+
+<reference_guide>
+When to consult reference files during execution:
+
+- **references/evaluation-framework.md** → During Step 3 (evaluating dimensions)
+  - Contains full 0/1/2 point criteria for each dimension
+  - Includes scoring interpretation and evaluation guidelines
+
+- **references/examples.md** → At any step for workflow patterns
+  - Example 1: Text description (two-step interaction)
+  - Example 2: Existing skill file (single-step)
+  - Example 3: Complete flow with Steps 8-9
+
+- **references/improvement-patterns.md** → During Steps 5 and 8 (generating improvements)
+  - Common improvement patterns
+  - How to rank by value impact
+  - [I-N] formatting guidance
+</reference_guide>
+
+<lens>
+Analyze proposed skill from the 7 evaluation dimensions defined in <evaluation_framework> above.
+
+Per lens: score (0/1/2) + rationale
+Synthesis: sum scores (0-14), interpret verdict, check for conflicting signals (e.g., high D-3 but low D-1)
+Coverage: all 7 dimensions must be scored before verdict
+</lens>
 
 <clarifying_questions>
 Triggers:
@@ -214,10 +269,11 @@ Check for:
 9. **Specification Offer** (required if verdict ≠ skip; wait for user response)
 
 **Optional artifact:**
-- **Specification Document** (markdown file generated if user requests it)
-  - Saved to scratchpad directory
-  - Contains: overview, objective, capabilities, inputs, outputs, process, quality gates, features, edge cases, examples, constraints, implementation notes
-  - Only relevant sections included
+- **Design File** (markdown file generated if user requests it or --output flag provided)
+  - Format: {skill-name}.skill-design.md
+  - Saved to specified path or scratchpad directory
+  - Contains: metadata, integrated Evaluation Summary, complete Specification
+  - Specification includes: Goal, Happy Path Example, Artifact Contract, User Inputs, Constraints, Non-Goals, Tools & Dependencies, Edge Cases
 
 **Forbidden sections:**
 - Comparison to existing skills
@@ -246,9 +302,9 @@ Check for:
 - User can reference IDs in follow-up: "apply I-2 and I-5 to specification", "explain D-3 scoring"
 - In specification generation (Step 9), user can select improvements by ID
 
-**Example improvement format:**
+**Example enhancement format:**
 ```
-**Additional Improvement Opportunities** (ranked by value impact):
+**Additional Enhancement Opportunities** (ranked by value impact):
 
 [I-1] Add MCP integration for Joplin (↑ D-3 by +1, D-6 by +1)
 - Rationale: ...
@@ -260,34 +316,17 @@ Check for:
 
 **See references/improvement-patterns.md for guidance on generating and ranking improvement suggestions.**
 
-**See references/specification-template.md for specification document structure and generation guidance.**
-
 <stop_conditions>
-**STOP immediately if:**
-- Verdict = "skip" AND Steps 1-7 completed
-- Verdict ≠ "skip" AND Steps 1-9 completed
-- User declines/completes specification generation
+**Complete when:**
+1. All quality gates (G1-G6) passed
+2. Steps 1-7 executed
+3. Verdict-specific requirements met:
+   - If verdict = "skip": Evaluation complete (Steps 8-9 not required)
+   - If verdict = "build" or "consider": Steps 8-9 executed and design file offered/generated
 
-**DO NOT STOP if:**
-- Verdict = "build" or "consider" but Steps 8-9 not completed
-- Any quality gates (G1-G5) have failed
-
-**Done when:**
-- All output_schema requirements met
-- All quality_gates (G1-G5) passed
-- Steps 8-9 completed if verdict ≠ skip (validated by G3.5, G4, G5)
-- Specification document generated if user requested
-
-**Don't:**
-- Compare to existing skills in the ecosystem
-- Provide implementation details in the evaluation report (allowed in specification document)
-- Skip the confirmation step for text descriptions
-- Skip steps 8-9 if verdict is "build" or "consider"
+**Never:**
+- Compare to existing skills in ecosystem (out of scope)
+- Provide implementation code in evaluation report (only in specification document)
+- Skip confirmation step for text descriptions (required by D2)
+- Skip Steps 8-9 when verdict is "build" or "consider" (enforced by G3.5, G4, G5)
 </stop_conditions>
-
-<references>
-**See also:**
-- **references/examples.md** — Three full worked examples demonstrating the complete evaluation flow
-- **references/improvement-patterns.md** — Guidance on generating and ranking improvement suggestions
-- **references/specification-template.md** — Template structure for generating specification documents
-</references>

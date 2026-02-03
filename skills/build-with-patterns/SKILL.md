@@ -21,32 +21,62 @@ Generated artifacts should include only the sections required by the chosen form
 </essential_principles>
 
 <inputs_first>
-**Required inputs:**
+**Input modes:**
+
+build-with-patterns supports two ways to provide inputs:
+
+1. **Interactive mode** (default):
+   ```bash
+   build-with-patterns skill
+   ```
+   Asks questions conversationally. No file required.
+
+2. **Design file mode**:
+   ```bash
+   build-with-patterns --from-design <file>.skill-design.md
+   ```
+   Reads markdown design file. File can be from assess-skill-value or manually created.
+
+**Required inputs (any mode):**
 - `target_type`: skill | prompt
 - `goal`: what this should do (1–2 sentences)
-- `happy_path_example`: Input → Output → what “good” looks like
+- `happy_path_example`: Input → Output → what "good" looks like
 - `artifacts`: files to create/modify + required/forbidden sections
 
 **Optional inputs:**
 - `constraints`: hard constraints (length, tone, safety)
 - `non_goals`: explicit exclusions
+- `tools`: required tools, MCP servers, libraries
+- `edge_cases`: important edge cases to consider
+
+**How design file is used:**
+- Read entire file as markdown
+- Extract required information from ## Specification section
+- Look for: Goal, Happy Path Example, Artifact Contract, User Inputs
+- If required information is missing or unclear: ask clarifying questions
+- If file is significantly incomplete: offer to switch to interactive mode
+- Tolerate format variations - focus on extracting necessary content
+
+**Approach:** Forgiving extraction with clarifying questions, not strict validation.
 
 **Validation:**
-- Required inputs must be non-empty.
+- Required inputs must be present (extracted from file or asked interactively)
 
 **Missing input handling:**
-- See <clarifying_questions> for the protocol when inputs are missing.
+- In interactive mode: See <clarifying_questions> for the protocol when inputs are missing
+- In design file mode: Extract what's available, ask for missing pieces, tolerate format variations
 </inputs_first>
 
 <step_contract>
-**High-level contract** (detailed implementation in `references/core-passes.md`):
+Follow this sequence (detailed in `references/core-passes.md`):
 
-1. Target selection → get `target_type`, then collect the remaining required inputs.
-2. Lock output contract → define format, required/forbidden sections, validation (confirm once).
-3. Define inputs → required/optional/defaults + missing-input behavior.
-4. Draft steps → appropriate steps as needed, plus minimal branching + gates.
-5. Assemble + validate → render final SKILL.md or prompt; run gates + edge tests.
-6. Present for approval → approve / targeted edits.
+0. Input mode detection
+1. Target selection
+2. Lock output contract
+3. Define inputs
+4. Draft steps
+5. Assemble + validate
+6. Present for approval
 </step_contract>
 
 <scope_fence>
@@ -95,6 +125,15 @@ Before drafting the final artifact:
 Proceed only after user confirms or corrects these.
 </interpretation_check>
 
+<assumption_registry>
+Log assumptions as made:
+- [Input extraction] assumed: "{what}" | source: {design file / interactive response / default} | confidence: {high|medium|low}
+- [Format decision] assumed: "{pattern}" applicable because {reason} | confidence: {level}
+- [Scope interpretation] assumed: "{boundary}" | source: {explicit statement / inferred from context} | confidence: {level}
+Validate high-impact + low-confidence assumptions before proceeding.
+Include assumption log in interpretation check or final report for auditability.
+</assumption_registry>
+
 <clarifying_questions>
 Triggers:
 - Required inputs missing or incomplete
@@ -119,25 +158,26 @@ criteria: completeness, consistency, format, no contradictions
 max_cycles: 2
 </review_step>
 
-<target_selection>
-What would you like to build?
+<lens>
+Analyze artifact from multiple perspectives:
+- **Correctness lens:** Does artifact correctly implement the requested behavior? Are inputs/outputs aligned? Do steps execute the goal?
+- **Format lens:** Does artifact match target type (skill XML tags + YAML vs prompt markdown)? Are required sections present? Structure valid?
+- **Usability lens:** Is artifact clear and executable? Will another agent understand it? Are examples/constraints sufficient?
+Per lens: findings + severity (critical/major/minor)
+Synthesis: merge findings, flag conflicts (e.g., high correctness but poor usability)
+Coverage: each lens must report during review step
+</lens>
 
-1. **Skill** - A Claude Code skill (SKILL.md with YAML frontmatter)
-2. **Prompt** - A standalone prompt (markdown headings)
+<mode_selection>
+workflow_options:
+  - skill: "Claude Code skill (SKILL.md with YAML frontmatter + XML-tag sections)"
+  - prompt: "Standalone prompt (markdown headings)"
+skip_when: user explicitly specifies "skill" or "prompt" in initial request
+default: ask "What would you like to build? 1) Skill or 2) Prompt"
 
-**Wait for response before proceeding.**
-
-Use plain language with the user; treat pattern names as internal.
-
-- Ask intake questions in ONE message (see <clarifying_questions> for protocol):
-  - What should this do? (1–2 sentences)
-  - One happy-path example: **Input → Output → what "good" looks like**
-  - What artifact(s) should be created/modified? (filenames + required/forbidden sections)
-  - What inputs will the user provide? (required/optional + defaults)
-  - Any hard constraints or non-goals?
-- Add optional add-ons only when a measurable trigger is met: `references/patterns-when-needed.md`.
-- Add-ons include: scope fences, addressable IDs, approval gates, fallback chains, review steps.
-</target_selection>
+After selection: gather required inputs per <inputs_first> (batch questions per <clarifying_questions>).
+Use plain language with user; treat pattern names as internal.
+</mode_selection>
 
 <decision_points>
 - If the user chose **Skill** (or says "skill" / "SKILL.md") → follow `references/workflow-build-skill.md`.
@@ -160,7 +200,7 @@ All domain knowledge in `references/`:
 **Pattern details:** pattern-catalog.md, pattern-catalog-appendix.md
 **Contracts & validation:** artifact-contracts.md, core-passes.md, validation-checklists.md
 **Examples:** worked-example-skill.md, worked-example-prompt.md
-**Format guidance:** core-passes.md (lines 12-18: format mapping)
+**Format guidance:** core-passes.md (lines 24-32: format mapping)
 </reference_index>
 
 <example_anchor>
@@ -170,12 +210,14 @@ For full worked examples, see:
 </example_anchor>
 
 <quick_start>
-**Quick invocations:**
-- `build-with-patterns` → ask what to build (skill/prompt)
-- `build-with-patterns skill` → build a Claude Code skill (SKILL.md)
-- `build-with-patterns prompt` → build a standalone prompt (headings)
+**Invocations:**
+- `build-with-patterns` → interactive mode (ask questions)
+- `build-with-patterns skill` → build a skill (YAML + XML)
+- `build-with-patterns prompt` → build a prompt (markdown)
+- `build-with-patterns --from-design <file>.skill-design.md` → build from design file
 
-Add optional add-ons only when a measurable trigger is met: `references/patterns-when-needed.md`.
+See <inputs_first> for design file format details.
+Add optional patterns only when triggered (see `references/patterns-when-needed.md`).
 </quick_start>
 
 <stop_conditions>
@@ -186,7 +228,3 @@ Done when:
 - gates pass and edge tests were run (minimum: 2)
 </stop_conditions>
 
-<references>
-- `references/patterns-when-needed.md` (measurable triggers)
-- `references/methodology-notes-for-authors.md` (archived notes; optional)
-</references>
