@@ -40,12 +40,14 @@ In chat, provide:
 - Prompt: "What actions do you want to execute?"
 - Then use AskUserQuestion to let the user select which actions to execute
 - Execute the selected actions
+- Verify execution results and report status
 
 Validation:
 - Report file written for each examined artifact
 - All issues tagged with [CRITICAL], [HIGH], [MEDIUM], or [LOW]
 - Chat summary includes artifact type, file path, health score with severity breakdown, and action list
 - User is prompted to select actions to execute
+- If actions executed: verification results reported
 </output_schema>
 
 <inputs_first>
@@ -137,6 +139,7 @@ Follow this exact sequence:
 5. In chat, provide: confirmation, artifact type, file path, health score with severity breakdown, and prioritized action list
 6. Ask user which actions to execute using AskUserQuestion
 7. Execute the selected actions (if any; if none selected, complete successfully)
+8. Verify execution → re-read modified file(s), confirm all selected actions applied correctly, check for syntax errors (YAML frontmatter, XML tags)
 </step_contract>
 
 <decision_points>
@@ -180,6 +183,14 @@ Before finalizing the report and chat summary, verify all gates:
     - How to fix (concrete recommendation)
   - Example pattern shown when helpful (good vs bad from standards)
 
+**Execution Verification Gate:**
+- **G8 Execution Gate:** If actions were executed (step 7), verify after step 8:
+  - All selected action IDs successfully applied
+  - Modified files readable and valid (check YAML frontmatter, XML tags)
+  - No syntax breaks introduced
+  - Changes match intended action descriptions
+  - Report verification results in final summary
+
 Evidence capture guidance (for G2/G3):
 - Use `nl -ba {file}` to capture stable line numbers
 - Quote the exact relevant lines in the report (copy/paste), alongside file + line range
@@ -216,11 +227,11 @@ After completing all steps, perform holistic review:
 **Criteria:**
 - All steps in step_contract completed
 - Report file(s) written to correct location(s)
-- All quality gates (G1-G7) passed
+- All quality gates (G1-G8) passed
 - All identified issues tagged with severity ([CRITICAL], [HIGH], [MEDIUM], [LOW])
 - Health score calculated correctly using severity_framework formula
 - Chat summary includes: artifact type, file path, health score, action list
-- If actions were selected: verify execution completed successfully
+- If actions were selected: verify execution completed successfully (G8) and report verification results
 
 **Max cycles:** 1
 
@@ -274,10 +285,10 @@ Work through frameworks systematically, documenting findings per references/outp
 - Step Contract complete for all targets
 - All targets analyzed through the appropriate framework
 - Output artifacts + chat summary produced per `output_schema`
-- All Quality Gates pass (G1-G7)
+- All Quality Gates pass (G1-G8)
 - Final Deliverable section produced
 - User has been asked which actions to execute
-- Selected actions have been executed (if any)
+- Selected actions have been executed and verified (if any)
 
 **Don't:**
 - Rewrite unrelated documentation
