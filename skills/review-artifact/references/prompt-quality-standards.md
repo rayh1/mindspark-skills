@@ -46,9 +46,9 @@ Skills have YAML frontmatter and may include bundled resources:
 | Length | Typically <300 lines | Can be larger with references/ |
 | Structure | Headings + content | XML tags + headings |
 
-### Examination Implications
+### Review Implications
 
-When examining a prompt:
+When reviewing a prompt:
 - Focus on clarity, organization, and self-containment
 - No description field to analyze (no triggering concerns)
 - No reference files to check for duplication
@@ -372,7 +372,7 @@ Prompts should be as long as necessary, but no longer.
 
 ## Prompt Quality Checklist
 
-Use this checklist when examining any prompt.
+Use this checklist when reviewing any prompt.
 
 ### Structure
 - [ ] H1 appears exactly once at top

@@ -1,5 +1,25 @@
 <output_format>
-Produce examination report in this structure:
+Produce review report in this structure:
+
+## Table of Contents
+
+1. [Executive Summary](#executive_summary) - Lines 4-12
+2. [Critical Issues](#critical_issues) - Lines 14-22
+3. [Contradictions Found](#contradictions_found) - Lines 24-32
+4. [Redundancies](#redundancies) - Lines 34-42
+5. [Outdated Content](#outdated_content) - Lines 44-52
+6. [Unclear Flows](#unclear_flows) - Lines 54-63
+7. [Type-Specific Issues](#type_specific_issues) - Lines 65-81
+8. [Structural Recommendations](#structural_recommendations) - Lines 83-98
+9. [Proposed New Structure](#proposed_new_structure) - Lines 100-123
+10. [Line-by-Line Issues](#line_by_line_issues) - Lines 125-132
+11. [Final Deliverable](#final_deliverable) - Lines 134-153
+12. [Severity Usage](#severity_usage) - Lines 155-185
+13. [Empty Section Handling](#empty_section_handling) - Lines 187-196
+14. [Addressable IDs](#addressable_ids) - Lines 198-211
+
+---
+
 
 <executive_summary>
 **EXECUTIVE SUMMARY**
@@ -133,7 +153,7 @@ Include only if detailed line-level issues found beyond those in other sections.
 </output_format>
 
 <final_deliverable>
-After the examination report, provide:
+After the review report, provide:
 
 1. **Prioritized action list** — numbered steps to fix the artifact, ordered by severity (CRITICAL first, then HIGH, MEDIUM, LOW)
    - Format: "[A-1] [CRITICAL] Fix description field: Add 'when to use' with enumerated cases"

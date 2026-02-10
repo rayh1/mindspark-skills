@@ -122,6 +122,10 @@ If a gate fails: fix once → re-check; else stop and report what’s missing.
 Before drafting the final artifact:
 - Restate what the user wants to build (skill vs prompt) and what "good" looks like.
 - Confirm target artifacts (file names / sections) and any non-goals.
+- Ask: "Is this understanding correct?"
+
+IMPORTANT: Wait for user response before proceeding. Do not make tool calls or begin artifact creation until user confirms or corrects the interpretation.
+
 Proceed only after user confirms or corrects these.
 </interpretation_check>
 
@@ -153,9 +157,48 @@ Before finalizing:
 If user rejects: do not continue drafting; ask what to change.
 </user_approval_gate>
 
+<post_build_protocol>
+After artifact creation is complete:
+
+1. **Announce completion clearly:**
+   - "Artifact created at [full_path]"
+   - Size: "[N] lines"
+   - Key features: Brief summary of what was included
+
+2. **Present next steps options:**
+   - Move to different location (if needed)
+   - Test/use the artifact
+   - Request validation review (optional)
+
+3. **Default behavior:**
+   - Give user clear completion signal and file location
+   - Let user ask for review if desired
+   - Don't automatically present multi-lens analysis unless requested
+
+This ensures user knows exactly where output is and what to do next.
+</post_build_protocol>
+
 <review_step>
-criteria: completeness, consistency, format, no contradictions
-max_cycles: 2
+**Purpose:** Internal validation of artifact structure and coherence.
+
+**Criteria:**
+- Completeness: all required sections present
+- Consistency: no contradictions in directives
+- Format: valid XML tags (skills) or heading hierarchy (prompts)
+- Semantic: sections work together coherently
+
+**Process:**
+- Run internally after artifact creation
+- Validate structure and integration
+- Fix critical issues (broken tags, missing sections)
+- Max cycles: 2
+
+**User presentation:**
+- Default: validate internally, announce completion cleanly (see <post_build_protocol>)
+- Only present detailed multi-lens analysis if user explicitly requests artifact review
+- Focus on completion signal and next steps, not automatic quality report
+
+This keeps token overhead low while ensuring structural quality.
 </review_step>
 
 <lens>

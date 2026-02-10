@@ -73,7 +73,7 @@ each page to retrieve the table data in a structured format.
 
 ### Assessment Criteria
 
-When examining any artifact:
+When reviewing any artifact:
 - ✓ Does it prefer examples over explanations?
 - ✓ Are explanations justified by complexity, or just verbose?
 - ✓ Could any paragraph be replaced with a code snippet or bullet list?
@@ -101,6 +101,40 @@ When examining any artifact:
 
 **Key:** High-level summary in one place, details in another. Not identical content.
 
+### Exception: Cognitive Anchors
+
+Keep examples inline even if reference docs contain same information when they serve a cognitive function beyond information delivery.
+
+**Inline examples vs reference docs serve different purposes:**
+- **Inline:** Pattern recognition, immediate context, fast decision-making
+- **Reference:** Complete information, optional lookup, deep detail
+
+**Keep inline if ANY of these apply:**
+
+1. **Non-obvious domain behavior** - Shows quirks/edge cases that would surprise the LLM or lead to errors
+   - Example: Field omission vs null vs zero in responses
+   - Example: Case-sensitive matching when case-insensitive is expected
+
+2. **Pattern recognition anchors** - Enables immediate recognition of structures/formats in data
+   - Example: Format conventions that appear in actual data
+   - Example: Cross-reference patterns in text/summaries
+
+3. **High-frequency operations** - Common operations where reference lookup would slow every execution
+   - Example: Most-used syntax patterns
+   - Example: Standard workflows executed repeatedly
+
+4. **Decision-point guidance** - Helps choose between approaches at execution branching points
+   - Example: When to use one tool vs another
+   - Example: Which syntax variant to prefer
+
+**Test: "Would removing this force reference lookup during normal execution?"**
+- If YES → functional duplication (keep inline)
+- If NO → redundant duplication (remove)
+
+**Distinction:**
+- **Redundant:** Same information, no execution benefit from inline presence
+- **Functional:** Same information, but inline placement reduces cognitive load or prevents errors
+
 ### Unacceptable Duplication
 
 **Never duplicate:**
@@ -109,14 +143,15 @@ When examining any artifact:
 - ❌ Same explanation with minor wording changes
 - ❌ Same code snippet in multiple places
 
-### Detection During Examination
+### Detection During Review
 
 **How to detect duplication:**
 
 1. **Extract key concepts** from the artifact
 2. **Search for same concepts** appearing multiple times
 3. **Compare content:**
-   - Identical → duplication (bad)
+   - Identical with no cognitive function → redundant duplication (bad)
+   - Identical but serves as cognitive anchor → functional duplication (acceptable, see § Exception: Cognitive Anchors)
    - Summary vs detail → acceptable
    - Different aspects → acceptable
 
@@ -125,6 +160,14 @@ When examining any artifact:
    - Same code snippet repeated
    - Same explanation with minor wording changes
    - Same list duplicated
+
+5. **Before flagging identical content:**
+   - [ ] Would removing it force reference doc lookup during execution?
+   - [ ] Does it show domain-specific behavior not inferable from general knowledge?
+   - [ ] Does it anchor pattern recognition for structures in data?
+   - [ ] Is it a high-frequency operation performed in most executions?
+   - If YES to any → functional duplication (acceptable)
+   - If NO to all → redundant duplication (flag for removal)
 
 ### Remediation
 
@@ -214,9 +257,9 @@ These follow the canonical pattern naming conventions defined in apply-patterns 
 
 ## Quality Assessment Principles
 
-### Using Standards During Examination
+### Using Standards During Review
 
-**When examining any artifact:**
+**When reviewing any artifact:**
 
 1. **Read the relevant standard** for the section you're analyzing
 2. **Apply the criteria** from the standard to the artifact
@@ -224,7 +267,7 @@ These follow the canonical pattern naming conventions defined in apply-patterns 
 4. **Provide specific recommendations** based on the standard
 5. **Use examples** from the standard to illustrate good/bad
 
-### In Examination Reports
+### In Review Reports
 
 - Reference specific standards when identifying issues
 - Quote criteria from standards to justify recommendations

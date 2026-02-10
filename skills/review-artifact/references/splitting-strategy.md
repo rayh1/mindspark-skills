@@ -1,7 +1,7 @@
-# Splitting Strategy for examine-artifact
+# Splitting Strategy for review-artifact
 
 ## Current Status
-- **Current SKILL.md size:** 310 lines (as of examination)
+- **Current SKILL.md size:** ~355 lines (as of 2026-02-09)
 - **Guideline threshold:** 500 lines
 - **Status:** Within acceptable range, but planning needed for future growth
 
@@ -31,7 +31,7 @@
 ### Proposed Split Structure (if needed)
 
 ```
-examine-artifact/
+review-artifact/
 ├── SKILL.md (200-300 lines target)
 │   ├── Essential workflow only
 │   ├── Core patterns and gates

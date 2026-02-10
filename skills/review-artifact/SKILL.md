@@ -1,6 +1,6 @@
 ---
-name: examine-artifact
-description: Examines SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations.
+name: review-artifact
+description: Reviews SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations.
 ---
 
 <interpretation_check>
@@ -26,10 +26,10 @@ Before starting:
 **Write the full report to a file, not to chat.**
 
 Artifact:
-- Report file: `{artifact-directory}/EXAMINATION-REPORT.md`
+- Report file: `{artifact-directory}/REVIEW-REPORT.md`
 
 In chat, provide:
-- Confirmation that examination is complete
+- Confirmation that review is complete
 - Detected artifact type (skill or prompt)
 - File path where report was written
 - Health score with emoticon and severity breakdown:
@@ -43,8 +43,9 @@ In chat, provide:
 - Verify execution results and report status
 
 Validation:
-- Report file written for each examined artifact
+- Report file written for each reviewed artifact
 - All issues tagged with [CRITICAL], [HIGH], [MEDIUM], or [LOW]
+- Consequential actions include confidence assessment (per <confidence_signal>)
 - Chat summary includes artifact type, file path, health score with severity breakdown, and action list
 - User is prompted to select actions to execute
 - If actions executed: verification results reported
@@ -52,20 +53,20 @@ Validation:
 
 <inputs_first>
 **Required inputs:**
-- Target artifact(s) to examine: file paths or folder path containing SKILL.md or prompt files
+- Target artifact(s) to review: file paths or folder path containing SKILL.md or prompt files
 - Scope: single artifact or multiple artifacts
 
 **Derived inputs (automatic):**
 - `artifact_type`: Determined by type_detection logic (skill or prompt)
 
 **Assumptions (list explicitly if used):**
-- If given folder path, examine all SKILL.md files under it (for skills)
+- If given folder path, review all SKILL.md files under it (for skills)
 - If given a single .md file without YAML frontmatter with name/description, treat as prompt
 - If multiple artifacts provided, produce one report per artifact
 
 **Validation:**
 - Provided paths must exist and be readable
-- If a folder path is provided, it must contain at least one examinable file
+- If a folder path is provided, it must contain at least one reviewable file
 </inputs_first>
 
 <clarifying_questions>
@@ -80,21 +81,21 @@ fallback:
 </clarifying_questions>
 
 <user_approval_gate>
-Before writing: if `{artifact-directory}/EXAMINATION-REPORT.md` already exists, ask whether to overwrite.
+Before writing: if `{artifact-directory}/REVIEW-REPORT.md` already exists, ask whether to overwrite.
 
 - If user approves overwrite: overwrite the existing report.
-- If user rejects overwrite or does not respond: do not overwrite; write to `{artifact-directory}/EXAMINATION-REPORT.new.md` instead.
+- If user rejects overwrite or does not respond: do not overwrite; write to `{artifact-directory}/REVIEW-REPORT.new.md` instead.
 
-If `{artifact-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
+If `{artifact-directory}/REVIEW-REPORT.md` does not exist: proceed.
 
-**When examining multiple artifacts:** Check each report file independently; mix of overwrites and new files is acceptable.
+**When reviewing multiple artifacts:** Check each report file independently; mix of overwrites and new files is acceptable.
 </user_approval_gate>
 
 <scope_fence>
 **In scope:**
 - Analyze skill files for structural and content issues
 - Analyze prompt files for clarity, organization, and efficiency issues
-- Produce examination reports (EXAMINATION-REPORT.md)
+- Produce review reports (REVIEW-REPORT.md)
 - Identify contradictions, redundancies, and outdated content
 - Provide actionable recommendations and outlines
 - Execute user-approved fixes from the prioritized action list
@@ -111,17 +112,17 @@ If `{artifact-directory}/EXAMINATION-REPORT.md` does not exist: proceed.
 - NEVER execute without explicit user approval via AskUserQuestion
 - NEVER add new features or capabilities beyond fixing identified issues
 - NEVER modify the core functionality or purpose of the artifact
-- NEVER execute actions on files outside the examined artifact directory
+- NEVER execute actions on files outside the reviewed artifact directory
 - NEVER modify canonical pattern section labels (preserve exact names from apply-patterns/build-with-patterns)
 - ALWAYS preserve all reference files, scripts, and assets unless explicitly approved for deletion
 
 **Out of scope:**
 - Create entirely new skills/prompts or add unrelated features
-- Execute or test the artifact being examined (only fix structure/content)
-- Make changes to artifacts other than the one being examined
+- Execute or test the artifact being reviewed (only fix structure/content)
+- Make changes to artifacts other than the one being reviewed
 - Modify user code or project files outside artifact directories
 
-**Note:** This skill does not require scripts/ or assets/ directories. It operates purely through analysis and produces markdown reports. Examined artifacts may have these directories, but this skill itself does not.
+**Note:** This skill does not require scripts/ or assets/ directories. It operates purely through analysis and produces markdown reports. Reviewed artifacts may have these directories, but this skill itself does not.
 </scope_fence>
 
 <step_contract>
@@ -131,10 +132,12 @@ Follow this exact sequence:
 2. For each artifact:
    a. Detect artifact type using type_detection logic
    b. Run appropriate analysis framework:
-      - If skill: shared checks (sections 3-4, 6-8, 10-12) + skill-specific checks (sections 1-2, 5, 9)
-      - If prompt: shared checks (sections 3-4, 6-8, 10-12) + prompt-specific checks (P-01 to P-20)
+      - If skill: shared checks (Temporal Analysis, Flow Mapping, Dead Code Identification, Writing Voice, Context Efficiency) + skill-specific checks (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check)
+      - If prompt: shared checks (Temporal Analysis, Flow Mapping, Dead Code Identification, Writing Voice, Context Efficiency) + prompt-specific checks (P-01 to P-20)
+      - Both types also run: Directive Extraction, Contradiction Detection, Freedom Calibration
    - If multiple artifacts: iterate sequentially, produce complete report per artifact before proceeding to next
-3. Write full report to `{artifact-directory}/EXAMINATION-REPORT.md` (see references/output-format.md)
+3. Write full report to `{artifact-directory}/REVIEW-REPORT.md` (see references/output-format.md)
+   - For consequential actions (moderate/breaking risk), include confidence assessment per <confidence_signal>
 4. Include Final Deliverable items in report (action list, revised outline, migration notes)
 5. In chat, provide: confirmation, artifact type, file path, health score with severity breakdown, and prioritized action list
 6. Ask user which actions to execute using AskUserQuestion
@@ -149,7 +152,7 @@ Follow this exact sequence:
 
 **Skill-specific:**
 - **Skill exceeds 500 lines** → Propose split into references/, keep SKILL.md as executive workflow
-- **Multiple skills examined** → Keep findings separated by skill name/path; do not merge directives across skills
+- **Multiple skills reviewed** → Keep findings separated by skill name/path; do not merge directives across skills
 
 **Prompt-specific:**
 - **Prompt exceeds 300 lines** → Flag as MEDIUM, suggest condensing or restructuring
@@ -192,8 +195,8 @@ Before finalizing the report and chat summary, verify all gates:
   - Report verification results in final summary
 
 Evidence capture guidance (for G2/G3):
-- Use `nl -ba {file}` to capture stable line numbers
-- Quote the exact relevant lines in the report (copy/paste), alongside file + line range
+- Capture file + line number for each directive and quoted evidence
+- Quote the exact relevant lines in the report alongside file + line range
 </quality_gates>
 
 <lens>
@@ -220,6 +223,35 @@ Assign unique IDs to output items for follow-up reference:
 - Presentation: inline in report tables and action lists
 - Usage: User can reference specific items ("apply A-1 and A-3" or "explain I-2")
 </addressable_output>
+
+<confidence_signal>
+For consequential recommendations (moderate/breaking risk), include confidence assessment:
+
+**Thresholds:**
+- High (>85%): Recommendation is well-supported, low ambiguity
+- Medium (60-85%): Recommendation is reasonable but has uncertainty
+- Low (<60%): Recommendation needs user judgment
+
+**Format in recommendations:**
+- "confidence: high (90%) - {reason}"
+- "confidence: medium (70%) - {reason}; would increase with {condition}"
+
+**Apply to:**
+- Actions with moderate/breaking risk (modifies existing behavior)
+- Actions addressing CRITICAL/HIGH severity issues
+- Structural changes that affect multiple sections
+
+**What to include:**
+- Percentage estimate
+- Reason for confidence level
+- What would increase confidence (if medium/low)
+
+**Example:**
+```
+[A-1] [HIGH] Move workflow to SKILL.md from references/workflow.md
+- confidence: high (90%) - workflow clearly belongs in main file per § Progressive Disclosure; references/workflow.md violates pattern
+```
+</confidence_signal>
 
 <review_step>
 After completing all steps, perform holistic review:
@@ -266,16 +298,18 @@ Assign severity to every identified issue based on impact.
 Load and apply checks systematically based on detected artifact type.
 
 **Skills:**
-- Shared: references/analysis-framework-shared.md (sections 3-4, 6-8, 10-12)
-- Skill-specific: references/skill-specific-checks.md (sections 1-2, 5, 9)
+- Shared: references/analysis-framework-shared.md (all 8 sections: Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency)
+- Skill-specific: references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check)
 - Standards: references/skill-quality-standards.md
 
 **Prompts:**
-- Shared: references/analysis-framework-shared.md (sections 3-4, 6-8, 10-12)
+- Shared: references/analysis-framework-shared.md (all 8 sections)
 - Prompt-specific: references/prompt-specific-checks.md (P-01 to P-20)
 - Standards: references/prompt-quality-standards.md
 
 **All artifacts:** Apply references/quality-standards-shared.md (universal criteria)
+
+**Check-to-report mapping:** Directive Extraction and Contradiction Detection feed → Critical Issues + Contradictions Found. Cross-File Redundancy + Context Efficiency feed → Redundancies. Temporal Analysis feeds → Outdated Content. Flow Mapping + Freedom Calibration feed → Unclear Flows. Structure/Trigger/Progressive Disclosure feed → Type-Specific Issues. Dead Code + Writing Voice feed → Line-by-Line Issues.
 
 Work through frameworks systematically, documenting findings per references/output-format.md structure.
 </analysis_framework>
@@ -292,7 +326,7 @@ Work through frameworks systematically, documenting findings per references/outp
 
 **Don't:**
 - Rewrite unrelated documentation
-- Add new features or "nice-to-have" content not justified by examination
+- Add new features or "nice-to-have" content not justified by review
 - Change required output headings or omit sections
 </stop_conditions>
 

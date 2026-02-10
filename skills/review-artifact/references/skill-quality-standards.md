@@ -78,7 +78,7 @@ Skills use a three-level loading system. Understanding this is essential for eva
 
 ### Loading Model Assessment
 
-When examining a skill, evaluate:
+When reviewing a skill, evaluate:
 
 1. **Is critical information at the right level?**
    - Triggers in description (Level 1)

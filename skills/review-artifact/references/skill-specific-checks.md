@@ -5,7 +5,7 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
 ## Table of Contents
 
 1. [Structure Analysis](#1-structure-analysis) - Lines 20-90
-2. [Trigger & Description Examination](#2-trigger--description-examination) - Lines 92-180
+2. [Trigger & Description Review](#2-trigger--description-review) - Lines 92-180
 3. [Cross-File Redundancy](#3-cross-file-redundancy) - Lines 182-260
 4. [Progressive Disclosure Check](#4-progressive-disclosure-check) - Lines 262-400
 
@@ -35,7 +35,8 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
     - Framework-specific patterns → references/{framework}.md
     - Advanced features → references/advanced.md
     - Detailed examples → references/examples.md
-    - API documentation → references/api-reference.md
+    - Reference documentation → references/
+  - **Note:** Cognitive anchors should stay inline (see § Exception: Cognitive Anchors in quality-standards-shared.md)
   - See § Split Strategy in skill-quality-standards.md
 
 - [D-62] **Reference files properly organized and clearly named?**
@@ -52,7 +53,7 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
 
 ---
 
-## 2. TRIGGER & DESCRIPTION EXAMINATION
+## 2. TRIGGER & DESCRIPTION REVIEW
 
 (See references/skill-quality-standards.md § Description Field Excellence for detailed criteria)
 
@@ -126,12 +127,20 @@ Apply the Challenge Test to all content:
   - Extract key concepts from SKILL.md
   - Search references/ for same concepts
   - Compare content:
-    - Identical content in both → **HIGH** severity (duplication rule violation)
+    - Identical content with no cognitive function → **HIGH** severity (redundant duplication)
+    - Cognitive anchors (see § Exception: Cognitive Anchors in quality-standards-shared.md) → Acceptable even if identical
     - Summary in SKILL.md + details in references/ → Acceptable (proper pattern)
     - Different aspects of same topic → Acceptable
-  - Check specifically for:
-    - Same examples in both places → **HIGH**
-    - Same code snippets duplicated → **HIGH**
+  - Before flagging identical content, check if it's a cognitive anchor:
+    - [ ] Would removing it force reference lookup during execution?
+    - [ ] Does it show non-obvious domain behavior?
+    - [ ] Does it anchor pattern recognition for data structures?
+    - [ ] Is it a high-frequency operation?
+    - If YES to any → acceptable functional duplication
+    - If NO to all → flag as redundant duplication
+  - Check specifically for redundant duplication (not cognitive anchors):
+    - Same examples in both places (no cognitive function) → **HIGH**
+    - Same code snippets duplicated (no cognitive function) → **HIGH**
     - Same explanation with minor wording changes → **HIGH**
     - Same table/list duplicated → **MEDIUM**
 
@@ -170,7 +179,15 @@ Apply the Challenge Test to all content:
   - **Step 1:** Extract distinct examples from SKILL.md (code snippets, workflows, patterns)
   - **Step 2:** For each example, search all references/ files for same/similar content
   - **Step 3:** Classify duplication:
-    - **Identical:** Same example, code, or explanation in both
+    - **Identical - Cognitive Anchor:** Same example in both, but serves cognitive function
+      - Apply cognitive anchor test (see § Exception: Cognitive Anchors):
+        - Shows non-obvious domain behavior?
+        - Anchors pattern recognition?
+        - High-frequency operation?
+        - Guides decision-making?
+      - If YES to any → Acceptable (functional duplication)
+      - If NO to all → proceed to classify as redundant
+    - **Identical - Redundant:** Same example, code, or explanation with no cognitive function
       - **HIGH** severity (violates duplication rule)
       - Recommendation: Keep in ONE location only
     - **Summary + Detail:** Brief mention in SKILL.md, full detail in references/
@@ -178,10 +195,11 @@ Apply the Challenge Test to all content:
       - **MEDIUM** if "summary" is actually detailed (should remove from SKILL.md)
     - **Different aspects:** Different information about same topic
       - Acceptable (not duplication)
-  - **Step 4:** Count violations
-    - 1-2 identical duplications → **HIGH**
-    - 3+ identical duplications → **CRITICAL** (systemic issue)
+  - **Step 4:** Count violations (redundant duplications only, exclude cognitive anchors)
+    - 1-2 redundant duplications → **HIGH**
+    - 3+ redundant duplications → **CRITICAL** (systemic issue)
   - **Step 5:** Recommend consolidation strategy
+    - If cognitive anchor → keep in both locations (functional duplication)
     - If core workflow → keep in SKILL.md, remove from references/
     - If detailed/optional → keep in references/, remove from SKILL.md
 
@@ -216,10 +234,13 @@ Verify information is at the right level (3-level loading model):
 
 - [D-93] **Detailed references in references/?**
   - Check for detailed content in SKILL.md that should move:
-    - Complete API documentation → references/api-reference.md
-    - Framework-specific patterns → references/{framework}.md
-    - Domain-specific knowledge → references/{domain}.md
-  - **MEDIUM** if significant details in SKILL.md (should be in references/)
+    - Complete reference documentation → references/
+    - Framework-specific patterns (not high-frequency) → references/{framework}.md
+    - Domain-specific knowledge (not cognitive anchors) → references/{domain}.md
+  - **Before flagging:** Check if content is cognitive anchor (see § Exception: Cognitive Anchors in quality-standards-shared.md)
+    - If YES → acceptable inline (functional placement)
+    - If NO → should move to references/
+  - **MEDIUM** if significant non-anchor details in SKILL.md
 
 - [D-94] **Executable code in scripts/?**
   - Check if code should be in scripts/:
@@ -238,9 +259,10 @@ Verify information is at the right level (3-level loading model):
 - [D-96] **SKILL.md overload check:**
   - Is SKILL.md trying to do too much? Signs:
     - Multiple framework sections (AWS + GCP + Azure all in SKILL.md)
-    - Complete API docs inline
-    - Exhaustive examples (>5 examples for same pattern)
-  - **MEDIUM** severity if SKILL.md is overloaded
+    - Complete reference documentation inline (excluding cognitive anchors)
+    - Exhaustive examples (>5 examples for same pattern, excluding cognitive anchor variations)
+  - **Before flagging overload:** Distinguish cognitive anchors from bloat (see § Exception: Cognitive Anchors in quality-standards-shared.md)
+  - **MEDIUM** severity if SKILL.md is overloaded with non-anchor content
   - Are reference files clearly signposted?
     - Does SKILL.md explain when to read each reference?
     - "See references/X for..." statements present?

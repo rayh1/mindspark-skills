@@ -1,6 +1,6 @@
 # Pattern Label Registry
 
-**Purpose:** Canonical pattern names that should be excluded from voice checking and preserved during examination.
+**Purpose:** Canonical pattern names that should be excluded from voice checking and preserved during review.
 
 These labels are standardized across the apply-patterns and build-with-patterns skills and should NOT be converted to imperative form.
 
