@@ -1,6 +1,6 @@
 ---
 name: review-artifact
-description: Reviews SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations.
+description: "Reviews SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations."
 ---
 
 <interpretation_check>

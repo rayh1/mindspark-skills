@@ -1,6 +1,6 @@
 ---
 name: apply-patterns
-description: Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when (1) improving prompt determinism with quality gates and contracts, (2) adding scope control and stop conditions to skills, (3) analyzing pattern coverage gaps in existing SKILL.md files, or other reliability engineering tasks. Does not change core intent. Requires user approval before modifications.
+description: "Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when (1) improving prompt determinism with quality gates and contracts, (2) adding scope control and stop conditions to skills, (3) analyzing pattern coverage gaps in existing SKILL.md files, or other reliability engineering tasks. Does not change core intent. Requires user approval before modifications."
 ---
 
 <quick_start>

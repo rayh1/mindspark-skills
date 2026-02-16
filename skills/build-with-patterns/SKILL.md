@@ -1,6 +1,6 @@
 ---
 name: build-with-patterns
-description: Builds reliable skills and prompts using spec-by-tightening methodology - start with one concrete example, then tighten into a small testable output contract and executable step sequence. Use when (1) Creating new Claude Code skills (SKILL.md with YAML frontmatter and XML structure), (2) Building standalone prompts with markdown headings, (3) Applying structured prompt engineering with output contracts and quality gates, (4) Need guidance on progressive disclosure, step sequences, and validation patterns, or any other skill/prompt development task following reliability best practices.
+description: "Builds reliable skills and prompts using spec-by-tightening methodology - start with one concrete example, then tighten into a small testable output contract and executable step sequence. Use when (1) Creating new Claude Code skills (SKILL.md with YAML frontmatter and XML structure), (2) Building standalone prompts with markdown headings, (3) Applying structured prompt engineering with output contracts and quality gates, (4) Need guidance on progressive disclosure, step sequences, and validation patterns, or any other skill/prompt development task following reliability best practices."
 ---
 
 <objective>
