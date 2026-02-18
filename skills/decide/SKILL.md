@@ -159,6 +159,7 @@ Before starting framework selection, verify understanding of decision scope:
 - Track used frameworks in session (per references/step-ledger.md)
 - When user selects new framework in step 7 → re-execute steps 4-7 with new framework
 - Exit loop when user says "Done" in step 7
+- **Mid-session information update:** When user provides new contextual information between framework iterations (new constraints, new data, changed priorities) → check against current lock's reversal criteria; if triggered, update lock and show revised recommendation; do NOT restart analysis from framework 1; then continue to multi-framework offer as normal
 </step_contract>
 
 <decision_points>
@@ -292,6 +293,8 @@ See references/frameworks.md for complete templates. See references/examples.md 
 **MANDATORY: Every decision output must end with explicit lock section.**
 
 Apply the full lock template from references/frameworks.md § Lock Protocol. The lock must include: 🔒 header, "Chosen based on" criteria, ✅/❌ reversal examples, and "Defense Protocol Active" statement.
+
+**Conditional Lock variant:** When analysis yields a genuine bifurcation on a user-answerable question, use header `🔒 CONDITIONAL LOCK` and include the decision tree in the "Chosen based on" section with explicit conditions for each branch. Each branch must be unconditional once its condition is met.
 </lock_protocol>
 
 <output_schema>
@@ -342,6 +345,13 @@ Apply the full lock template from references/frameworks.md § Lock Protocol. The
 
 **Constraints:**
 - Recommendation must be single clear option (not "A or B")
+  **Exception — Conditional Lock:** When multi-framework analysis converges to a genuine bifurcation on a specific, user-answerable question, a decision tree is valid and preferred over a forced single choice:
+  ```
+  IF [condition] → [Option A]
+  IF [condition] → [Option B]
+  Default        → [Option X]
+  ```
+  Use `CONDITIONAL LOCK` in the lock section header (see lock_protocol). A valid bifurcation requires: a concrete answerable question, exactly one answer per branch, and no "it depends" ambiguity.
 - Lock section must include concrete examples (✅/❌ format)
 - Multi-framework menu must track used_frameworks from step_ledger
 
@@ -357,6 +367,9 @@ Apply the full lock template from references/frameworks.md § Lock Protocol. The
 After completing decision analysis and lock section, present option to analyze same decision with different framework.
 
 Track which frameworks have been used in this session (start with empty list, add current framework after execution).
+
+**Menu generation (mandatory verification):**
+Enumerate all 9 framework IDs [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract used_frameworks, present the complete remainder. Never reconstruct the available list from memory — always subtract from the full set of 9.
 
 **Template:**
 ```markdown
@@ -434,7 +447,10 @@ Choose framework number (1-9) to re-analyze, or 'Done' to finish:
 - All previous gates passed? (else fix issues first)
 - Multi-framework menu presented? (else add)
 - Step ledger updated with used_frameworks list? (else update)
-- Multi-framework menu excludes already-used frameworks? (cross-check with step_ledger)
+- Multi-framework menu excludes already-used frameworks?
+  → Enumerate all 9 IDs: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  → Remove used_frameworks from list
+  → Verify remaining list is complete and presented in full (no silent omissions from memory)
 
 **Failure handling:**
 - Gate fails → fix once → re-check
