@@ -2,6 +2,20 @@
 
 This reference helps determine which patterns are most applicable for different types of targets, organized by tier priority.
 
+## Table of Contents
+
+- [Type Detection](#type-detection) - Line 14
+- [Tier 1 - Core (Always Consider)](#tier-1---core-always-consider) - Line 21
+- [Tier 2 - Recommended (When Situation Warrants)](#tier-2---recommended-when-situation-warrants) - Line 40
+- [Tier 3 - Situational (Require Justification)](#tier-3---situational-require-justification) - Line 59
+- [Gap-Driven Selection Flow](#gap-driven-selection-flow) - Line 76
+- [Applicability by Target Type](#applicability-by-target-type) - Line 154
+- [Partial Match Handling](#partial-match-handling) - Line 206
+- [Conflict Resolution](#conflict-resolution) - Line 219
+- [Quick Decision Matrix](#quick-decision-matrix) - Line 232
+
+---
+
 ## Type Detection
 
 - If file starts with `---` and contains `name:` and `description:` → type = "skill"
@@ -150,6 +164,10 @@ Show:
 - Metadata (name + description) always in context (~100 words)
 - SKILL.md body loaded when triggered (<5k words, <500 lines guideline)
 - Bundled resources (scripts/, references/, assets/) loaded as needed
+
+**When proposing patterns for skills that orchestrate MCP:**
+- If the skill's core value depends on MCP server access, check for MCP error handling: connection failures, auth failures, case-sensitive tool names
+- Propose S-3 (MCP Error Handling) from pattern-catalog.md if missing — this is the primary failure mode for MCP skills
 
 **When proposing patterns for skills:**
 - Check current line count against 500-line guideline

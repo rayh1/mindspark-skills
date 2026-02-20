@@ -10,6 +10,7 @@ Essential knowledge for building production-quality Claude Code skills that mana
 - [Skill Anatomy](#skill-anatomy) - Line 27
 - [Progressive Disclosure: 3-Level Loading](#progressive-disclosure-3-level-loading) - Line 46
 - [YAML Frontmatter: The Trigger Mechanism](#yaml-frontmatter-the-trigger-mechanism) - Line 69
+- [Skill Category Types](#skill-category-types)
 - [Bundled Resources: When and How](#bundled-resources-when-and-how) - Line 105
 - [The 500-Line Guideline](#the-500-line-guideline) - Line 210
 - [What NOT to Include](#what-not-to-include) - Line 252
@@ -116,6 +117,85 @@ description: Work with DOCX files
 - Body is only loaded AFTER triggering, so "When to Use This Skill" sections in the body are worthless
 - Be specific about triggers (file types, use cases, keywords)
 - Include examples of what should trigger the skill
+- Description must be under 1024 characters
+
+### Optional Frontmatter Fields
+
+```yaml
+compatibility: "Requires Python 3.9+, network access, Claude Code"  # 1-500 chars
+allowed-tools: "Bash(python:*) WebFetch"   # restrict tool access
+license: MIT                               # for publicly distributed skills
+metadata:
+  author: Your Name
+  version: 1.0.0
+  mcp-server: notion                       # for Category 3 MCP skills
+```
+
+**When to use:**
+- `compatibility`: Any skill with external dependencies (packages, network, MCP server) — documents requirements so users know what they need before installing
+- `allowed-tools`: When skill should only invoke a subset of available tools (security/scoping)
+- `metadata.mcp-server`: Category 3 skills; associates skill with the required MCP server
+
+### Security Restrictions
+
+**Forbidden in frontmatter — these are security rules, not style guidelines:**
+- No XML angle brackets (`<` or `>`) anywhere in frontmatter — frontmatter is always loaded into the system prompt; angle brackets can inject instructions
+- `name` must not start with `claude` or `anthropic` (reserved prefixes)
+
+### Negative Triggers
+
+When a sibling skill covers overlapping territory, add a negative trigger to prevent overtriggering:
+
+```yaml
+description: Advanced statistical analysis for CSV datasets. Use for regression,
+clustering, and modeling... Do NOT use for simple data exploration
+(use data-viz skill instead).
+```
+
+**When to include:** Any skill that shares a domain with another skill where triggering the wrong one degrades results.
+
+---
+
+## Skill Category Types
+
+Knowing your skill's category determines what structure it needs.
+
+### Category 1: Document & Asset Creation
+
+**Purpose:** Creates documents, designs, code artifacts, or other deliverables
+**Tools:** Claude's built-in capabilities only — no MCP required
+**Structure needs:**
+- Embedded style guides and quality standards
+- Quality checklist before finalizing output
+- Templates in `assets/` if format consistency matters
+- No error handling for external tools needed
+
+**Examples:** docx, pdf, pptx, xlsx, frontend-design skills
+
+### Category 2: Workflow Automation
+
+**Purpose:** Repeatable multi-step processes where consistent methodology is the value
+**Tools:** May use MCP, but workflow consistency is the primary goal
+**Structure needs:**
+- Step-by-step workflow with explicit validation gates
+- Iterative refinement loops
+- Handling for incomplete inputs (what to ask, what to default)
+
+**Examples:** sprint-planning, code-review, onboarding workflows
+
+### Category 3: MCP Enhancement
+
+**Purpose:** Adds workflow/knowledge layer on top of MCP server access
+**Tools:** Requires one or more MCP servers
+**Structure needs:**
+- `metadata.mcp-server` in frontmatter
+- `compatibility` field documenting the MCP dependency
+- MCP error handling section covering: connection failures, authentication failures, case-sensitive tool names
+- Guidance to test MCP independently: "Ask Claude to call the MCP tool directly (without this skill) to isolate whether a failure is in the skill or the MCP connection"
+
+**Examples:** sentry-code-review, notion-project-setup, linear-sprint-planning
+
+**Identifying your category:** If the skill's core value disappears without a specific MCP server → Category 3. If it primarily creates artifacts using Claude's own capabilities → Category 1. Otherwise → Category 2.
 
 ---
 
@@ -452,8 +532,16 @@ description: Work with PDF files
 When building a skill:
 
 **YAML frontmatter:**
-- [ ] Description includes "when to use" with specific examples
+- [ ] `name` is kebab-case, no spaces/capitals, matches folder name
+- [ ] `name` does not start with `claude` or `anthropic`
+- [ ] No XML angle brackets (`<` or `>`) anywhere in frontmatter
+- [ ] Description includes "when to use" with specific trigger phrases
 - [ ] Description mentions file types, use cases, or keywords
+- [ ] Description under 1024 characters
+- [ ] Negative trigger added if sibling skill covers overlapping domain
+- [ ] `compatibility` field present if skill has external dependencies (packages, MCP, network)
+- [ ] `allowed-tools` present if tool scoping is appropriate
+- [ ] `metadata.mcp-server` declared for Category 3 skills
 
 **SKILL.md body:**
 - [ ] Under 500 lines (or has clear split strategy)
@@ -485,11 +573,13 @@ When building a skill:
 ## Summary
 
 A well-architected skill:
-1. **Triggers precisely** (description includes specific "when to use")
+1. **Triggers precisely** (description includes specific "when to use", trigger phrases, negative triggers if needed)
 2. **Stays lean** (SKILL.md under 500 lines)
 3. **Discloses progressively** (metadata → body → references → assets)
 4. **Organizes resources** (scripts/ vs references/ vs assets/ used correctly)
 5. **Respects context** (every token justified)
 6. **Avoids bloat** (no README or auxiliary docs)
+7. **Declares dependencies** (compatibility + optional fields match the skill's category and requirements)
+8. **Is category-appropriate** (Category 1/2/3 structure matches the skill's actual purpose)
 
 Apply these principles during all phases of build-with-patterns to create skills that are efficient, maintainable, and context-aware.

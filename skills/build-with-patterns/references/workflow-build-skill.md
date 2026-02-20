@@ -18,11 +18,6 @@ Build a Claude Code skill by following the canonical procedure in `./core-passes
 - Follow `./core-passes.md`.
 - Use optional add-ons only when triggered: `./patterns-when-needed.md`.
 
-**Skill-specific output**:
-Render `SKILL.md`:
-- YAML frontmatter (`name`, `description`)
-- XML-tag sections (per `../SKILL.md` `<output_schema>`)
-
 **Approval:**
 Run the single approval checkpoint before finalizing (per `../SKILL.md` `<user_approval_gate>`).
 </process>

@@ -8,6 +8,7 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
 2. [Trigger & Description Review](#2-trigger--description-review) - Lines 92-180
 3. [Cross-File Redundancy](#3-cross-file-redundancy) - Lines 182-260
 4. [Progressive Disclosure Check](#4-progressive-disclosure-check) - Lines 262-400
+5. [Skill Category & MCP-Specific Checks](#5-skill-category--mcp-specific-checks)
 
 ---
 
@@ -51,6 +52,19 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
   - **MEDIUM** severity if found (skills are for AI agents, not users)
   - Recommendation: Remove these files
 
+- [D-108] **Frontmatter security restrictions:**
+  - Check `name` field: must NOT begin with "claude" or "anthropic" (reserved prefixes)
+  - Check entire frontmatter block for XML angle brackets (`<` or `>`)
+  - **CRITICAL** if name starts with "claude" or "anthropic" (reserved; violates Anthropic naming policy)
+  - **CRITICAL** if frontmatter contains XML angle brackets (prompt injection risk: frontmatter is always loaded into Claude's system prompt — malicious or accidentally injected content can interfere with Claude's behavior in every conversation where the skill is active)
+  - Security note: Unlike the SKILL.md body (loaded on demand), frontmatter is always in context. These are security restrictions, not style guidelines.
+
+- [D-109] **Skill name-to-folder consistency:**
+  - Read `name:` value from frontmatter
+  - Compare against the actual folder/directory name containing SKILL.md
+  - **HIGH** if they do not match (breaks install conventions and discoverability; skill may not install correctly)
+  - Note: If reviewing a standalone SKILL.md without folder context available, skip and note as unchecked
+
 ---
 
 ## 2. TRIGGER & DESCRIPTION REVIEW
@@ -87,6 +101,13 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
   - Compare to similar skills if they exist
   - **HIGH** if description is too generic to distinguish
   - **MEDIUM** if description could be more specific
+
+- [D-68] **Negative trigger presence** (overtriggering guard):
+  - When a skill is domain-scoped or has a sibling skill covering overlapping territory, check if the description contains explicit exclusions
+  - Canonical pattern: `"... Do NOT use for [X] (use [other-skill] instead)."`
+  - Example: `"Advanced statistical analysis for CSV. Do NOT use for simple data exploration (use data-viz skill instead)."`
+  - **MEDIUM** if skill operates in a domain shared by another skill, but no negative trigger is present to prevent overlap
+  - Note: Negative triggers are the primary prescribed fix for overtriggering. Absence when there is a clear sibling skill is a reliability risk.
 
 **Description Quality Depth:**
 
@@ -314,3 +335,39 @@ Verify information is at the right level (3-level loading model):
     - List all files in each directory with extensions
     - Apply decision tree from § Resource Type Selection
     - Flag mismatches
+
+---
+
+## 5. SKILL CATEGORY & MCP-SPECIFIC CHECKS
+
+Classify the skill type first, then apply category-appropriate checks.
+
+### Category Classification
+
+- [D-111] **Classify skill category:**
+  - Read SKILL.md and identify which category best fits:
+    - **Category 1 (Document & Asset Creation)**: Creates documents, designs, code artifacts; no external tools required beyond Claude's built-in capabilities
+    - **Category 2 (Workflow Automation)**: Multi-step processes with validation gates; may use MCP but focus is on repeatable methodology
+    - **Category 3 (MCP Enhancement)**: Explicitly orchestrates MCP server tools; adds workflow/knowledge layer on top of MCP access
+  - Record category in review report (e.g., "Detected: Category 3 - MCP Enhancement")
+  - Apply D-112/D-113 only for Category 2/3 skills
+
+### MCP-Specific Instruction Quality (Category 2/3 Only)
+
+- [D-112] **MCP error handling coverage:**
+  - Check if skill instructions address:
+    - [ ] Connection failures (e.g., "Connection refused", server not running — verify in Settings > Extensions)
+    - [ ] Authentication failures (invalid/expired API keys, OAuth token refresh)
+    - [ ] Tool name case-sensitivity (MCP tool names are case-sensitive; skill must reference exact names)
+    - [ ] Fallback or retry guidance when MCP calls fail
+  - **HIGH** if no MCP error handling present in a skill that makes MCP calls
+  - **MEDIUM** if error handling present but incomplete (covers connection but not auth, or vice versa)
+  - Best practice that should be present: instructions to test MCP independently ("Ask Claude to call the MCP tool directly without the skill to isolate whether failure is in the skill or the MCP connection itself")
+
+- [D-113] **MCP tool name references:**
+  - Identify all MCP tool names explicitly mentioned in SKILL.md (e.g., `create_customer`, `setup_payment_method`)
+  - Flag names that appear malformed (spaces, inconsistent casing)
+  - **MEDIUM** if tool names are used without noting they are case-sensitive
+  - **LOW** if no tool names are mentioned but skill claims to orchestrate MCP (tool names should be explicit)
+  - Note: Static review cannot verify names against a live MCP server; flag for manual verification
+

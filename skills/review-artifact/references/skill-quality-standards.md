@@ -9,7 +9,9 @@ Quality standards specific to SKILL.md files. For universal standards, see quali
 3. [Reference Organization Patterns](#reference-organization-patterns) - Lines 232-350
 4. [Description Field Excellence](#description-field-excellence) - Lines 352-480
 5. [Split Strategy (500-Line Guideline)](#split-strategy-500-line-guideline) - Lines 482-600
-6. [Skill Quality Checklist](#skill-quality-checklist) - Lines 602-680
+6. [Frontmatter Complete Schema](#frontmatter-complete-schema)
+7. [MCP Skill Quality Standards](#mcp-skill-quality-standards)
+8. [Skill Quality Checklist](#skill-quality-checklist)
 
 ---
 
@@ -420,6 +422,107 @@ Not a hard limit, but a forcing function:
 
 ---
 
+---
+
+## Frontmatter Complete Schema
+
+### Required Fields
+
+```yaml
+---
+name: skill-name-in-kebab-case   # required; kebab-case only, no spaces/capitals
+description: What it does and when to use it. Include specific trigger phrases.  # required; ~50-150 words
+---
+```
+
+### Optional Fields
+
+```yaml
+license: MIT                      # open-source skills; e.g. MIT, Apache-2.0
+compatibility: Requires Python 3.9+, network access, Claude Code  # environment requirements; 1-500 chars
+allowed-tools: "Bash(python:*) WebFetch"  # restrict tool access for scoping/security
+metadata:
+  author: Company Name
+  version: 1.0.0
+  mcp-server: server-name         # associate skill with a specific MCP server
+  category: productivity
+  tags: [project-management, automation]
+  documentation: https://example.com/docs
+  support: support@example.com
+```
+
+### Security Restrictions
+
+**Forbidden in frontmatter — these are security rules, not style guidelines:**
+
+| Forbidden | Why |
+|---|---|
+| XML angle brackets (`<` or `>`) anywhere in frontmatter | Frontmatter is always loaded into Claude's system prompt. Angle brackets can inject instructions into that context, altering Claude's behavior in every conversation where the skill is active. |
+| `name` starting with "claude" or "anthropic" | Reserved prefixes; violates Anthropic naming policy |
+
+### When to Use Optional Fields
+
+- `compatibility`: Use whenever the skill has environment requirements users may not meet (packages, network, specific Claude surface, MCP server). Prevents silent failures.
+- `allowed-tools`: Use when the skill should not invoke all available tools. Provides security scoping and makes skill intent explicit.
+- `metadata.mcp-server`: Use for Category 3 (MCP Enhancement) skills to document the associated server.
+
+### Name-to-Folder Consistency
+
+The `name` value in frontmatter should match the skill's folder name exactly. Mismatches break install conventions and can cause skills to fail to load correctly.
+
+```
+✓ Folder: notion-project-setup/  →  name: notion-project-setup
+✗ Folder: notion-project-setup/  →  name: notion_project_setup
+✗ Folder: NotionProjectSetup/    →  name: notion-project-setup
+```
+
+---
+
+## MCP Skill Quality Standards
+
+Applies to **Category 3 (MCP Enhancement)** skills and partially to **Category 2 (Workflow Automation)** skills that make MCP calls.
+
+### What Good MCP Error Handling Looks Like
+
+A well-written MCP skill includes a troubleshooting section that addresses the three most common failure modes:
+
+```markdown
+## Troubleshooting
+
+### MCP Connection Failed
+If you see "Connection refused":
+1. Verify MCP server is running: Settings > Extensions > [Service]
+2. Confirm API key is valid and not expired
+3. Try reconnecting: Settings > Extensions > [Service] > Reconnect
+
+### Authentication Errors
+- OAuth: tokens may need refresh — disconnect and reconnect the integration
+- API keys: verify key has correct permissions/scopes for required operations
+
+### Tool Call Failures
+- MCP tool names are case-sensitive: verify exact names in MCP server documentation
+- To isolate whether failure is in the skill or the MCP connection, test the MCP tool directly: "Use [Service] MCP to [action]" — if this also fails, the issue is the MCP connection, not the skill
+```
+
+### Tool Name Discipline
+
+- Always reference MCP tool names using exact casing (e.g., `create_customer`, not `Create_Customer`)
+- Note case-sensitivity in the skill when referencing tools
+- List the MCP tools used in the skill's instructions so users know what to expect
+
+### MCP + `metadata.mcp-server`
+
+Category 3 skills should declare their associated MCP server in frontmatter:
+
+```yaml
+metadata:
+  mcp-server: notion          # or "linear", "sentry", etc.
+```
+
+This helps users understand the dependency before installing the skill.
+
+---
+
 ## Skill Quality Checklist
 
 ### Progressive Disclosure
@@ -452,3 +555,18 @@ Not a hard limit, but a forcing function:
 - [ ] Summary in SKILL.md, detail in references/ (if both)
 - [ ] No repeated examples
 - [ ] No repeated code snippets
+
+### Frontmatter Security & Completeness
+- [ ] No XML angle brackets in frontmatter (injection risk)
+- [ ] name does not start with "claude" or "anthropic"
+- [ ] name matches folder name
+- [ ] `compatibility` field present if skill has external dependencies
+- [ ] `allowed-tools` field present if tool scoping is appropriate
+- [ ] `metadata.mcp-server` declared for Category 3 skills
+
+### MCP Quality (Category 2/3 Only)
+- [ ] MCP connection failure handling documented
+- [ ] Authentication failure handling documented
+- [ ] Tool names referenced with exact casing
+- [ ] Independent MCP testing guidance present
+- [ ] Negative trigger present if sibling skill covers overlapping domain

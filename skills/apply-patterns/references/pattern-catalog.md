@@ -7,6 +7,14 @@ Patterns are organized into three tiers by priority:
 - **Tier 2 - Recommended:** Valuable when situation warrants. Check applicability.
 - **Tier 3 - Situational:** Specific use cases. Don't apply by default.
 
+## Table of Contents
+
+- [Tier 1 - Core (8 patterns)](#tier-1---core-8-patterns) - Line 22
+- [Tier 2 - Recommended (8 patterns)](#tier-2---recommended-8-patterns) - Line 41
+- [Tier 3 - Situational (6 patterns)](#tier-3---situational-6-patterns) - Line 58
+- [Skill-Specific Patterns](#skill-specific-patterns) - Line 74
+- [Quick Applicability Checklist](#quick-applicability-checklist) - Line 103
+
 ---
 
 ## Tier 1 - Core (8 patterns)
@@ -60,9 +68,40 @@ Use when specifically relevant. Require explicit justification.
 
 ---
 
+---
+
+## Skill-Specific Patterns
+
+One additional pattern applies only to SKILL.md files that orchestrate MCP servers. Use `[S-3]` ID in proposals.
+
+| # | Pattern | Purpose | Applies when |
+|---|---------|---------|--------------|
+| S-3 | **MCP Error Handling** | Handle MCP failure modes | Skill orchestrates MCP without connection/auth/tool-name error handling |
+
+**S-3 MCP Error Handling — what to add:**
+```markdown
+## Troubleshooting
+
+### MCP Connection Failed
+If you see "Connection refused": verify server is running in Settings > Extensions,
+confirm API key is valid, try reconnecting.
+
+### Authentication Errors
+OAuth tokens may need refresh — disconnect and reconnect the integration.
+API keys: verify correct permissions/scopes.
+
+### Tool Call Failures
+MCP tool names are case-sensitive. To isolate failures, test the MCP tool directly
+(without this skill): "Use [Service] MCP to [action]". If that also fails,
+the issue is the MCP connection, not this skill.
+```
+Also add to frontmatter: `metadata.mcp-server: <server-name>` and `compatibility: "Requires [Service] MCP"`
+
+---
+
 ## Quick Applicability Checklist
 
-For gap-driven selection guidance (proposal counts by target complexity), see SKILL.md `<scope_fence>` section.
+For gap-driven selection guidance (proposal counts by target complexity), see [applicability-guide.md](applicability-guide.md) § Gap-Driven Selection Flow.
 
 **Always applicable (Tier 1):**
 - [ ] Takes inputs? → Inputs First

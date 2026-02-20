@@ -17,9 +17,6 @@ Build a standalone prompt by following the canonical procedure in `./core-passes
 - Follow `./core-passes.md`.
 - Use optional add-ons only when triggered: `./patterns-when-needed.md`.
 
-**Prompt-specific output:**
-Render as a single copy/paste prompt with markdown headings (no YAML).
-
 **Approval:**
 Run the single approval checkpoint before finalizing (per `../SKILL.md` `<user_approval_gate>`).
 </process>

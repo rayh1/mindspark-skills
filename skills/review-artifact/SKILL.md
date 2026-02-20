@@ -1,6 +1,6 @@
 ---
 name: review-artifact
-description: "Reviews SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations."
+description: "Reviews SKILL.md files and prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects skill vs prompt type via YAML frontmatter. Use when (1) auditing skills before deployment, (2) identifying improvement opportunities, (3) validating structure against quality standards, (4) reviewing prompt clarity and efficiency, (5) preparing artifacts for refactoring. Produces detailed reports with severity-tagged issues and prioritized actionable recommendations. Do NOT use for evolving artifacts after execution (use evolve-artifact instead) or for adding reliability patterns (use apply-patterns instead)."
 ---
 
 <interpretation_check>
@@ -132,9 +132,9 @@ Follow this exact sequence:
 2. For each artifact:
    a. Detect artifact type using type_detection logic
    b. Run appropriate analysis framework:
-      - If skill: shared checks (Temporal Analysis, Flow Mapping, Dead Code Identification, Writing Voice, Context Efficiency) + skill-specific checks (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check)
-      - If prompt: shared checks (Temporal Analysis, Flow Mapping, Dead Code Identification, Writing Voice, Context Efficiency) + prompt-specific checks (P-01 to P-20)
-      - Both types also run: Directive Extraction, Contradiction Detection, Freedom Calibration
+      - All types: run all 8 shared checks from references/analysis-framework-shared.md (Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency)
+      - If skill: also run skill-specific checks from references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check, Skill Category & MCP-Specific Checks)
+      - If prompt: also run prompt-specific checks from references/prompt-specific-checks.md (P-01 to P-20)
    - If multiple artifacts: iterate sequentially, produce complete report per artifact before proceeding to next
 3. Write full report to `{artifact-directory}/REVIEW-REPORT.md` (see references/output-format.md)
    - For consequential actions (moderate/breaking risk), include confidence assessment per <confidence_signal>
@@ -284,7 +284,7 @@ Assign severity to every identified issue based on impact.
 
 **Authoritative severity assignments** (see references/quality-standards-shared.md for details):
 
-- **CRITICAL:** Blocks correctness/triggering (missing "when to use", dead references, 3+ duplications)
+- **CRITICAL:** Blocks correctness/triggering or poses security risk (missing "when to use", dead references, 3+ duplications, XML in frontmatter, reserved name prefix)
 - **HIGH:** Significantly degrades quality (>700 lines, <20 words description, no structure)  
 - **MEDIUM:** Quality improvement needed (500-700 lines, <50/>200 words, missing TOC)
 - **LOW:** Polish/consistency (voice issues, vague naming, minor redundancy)
@@ -309,7 +309,16 @@ Load and apply checks systematically based on detected artifact type.
 
 **All artifacts:** Apply references/quality-standards-shared.md (universal criteria)
 
-**Check-to-report mapping:** Directive Extraction and Contradiction Detection feed → Critical Issues + Contradictions Found. Cross-File Redundancy + Context Efficiency feed → Redundancies. Temporal Analysis feeds → Outdated Content. Flow Mapping + Freedom Calibration feed → Unclear Flows. Structure/Trigger/Progressive Disclosure feed → Type-Specific Issues. Dead Code + Writing Voice feed → Line-by-Line Issues.
+**Check-to-report mapping:**
+
+| Check(s) | Report Section |
+|----------|---------------|
+| Directive Extraction, Contradiction Detection | Critical Issues + Contradictions Found |
+| Cross-File Redundancy, Context Efficiency | Redundancies |
+| Temporal Analysis | Outdated Content |
+| Flow Mapping, Freedom Calibration | Unclear Flows |
+| Structure Analysis, Trigger & Description Review, Progressive Disclosure | Type-Specific Issues |
+| Dead Code Identification, Writing Voice | Line-by-Line Issues |
 
 Work through frameworks systematically, documenting findings per references/output-format.md structure.
 </analysis_framework>

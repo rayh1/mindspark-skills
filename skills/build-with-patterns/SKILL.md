@@ -68,7 +68,7 @@ build-with-patterns supports two ways to provide inputs:
 </inputs_first>
 
 <step_contract>
-Follow this sequence (detailed in `references/core-passes.md`):
+Follow this sequence (detailed in `references/workflow-build-skill.md` or `references/workflow-build-prompt.md`):
 
 0. Input mode detection
 1. Target selection
@@ -127,6 +127,8 @@ Before drafting the final artifact:
 IMPORTANT: Wait for user response before proceeding. Do not make tool calls or begin artifact creation until user confirms or corrects the interpretation.
 
 Proceed only after user confirms or corrects these.
+
+Timing: Fires after step 4 (Draft steps), before step 5 (Assemble + validate). This is a holistic plan-level confirmation, separate from the per-pass confirmations in core-passes.md (Pass 1 contract check, Pass 2 inputs check).
 </interpretation_check>
 
 <assumption_registry>
@@ -195,21 +197,11 @@ This ensures user knows exactly where output is and what to do next.
 
 **User presentation:**
 - Default: validate internally, announce completion cleanly (see <post_build_protocol>)
-- Only present detailed multi-lens analysis if user explicitly requests artifact review
+- If requested: apply correctness / format / usability lenses
 - Focus on completion signal and next steps, not automatic quality report
 
 This keeps token overhead low while ensuring structural quality.
 </review_step>
-
-<lens>
-Analyze artifact from multiple perspectives:
-- **Correctness lens:** Does artifact correctly implement the requested behavior? Are inputs/outputs aligned? Do steps execute the goal?
-- **Format lens:** Does artifact match target type (skill XML tags + YAML vs prompt markdown)? Are required sections present? Structure valid?
-- **Usability lens:** Is artifact clear and executable? Will another agent understand it? Are examples/constraints sufficient?
-Per lens: findings + severity (critical/major/minor)
-Synthesis: merge findings, flag conflicts (e.g., high correctness but poor usability)
-Coverage: each lens must report during review step
-</lens>
 
 <mode_selection>
 workflow_options:
@@ -240,7 +232,7 @@ All domain knowledge in `references/`:
 **Workflows:** workflow-build-skill.md, workflow-build-prompt.md
 **Core methodology:** patterns-when-needed.md, tightening-methodology.md
 **Skill architecture:** skill-architecture.md (bundled resources, progressive disclosure, 500-line guideline)
-**Pattern details:** pattern-catalog.md, pattern-catalog-appendix.md
+**Pattern details:** pattern-catalog-appendix.md
 **Contracts & validation:** artifact-contracts.md, core-passes.md, validation-checklists.md
 **Examples:** worked-example-skill.md, worked-example-prompt.md
 **Format guidance:** core-passes.md (lines 24-32: format mapping)

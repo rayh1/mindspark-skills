@@ -4,6 +4,20 @@ This document describes the design file format for manually creating skill desig
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview) - Lines 21-30
+- [Required Structure](#required-structure) - Lines 32-75
+- [Optional Sections](#optional-sections) - Lines 77-150
+- [Section Details](#section-details) - Lines 152-270
+- [Examples](#examples) - Lines 272-435
+- [Format Variations](#format-variations) - Lines 437-485
+- [Tips for Creating Design Files](#tips-for-creating-design-files) - Lines 487-500
+- [Comparison with assess-skill-value](#comparison-with-assess-skill-value) - Lines 502-520
+- [Quick Start](#quick-start) - Lines 522-550
+
+---
+
 ## Overview
 
 **Design files are markdown documents that specify what to build.**

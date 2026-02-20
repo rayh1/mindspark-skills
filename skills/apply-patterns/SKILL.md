@@ -1,6 +1,6 @@
 ---
 name: apply-patterns
-description: "Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when (1) improving prompt determinism with quality gates and contracts, (2) adding scope control and stop conditions to skills, (3) analyzing pattern coverage gaps in existing SKILL.md files, or other reliability engineering tasks. Does not change core intent. Requires user approval before modifications."
+description: "Adds reliability patterns to a prompt or skill using gap-driven analysis. Reads target, detects missing patterns, proposes improvements based on actual gaps. Use when (1) improving prompt determinism with quality gates and contracts, (2) adding scope control and stop conditions to skills, (3) analyzing pattern coverage gaps in existing SKILL.md files, or other reliability engineering tasks. Does not change core intent. Requires user approval before modifications. Do NOT use when building a new skill/prompt from scratch (use build-with-patterns instead)."
 ---
 
 <quick_start>
@@ -58,9 +58,7 @@ Improve determinism and debuggability by adding reliability structure (not chang
 **Approach:**
 1. **Detect gaps:** Analyze target against tier-appropriate patterns
 2. **Assess impact:** Critical gaps (blocks correctness) vs nice-to-have improvements
-3. **Propose smartly:**
-   - Simple targets with few gaps → propose 2-4 patterns
-   - Complex targets with many gaps → propose 4-8 patterns, prioritized
+3. **Propose smartly:** Use complexity-appropriate counts (see [applicability-guide.md](references/applicability-guide.md) § Gap-Driven Selection Flow)
    - Already solid targets → acknowledge + suggest 0-2 optional improvements
 4. **Scale analysis:** Load comprehensive references only when gaps warrant deep investigation
 </objective>
@@ -109,7 +107,7 @@ For proposal counts by target complexity (simple/moderate/complex/solid), see [a
 See [pattern-catalog.md](references/pattern-catalog.md) § Tier 1 - Core for complete list and applicability criteria. Focus on patterns addressing detected gaps.
 
 **Tier 2/3 patterns:** Propose only when:
-- Tier 1 gaps addressed (or present)
+- Tier 1 gaps addressed (either already present in target, or being proposed in this batch)
 - Clear ROI for specific target characteristics
 - Tier 3 requires explicit justification
 
@@ -134,6 +132,7 @@ See [pattern-catalog.md](references/pattern-catalog.md) § Tier 1 - Core for com
 - **Skills approaching 500 lines:** Recommend moving detailed content (examples, reference material) to references/ directory instead of adding patterns to SKILL.md
 - **Skills with "when to use" sections in body:** Flag as ineffective (body loads AFTER triggering); recommend moving to frontmatter description field
 - **Duplicate content in SKILL.md and references/:** Flag violation of anti-duplication rule; recommend consolidating to references/
+- **Category 3 skills without MCP error handling:** Flag as HIGH gap — MCP failures are the primary failure mode for these skills; propose S-3 from pattern-catalog.md
 </decision_points>
 
 <step_contract>
