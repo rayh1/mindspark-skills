@@ -4,14 +4,16 @@ Checks that apply only to standalone prompt files (no YAML frontmatter with name
 
 ## Table of Contents
 
-1. [Structure Analysis (P-01 to P-05)](#1-structure-analysis) - Lines 20-100
-2. [Heading Quality (P-06 to P-10)](#2-heading-quality) - Lines 102-170
-3. [Content Efficiency (P-11 to P-15)](#3-content-efficiency) - Lines 172-250
-4. [Progressive Complexity (P-16 to P-20)](#4-progressive-complexity) - Lines 252-330
+1. [Structure Analysis (P-01 to P-05)](#1-structure-analysis) - Lines 14-80
+2. [Heading Quality (P-06 to P-10)](#2-heading-quality) - Lines 83-121
+3. [Content Efficiency (P-11 to P-15)](#3-content-efficiency) - Lines 124-178
+4. [Progressive Complexity (P-16 to P-20)](#4-progressive-complexity) - Lines 181-250
 
 ---
 
 ## 1. STRUCTURE ANALYSIS
+
+(See references/prompt-quality-standards.md § Heading Structure Excellence, § Section Organization, § Length Guidelines)
 
 Basic structural checks for prompt files:
 
@@ -80,6 +82,8 @@ Basic structural checks for prompt files:
 
 ## 2. HEADING QUALITY
 
+(See references/prompt-quality-standards.md § Heading Structure Excellence)
+
 Assess the quality and usefulness of headings:
 
 - [P-06] **Descriptive headings:**
@@ -118,6 +122,8 @@ Assess the quality and usefulness of headings:
 ---
 
 ## 3. CONTENT EFFICIENCY
+
+(See references/prompt-quality-standards.md § Content Efficiency, references/quality-standards-shared.md § Duplication Rule)
 
 Assess whether content is efficiently expressed:
 
@@ -173,6 +179,8 @@ Assess whether content is efficiently expressed:
 ---
 
 ## 4. PROGRESSIVE COMPLEXITY
+
+(See references/prompt-quality-standards.md § Progressive Complexity)
 
 Assess whether the prompt is organized for optimal comprehension:
 

@@ -3,20 +3,17 @@ Produce review report in this structure:
 
 ## Table of Contents
 
-1. [Executive Summary](#executive_summary) - Lines 4-12
-2. [Critical Issues](#critical_issues) - Lines 14-22
-3. [Contradictions Found](#contradictions_found) - Lines 24-32
-4. [Redundancies](#redundancies) - Lines 34-42
-5. [Outdated Content](#outdated_content) - Lines 44-52
-6. [Unclear Flows](#unclear_flows) - Lines 54-63
-7. [Type-Specific Issues](#type_specific_issues) - Lines 65-81
-8. [Structural Recommendations](#structural_recommendations) - Lines 83-98
-9. [Proposed New Structure](#proposed_new_structure) - Lines 100-123
-10. [Line-by-Line Issues](#line_by_line_issues) - Lines 125-132
-11. [Final Deliverable](#final_deliverable) - Lines 134-153
-12. [Severity Usage](#severity_usage) - Lines 155-185
-13. [Empty Section Handling](#empty_section_handling) - Lines 187-196
-14. [Addressable IDs](#addressable_ids) - Lines 198-211
+1. [Executive Summary](#executive_summary) - Lines 21-29
+2. [Critical Issues](#critical_issues) - Lines 31-39
+3. [Contradictions Found](#contradictions_found) - Lines 41-49
+4. [Redundancies](#redundancies) - Lines 51-59
+5. [Outdated Content](#outdated_content) - Lines 61-69
+6. [Unclear Flows](#unclear_flows) - Lines 71-80
+7. [Type-Specific Issues](#type_specific_issues) - Lines 82-98
+8. [Structural Recommendations](#structural_recommendations) - Lines 100-115
+9. [Proposed New Structure](#proposed_new_structure) - Lines 117-139
+10. [Line-by-Line Issues](#line_by_line_issues) - Lines 141-149
+11. [Final Deliverable](#final_deliverable) - Lines 152-170
 
 ---
 
@@ -171,6 +168,12 @@ After the review report, provide:
    - Which content moves where
    - Which content gets removed
 </final_deliverable>
+
+<!-- ================================================================
+     META-INSTRUCTIONS: Guidance for writing the report above.
+     The sections below are NOT report sections — they describe
+     how to format, tag, and structure the report content.
+     ================================================================ -->
 
 <severity_usage>
 **Using Severity Throughout the Report:**

@@ -4,11 +4,11 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
 
 ## Table of Contents
 
-1. [Structure Analysis](#1-structure-analysis) - Lines 20-90
-2. [Trigger & Description Review](#2-trigger--description-review) - Lines 92-180
-3. [Cross-File Redundancy](#3-cross-file-redundancy) - Lines 182-260
-4. [Progressive Disclosure Check](#4-progressive-disclosure-check) - Lines 262-400
-5. [Skill Category & MCP-Specific Checks](#5-skill-category--mcp-specific-checks)
+1. [Structure Analysis](#1-structure-analysis) - Lines 15-67
+2. [Trigger & Description Review](#2-trigger--description-review) - Lines 70-138
+3. [Cross-File Redundancy](#3-cross-file-redundancy) - Lines 141-223
+4. [Progressive Disclosure Check](#4-progressive-disclosure-check) - Lines 226-336
+5. [Skill Category & MCP-Specific Checks](#5-skill-category--mcp-specific-checks) - Lines 338-371
 
 ---
 
@@ -52,14 +52,14 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
   - **MEDIUM** severity if found (skills are for AI agents, not users)
   - Recommendation: Remove these files
 
-- [D-108] **Frontmatter security restrictions:**
+- [D-120] **Frontmatter security restrictions:**
   - Check `name` field: must NOT begin with "claude" or "anthropic" (reserved prefixes)
   - Check entire frontmatter block for XML angle brackets (`<` or `>`)
   - **CRITICAL** if name starts with "claude" or "anthropic" (reserved; violates Anthropic naming policy)
   - **CRITICAL** if frontmatter contains XML angle brackets (prompt injection risk: frontmatter is always loaded into Claude's system prompt — malicious or accidentally injected content can interfere with Claude's behavior in every conversation where the skill is active)
   - Security note: Unlike the SKILL.md body (loaded on demand), frontmatter is always in context. These are security restrictions, not style guidelines.
 
-- [D-109] **Skill name-to-folder consistency:**
+- [D-121] **Skill name-to-folder consistency:**
   - Read `name:` value from frontmatter
   - Compare against the actual folder/directory name containing SKILL.md
   - **HIGH** if they do not match (breaks install conventions and discoverability; skill may not install correctly)
@@ -102,7 +102,7 @@ Checks that apply only to SKILL.md files (artifacts with YAML frontmatter contai
   - **HIGH** if description is too generic to distinguish
   - **MEDIUM** if description could be more specific
 
-- [D-68] **Negative trigger presence** (overtriggering guard):
+- [D-125] **Negative trigger presence** (overtriggering guard):
   - When a skill is domain-scoped or has a sibling skill covering overlapping territory, check if the description contains explicit exclusions
   - Canonical pattern: `"... Do NOT use for [X] (use [other-skill] instead)."`
   - Example: `"Advanced statistical analysis for CSV. Do NOT use for simple data exploration (use data-viz skill instead)."`
@@ -157,6 +157,7 @@ Apply the Challenge Test to all content:
     - [ ] Does it show non-obvious domain behavior?
     - [ ] Does it anchor pattern recognition for data structures?
     - [ ] Is it a high-frequency operation?
+    - [ ] Does it guide decision-making at branching points?
     - If YES to any → acceptable functional duplication
     - If NO to all → flag as redundant duplication
   - Check specifically for redundant duplication (not cognitive anchors):
@@ -201,11 +202,7 @@ Apply the Challenge Test to all content:
   - **Step 2:** For each example, search all references/ files for same/similar content
   - **Step 3:** Classify duplication:
     - **Identical - Cognitive Anchor:** Same example in both, but serves cognitive function
-      - Apply cognitive anchor test (see § Exception: Cognitive Anchors):
-        - Shows non-obvious domain behavior?
-        - Anchors pattern recognition?
-        - High-frequency operation?
-        - Guides decision-making?
+      - Apply cognitive anchor test (see D-75 checklist above)
       - If YES to any → Acceptable (functional duplication)
       - If NO to all → proceed to classify as redundant
     - **Identical - Redundant:** Same example, code, or explanation with no cognitive function
@@ -344,17 +341,17 @@ Classify the skill type first, then apply category-appropriate checks.
 
 ### Category Classification
 
-- [D-111] **Classify skill category:**
+- [D-122] **Classify skill category:**
   - Read SKILL.md and identify which category best fits:
     - **Category 1 (Document & Asset Creation)**: Creates documents, designs, code artifacts; no external tools required beyond Claude's built-in capabilities
     - **Category 2 (Workflow Automation)**: Multi-step processes with validation gates; may use MCP but focus is on repeatable methodology
     - **Category 3 (MCP Enhancement)**: Explicitly orchestrates MCP server tools; adds workflow/knowledge layer on top of MCP access
   - Record category in review report (e.g., "Detected: Category 3 - MCP Enhancement")
-  - Apply D-112/D-113 only for Category 2/3 skills
+  - Apply D-123/D-124 only for Category 2/3 skills
 
 ### MCP-Specific Instruction Quality (Category 2/3 Only)
 
-- [D-112] **MCP error handling coverage:**
+- [D-123] **MCP error handling coverage:**
   - Check if skill instructions address:
     - [ ] Connection failures (e.g., "Connection refused", server not running — verify in Settings > Extensions)
     - [ ] Authentication failures (invalid/expired API keys, OAuth token refresh)
@@ -364,7 +361,7 @@ Classify the skill type first, then apply category-appropriate checks.
   - **MEDIUM** if error handling present but incomplete (covers connection but not auth, or vice versa)
   - Best practice that should be present: instructions to test MCP independently ("Ask Claude to call the MCP tool directly without the skill to isolate whether failure is in the skill or the MCP connection itself")
 
-- [D-113] **MCP tool name references:**
+- [D-124] **MCP tool name references:**
   - Identify all MCP tool names explicitly mentioned in SKILL.md (e.g., `create_customer`, `setup_payment_method`)
   - Flag names that appear malformed (spaces, inconsistent casing)
   - **MEDIUM** if tool names are used without noting they are case-sensitive

@@ -4,13 +4,13 @@ Quality standards specific to standalone prompt files. For universal standards, 
 
 ## Table of Contents
 
-1. [Prompts vs Skills: Key Differences](#prompts-vs-skills-key-differences) - Lines 18-70
-2. [Heading Structure Excellence](#heading-structure-excellence) - Lines 72-140
-3. [Section Organization](#section-organization) - Lines 142-210
-4. [Content Efficiency](#content-efficiency) - Lines 212-280
-5. [Progressive Complexity](#progressive-complexity) - Lines 282-350
-6. [Length Guidelines](#length-guidelines) - Lines 352-410
-7. [Prompt Quality Checklist](#prompt-quality-checklist) - Lines 412-480
+1. [Prompts vs Skills: Key Differences](#prompts-vs-skills-key-differences) - Lines 17-58
+2. [Heading Structure Excellence](#heading-structure-excellence) - Lines 60-128
+3. [Section Organization](#section-organization) - Lines 130-192
+4. [Content Efficiency](#content-efficiency) - Lines 194-244
+5. [Progressive Complexity](#progressive-complexity) - Lines 246-325
+6. [Length Guidelines](#length-guidelines) - Lines 327-371
+7. [Prompt Quality Checklist](#prompt-quality-checklist) - Lines 373-421
 
 ---
 

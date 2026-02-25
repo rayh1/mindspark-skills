@@ -4,14 +4,14 @@ Quality standards specific to SKILL.md files. For universal standards, see quali
 
 ## Table of Contents
 
-1. [Progressive Disclosure: 3-Level Loading](#progressive-disclosure-3-level-loading) - Lines 20-120
-2. [Resource Type Selection Criteria](#resource-type-selection-criteria) - Lines 122-230
-3. [Reference Organization Patterns](#reference-organization-patterns) - Lines 232-350
-4. [Description Field Excellence](#description-field-excellence) - Lines 352-480
-5. [Split Strategy (500-Line Guideline)](#split-strategy-500-line-guideline) - Lines 482-600
-6. [Frontmatter Complete Schema](#frontmatter-complete-schema)
-7. [MCP Skill Quality Standards](#mcp-skill-quality-standards)
-8. [Skill Quality Checklist](#skill-quality-checklist)
+1. [Progressive Disclosure: 3-Level Loading](#progressive-disclosure-3-level-loading) - Lines 18-100
+2. [Resource Type Selection Criteria](#resource-type-selection-criteria) - Lines 102-184
+3. [Reference Organization Patterns](#reference-organization-patterns) - Lines 186-264
+4. [Description Field Excellence](#description-field-excellence) - Lines 266-368
+5. [Split Strategy (500-Line Guideline)](#split-strategy-500-line-guideline) - Lines 370-425
+6. [Frontmatter Complete Schema](#frontmatter-complete-schema) - Lines 427-479
+7. [MCP Skill Quality Standards](#mcp-skill-quality-standards) - Lines 481-524
+8. [Skill Quality Checklist](#skill-quality-checklist) - Lines 526-573
 
 ---
 
@@ -419,8 +419,6 @@ Not a hard limit, but a forcing function:
 ❌ SKILL.md reduced to 20 lines, everything in references/
 ✓ SKILL.md contains complete workflow (100-300 lines)
 ```
-
----
 
 ---
 

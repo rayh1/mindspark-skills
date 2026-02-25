@@ -4,14 +4,15 @@ Universal checks applicable to both skills and prompts.
 
 ## Table of Contents
 
-1. [Directive Extraction](#1-directive-extraction) - Lines 20-45
-2. [Contradiction Detection](#2-contradiction-detection) - Lines 47-70
-3. [Temporal Analysis](#3-temporal-analysis) - Lines 72-95
-4. [Flow Mapping](#4-flow-mapping) - Lines 97-120
-5. [Freedom Calibration](#5-freedom-calibration) - Lines 122-155
-6. [Dead Code Identification](#6-dead-code-identification) - Lines 157-180
-7. [Writing Voice](#7-writing-voice) - Lines 182-225
-8. [Context Efficiency](#8-context-efficiency) - Lines 227-280
+1. [Directive Extraction](#1-directive-extraction)
+2. [Contradiction Detection](#2-contradiction-detection)
+3. [Temporal Analysis](#3-temporal-analysis)
+4. [Flow Mapping](#4-flow-mapping)
+5. [Freedom Calibration](#5-freedom-calibration)
+6. [Dead Code Identification](#6-dead-code-identification)
+7. [Writing Voice](#7-writing-voice)
+8. [Context Efficiency](#8-context-efficiency)
+9. [Domain Correctness](#9-domain-correctness)
 
 ---
 
@@ -61,6 +62,31 @@ Compare all extracted directives for conflicts:
 - [D-73] **Check cross-file consistency (skills only):**
   - Reference files contradict main file?
   - Different reference files contradict each other?
+
+- [D-73b] **Check intra-file contradictions:**
+  - Does any file contradict its own content?
+  - Section ordering in the file vs ordering described/specified within that file
+  - TOC line numbers match actual heading locations
+  - Rule A within a file conflicting with Rule B in the same file
+  - Examples or templates contradicting the prose that describes them
+
+- [D-73b-ii] **Template value completeness:**
+  - When a template or example shows enumerated options (e.g., severity levels, status values, field choices), cross-check against all documented valid values elsewhere in the artifact
+  - Flag: a template listing "A / B / C" when the prose also documents "D" as a valid value (omission from template)
+  - Example: severity template showing "Critical / Major / Minor / Info" but omitting "—" (dash for no concerns), which is a documented valid value
+  - **MEDIUM** severity if omitted value is commonly used; **LOW** if rare edge case
+
+- [D-73c] **Check cross-rule strictness consistency:**
+  - When two directives address the same behavior, do they agree on strictness?
+  - One rule requiring X (e.g., "section must be present") while a related rule allows omitting X (e.g., "omit section if empty")
+  - Quality gates expecting content that other directives say to skip
+  - Catch pattern: extract each "must/required/always" directive and each "omit/skip/optional" directive, cross-reference for same-topic conflicts
+
+- [D-73d] **Check vocabulary/terminology consistency:**
+  - When the same concept (enumerated reasons, status values, section names) appears in multiple locations, is the full vocabulary consistent?
+  - Example: if skip reasons are enumerated in file A, do all skip reasons used in files B and C also appear in A's list?
+  - Example: if section ordering is stated in one place, do all other mentions of section order match?
+  - Flag: a value introduced in one file (e.g., a new skip reason in a fallback chain) but absent from the canonical list or example table elsewhere
 
 - [D-74] **Document each contradiction:**
   - Quote both conflicting directives
@@ -199,6 +225,11 @@ Find instructions or content that will never be executed/used:
   - Calls to functions/scripts that don't exist
   - **CRITICAL** severity for missing referenced files
 
+- [D-99b] **Section-level cross-references:**
+  - When an artifact uses `§ Section Name`, `see file.md § Heading`, or similar notation referencing a specific section within a file, verify the target heading exists as an actual `##`/`###` heading in the referenced file
+  - Also check: inline references like "see document-format.md § When no concerns" — does that exact heading exist?
+  - **MEDIUM** severity for section references that don't resolve to actual headings (misleading navigation)
+
 - [D-100] **Unused parameters/options:**
   - Documented options that are never referenced
   - Parameters defined but never used
@@ -278,10 +309,58 @@ Assess whether the artifact uses context efficiently:
   - **LOW** severity if 3+ instances (scannability improvement)
   - Note: Bulleted lists are more scannable and context-efficient
 
-**The Challenge Test:**
-For every piece of content, ask:
-1. "Does Claude really need this explanation?"
-2. "Does this paragraph justify its token cost?"
-3. "Is this information Claude can already infer from context?"
+**The Challenge Test:** (see quality-standards-shared.md § The Challenge Test for full definition)
+Apply the three questions (need? justify? inferable?). If content fails → flag for removal/condensing.
 
-If #1 or #2 is "no," or #3 is "yes" → flag for removal/condensing.
+---
+
+## 9. DOMAIN CORRECTNESS
+
+Verify the artifact's instructions are semantically correct for its stated purpose:
+
+- [D-112] **Semantic correctness of directives:**
+  - For each major workflow step, ask: "Is this instruction logically correct for what the artifact claims to do?"
+  - Check for instructions that contradict the artifact's stated scope or purpose
+  - Example: a "staged changes" scope that includes untracked files (untracked = not staged)
+  - Example: a "skip all markdown" rule that makes a later classification layer for markdown vestigial
+  - **HIGH** severity if an instruction is semantically wrong for its stated purpose
+  - **MEDIUM** severity if an instruction is misleading or could cause confusion
+
+- [D-113] **Unspecified edge cases:**
+  - For each branching point or enumerated category, ask: "What happens in the case not listed?"
+  - Look for:
+    - Display/output formats for error states (e.g., what text goes in a table cell when a value is empty?)
+    - Boundary conditions not addressed (e.g., what if a directory contains files that don't match expected patterns?)
+    - Ambiguous specifications (e.g., "line range" without specifying old file vs new file vs diff output)
+  - **Systematic enumeration method** (apply all four):
+    1. **Output fields/columns:** List every output field, table column, and template placeholder in the artifact. For each, verify the spec covers: what value when empty, what value on error, what value at boundary conditions.
+    2. **User-facing text:** List every user-facing text string or message. Verify each is fully specified (no vague words like "stats", "info", "details" without definition).
+    3. **Parse/find operations:** List every operation that reads or searches input (file finding, pattern matching, parsing). Verify behavior is specified for: malformed input, unexpected format, no matches, partial matches.
+    4. **Enumerated states/values:** For each set of enumerated values (statuses, severity levels, skip reasons), verify all valid values are documented and no implicit "other" case is unhandled.
+  - **MEDIUM** severity per unspecified edge case that a reasonable implementer would need to resolve
+  - **LOW** severity for minor ambiguities
+
+- [D-114] **Implicit dependencies:**
+  - Check if instructions rely on external behavior not documented in the artifact
+  - Examples:
+    - Git default flags (e.g., `-M` for rename detection) relied upon without mention
+    - Tool version behavior assumed without stating version requirements
+    - Example lists presented ambiguously — could be read as exhaustive when they're illustrative, or vice versa
+  - **MEDIUM** severity if implicit dependency could cause silent failure
+  - **LOW** severity if implicit dependency is a reasonable default
+
+- [D-115] **Logical preemption (dead content via other rules):**
+  - Check if any rule/pattern renders another rule/pattern logically dead
+  - Different from D-97 (unreachable instructions): logical preemption involves two valid rules where one makes the other vestigial in practice
+  - Example: a pre-classification skip rule catching all files that a later classification category would match
+  - **LOW** severity (content waste, not functional failure)
+  - Recommendation: note the preemption, suggest consolidation or removal of vestigial content
+
+- [D-112b] **Scope claim verification:**
+  - For each assertion in scope_fence, description, or purpose statement, verify the claim against actual implementation
+  - Check patterns:
+    - "Nothing is X" → confirm nothing is X (e.g., "nothing is skipped" but skill has skip rules → contradiction)
+    - "Includes Y fields" → confirm those fields exist in the actual specification (e.g., scope says "failure modes" but no such annotation field exists)
+    - "All Z are reviewed" → confirm no Z is silently excluded
+  - **MEDIUM** severity if scope claim contradicts implementation (misleading to both users and the executing LLM)
+  - **LOW** severity if scope claim is imprecise but not outright wrong

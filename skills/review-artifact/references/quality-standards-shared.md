@@ -4,10 +4,10 @@ Universal quality standards applicable to both skills and prompts.
 
 ## Table of Contents
 
-1. [Context Window Philosophy](#context-window-philosophy) - Lines 15-85
-2. [Duplication Rule](#duplication-rule) - Lines 87-150
-3. [Writing Voice Guidelines](#writing-voice-guidelines) - Lines 152-210
-4. [Quality Assessment Principles](#quality-assessment-principles) - Lines 212-280
+1. [Context Window Philosophy](#context-window-philosophy) - Lines 14-82
+2. [Duplication Rule](#duplication-rule) - Lines 84-186
+3. [Writing Voice Guidelines](#writing-voice-guidelines) - Lines 188-256
+4. [Quality Assessment Principles](#quality-assessment-principles) - Lines 258-328
 
 ---
 

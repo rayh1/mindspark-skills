@@ -14,7 +14,10 @@ Before starting:
 <type_detection>
 1. Read first 10 lines of target file
 2. Check for YAML frontmatter (starts with `---` on line 1)
-3. If frontmatter present with both `name:` AND `description:` fields → **skill**, otherwise → **prompt**
+3. If frontmatter present:
+   a. If both `name:` AND `description:` fields → **skill**
+   b. If `name:` present but `description:` missing → **skill** (D-60 will flag missing description as CRITICAL)
+   c. Otherwise → **prompt**
 4. If no frontmatter → **prompt**
 5. Report detected type in interpretation check
 6. Apply appropriate framework:
@@ -58,6 +61,9 @@ Validation:
 
 **Derived inputs (automatic):**
 - `artifact_type`: Determined by type_detection logic (skill or prompt)
+
+**Optional inputs:**
+- `max_cycles`: Maximum post-fix review-fix cycles (default: 2, upper bound: 5)
 
 **Assumptions (list explicitly if used):**
 - If given folder path, review all SKILL.md files under it (for skills)
@@ -132,9 +138,16 @@ Follow this exact sequence:
 2. For each artifact:
    a. Detect artifact type using type_detection logic
    b. Run appropriate analysis framework:
-      - All types: run all 8 shared checks from references/analysis-framework-shared.md (Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency)
+      - All types: run all 9 shared checks from references/analysis-framework-shared.md (Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness)
       - If skill: also run skill-specific checks from references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check, Skill Category & MCP-Specific Checks)
       - If prompt: also run prompt-specific checks from references/prompt-specific-checks.md (P-01 to P-20)
+   c. For skills with reference files, analyze each reference file individually (**per-file tracking required**):
+      - Enumerate all reference files. For EACH file, report results for:
+        - [D-126] Tag validation: check for orphaned/stray XML tags (opening without closing, closing without opening). **Disambiguation warning:** the Read tool wraps its output in XML-like tags — a `</output>` appearing after the last line of a file is the Read tool's output wrapper, not file content. Before flagging any suspected orphaned tag at a file boundary, re-read the file with an offset to confirm the tag exists in the actual file content.
+        - [D-127] Internal consistency: verify TOC line numbers match actual heading locations, section ordering within the file matches any ordering the file describes
+        - Contradiction Detection (D-73b intra-file) applied to this file
+        - Domain Correctness (D-115 logical preemption) across this file and SKILL.md
+      - Verify: number of files analyzed matches total reference file count (G10)
    - If multiple artifacts: iterate sequentially, produce complete report per artifact before proceeding to next
 3. Write full report to `{artifact-directory}/REVIEW-REPORT.md` (see references/output-format.md)
    - For consequential actions (moderate/breaking risk), include confidence assessment per <confidence_signal>
@@ -142,7 +155,16 @@ Follow this exact sequence:
 5. In chat, provide: confirmation, artifact type, file path, health score with severity breakdown, and prioritized action list
 6. Ask user which actions to execute using AskUserQuestion
 7. Execute the selected actions (if any; if none selected, complete successfully)
-8. Verify execution → re-read modified file(s), confirm all selected actions applied correctly, check for syntax errors (YAML frontmatter, XML tags)
+8. Post-fix review-fix cycle (bounded by `max_cycles`, default 2):
+   a. Re-read modified file(s) fully
+   b. Confirm all selected actions applied correctly
+   c. Run regression checks:
+      - Structural: YAML frontmatter valid, XML tags balanced, markdown structure intact
+      - Semantic: no new contradictions introduced, content coherence preserved, cross-references valid
+      - Integration: fixes don't conflict with unchanged sections
+   d. If issues found and cycle < max_cycles → fix issues, increment cycle, go to (a)
+   e. If no issues found → report PASS with cycle count
+   f. If max_cycles reached with issues remaining → report remaining issues in summary
 </step_contract>
 
 <decision_points>
@@ -187,12 +209,29 @@ Before finalizing the report and chat summary, verify all gates:
   - Example pattern shown when helpful (good vs bad from standards)
 
 **Execution Verification Gate:**
-- **G8 Execution Gate:** If actions were executed (step 7), verify after step 8:
+- **G8 Execution Gate:** If actions were executed (step 7), verify per cycle in step 8:
   - All selected action IDs successfully applied
   - Modified files readable and valid (check YAML frontmatter, XML tags)
   - No syntax breaks introduced
   - Changes match intended action descriptions
-  - Report verification results in final summary
+  - No regressions: applied fixes don't introduce new contradictions, break cross-references, or conflict with unchanged sections
+  - Report verification results per cycle (cycle number, issues found, fixes applied)
+  - Final status: PASS (all clean) or REMAINING_ISSUES (at max_cycles)
+
+**Domain Correctness Application Gate:**
+- **G9 Domain Correctness Gate:** After running Domain Correctness checks (D-112 through D-115), verify:
+  - Each D-112 example pattern was explicitly cross-checked against the target artifact (report: "checked — applies/does not apply" per example)
+  - D-113 was applied systematically: all output fields, table columns, user-facing text strings, and parse/find operations enumerated and checked for specification completeness
+  - D-115 was applied across all classification/ordering/skip rules for logical preemption
+  - If any D-112/D-113 example is not reported on → gate fails
+
+**Reference File Analysis Gate:**
+- **G10 Reference File Coverage Gate:** After step 2c (reference file content analysis), verify:
+  - Every reference file was individually analyzed (enumerate: filename + result for each check)
+  - File count analyzed must match total reference file count
+  - Per-file results reported: tag validation, TOC accuracy (if applicable), intra-file contradictions
+  - If any reference file was not analyzed → gate fails
+  - If the artifact has no reference files, G10 is automatically satisfied
 
 Evidence capture guidance (for G2/G3):
 - Capture file + line number for each directive and quoted evidence
@@ -203,17 +242,19 @@ Evidence capture guidance (for G2/G3):
 Analyze findings from multiple perspectives:
 
 - **Correctness lens:** Does this pattern/directive prevent errors or ambiguity?
-  - Report: findings + severity (critical/major/minor)
+  - Report: findings + severity (CRITICAL/HIGH/MEDIUM/LOW)
 
 - **Integration lens:** Conflicts with existing structure? Duplicates content?
-  - Report: findings + severity (critical/major/minor)
+  - Report: findings + severity (CRITICAL/HIGH/MEDIUM/LOW)
 
 - **ROI lens:** Does value (reliability gain) exceed overhead (token cost)?
-  - Report: findings + severity (critical/major/minor)
+  - Report: findings + severity (CRITICAL/HIGH/MEDIUM/LOW)
 
 **Synthesis:** Merge findings across lenses, flag conflicts (e.g., high correctness but low ROI)
 
 **Coverage requirement:** Each lens must report for critical issues and contradictions
+
+**Report integration:** Lens findings are not a separate report section. Integrate them into Critical Issues and Contradictions Found sections, prefixing relevant findings with the lens label (e.g., "[ROI lens] This pattern adds ~200 tokens overhead for marginal reliability gain").
 </lens>
 
 <addressable_output>
@@ -226,6 +267,10 @@ Assign unique IDs to output items for follow-up reference:
 
 <confidence_signal>
 For consequential recommendations (moderate/breaking risk), include confidence assessment:
+
+**Risk definitions:**
+- **Moderate risk:** Changes existing behavior or structure but is reversible (e.g., restructuring sections, consolidating content, updating references)
+- **Breaking risk:** Changes that could alter the artifact's core functionality or invalidate existing workflows (e.g., removing sections other artifacts depend on, changing execution order, modifying scope)
 
 **Thresholds:**
 - High (>85%): Recommendation is well-supported, low ambiguity
@@ -254,29 +299,31 @@ For consequential recommendations (moderate/breaking risk), include confidence a
 </confidence_signal>
 
 <review_step>
-After completing all steps, perform holistic review:
+After completing all steps, perform holistic validation:
 
 **Criteria:**
 - All steps in step_contract completed
 - Report file(s) written to correct location(s)
-- All quality gates (G1-G8) passed
+- All quality gates (G1-G10) passed
 - All identified issues tagged with severity ([CRITICAL], [HIGH], [MEDIUM], [LOW])
 - Health score calculated correctly using severity_framework formula
 - Chat summary includes: artifact type, file path, health score, action list
-- If actions were selected: verify execution completed successfully (G8) and report verification results
+- If actions were selected: post-fix review-fix cycles completed (step 8) with results reported
 
-**Max cycles:** 1
+**Max validation passes:** 2
 
-**Per cycle:**
+**Per pass:**
 1. Identify issues against criteria
 2. Fix issues
 3. Re-check criteria
 
 **Exit conditions:**
 - No issues found, OR
-- Max cycles reached
+- Max passes reached
 
-**If issues remain at max_cycles:** Report them in chat output and note in final summary
+**If issues remain at max passes:** Report them in chat output and note in final summary
+
+**Note:** These validation passes check the overall process output (report completeness, gate compliance). The post-fix review-fix cycles in step 8 (bounded by `max_cycles`) handle artifact-level regression detection separately.
 </review_step>
 
 <severity_framework>
@@ -289,7 +336,7 @@ Assign severity to every identified issue based on impact.
 - **MEDIUM:** Quality improvement needed (500-700 lines, <50/>200 words, missing TOC)
 - **LOW:** Polish/consistency (voice issues, vague naming, minor redundancy)
 
-**Health Score:** 2+ CRITICAL → Critical 🔴; 0-1 CRITICAL + 3+ HIGH → Needs Work 🟡; 0 CRITICAL + 0-2 HIGH → Good 🟢; 0 CRITICAL + 0 HIGH + 0-2 MEDIUM → Excellent ✨
+**Health Score (evaluate in order, first match wins):** 2+ CRITICAL → Critical 🔴; 1 CRITICAL or 3+ HIGH → Needs Work 🟡; 0 CRITICAL + 1-2 HIGH → Good 🟢; 0 CRITICAL + 0 HIGH + 3+ MEDIUM → Good 🟢; 0 CRITICAL + 0 HIGH + 0-2 MEDIUM → Excellent ✨
 
 **In reports:** Tag every issue with severity [CRITICAL], [HIGH], [MEDIUM], or [LOW]
 </severity_framework>
@@ -298,12 +345,12 @@ Assign severity to every identified issue based on impact.
 Load and apply checks systematically based on detected artifact type.
 
 **Skills:**
-- Shared: references/analysis-framework-shared.md (all 8 sections: Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency)
-- Skill-specific: references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check)
+- Shared: references/analysis-framework-shared.md (all 9 sections: Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness)
+- Skill-specific: references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check, Skill Category & MCP-Specific Checks)
 - Standards: references/skill-quality-standards.md
 
 **Prompts:**
-- Shared: references/analysis-framework-shared.md (all 8 sections)
+- Shared: references/analysis-framework-shared.md (all 9 sections)
 - Prompt-specific: references/prompt-specific-checks.md (P-01 to P-20)
 - Standards: references/prompt-quality-standards.md
 
@@ -317,8 +364,9 @@ Load and apply checks systematically based on detected artifact type.
 | Cross-File Redundancy, Context Efficiency | Redundancies |
 | Temporal Analysis | Outdated Content |
 | Flow Mapping, Freedom Calibration | Unclear Flows |
-| Structure Analysis, Trigger & Description Review, Progressive Disclosure | Type-Specific Issues |
+| Structure Analysis, Trigger & Description Review, Progressive Disclosure, Skill Category & MCP-Specific Checks | Type-Specific Issues |
 | Dead Code Identification, Writing Voice | Line-by-Line Issues |
+| Domain Correctness | Critical Issues + Unclear Flows |
 
 Work through frameworks systematically, documenting findings per references/output-format.md structure.
 </analysis_framework>
@@ -328,7 +376,7 @@ Work through frameworks systematically, documenting findings per references/outp
 - Step Contract complete for all targets
 - All targets analyzed through the appropriate framework
 - Output artifacts + chat summary produced per `output_schema`
-- All Quality Gates pass (G1-G8)
+- All Quality Gates pass (G1-G10)
 - Final Deliverable section produced
 - User has been asked which actions to execute
 - Selected actions have been executed and verified (if any)

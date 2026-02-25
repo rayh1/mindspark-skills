@@ -22,6 +22,8 @@ Patterns are organized into three tiers by priority. See [pattern-catalog.md](re
 - Always load: minimal-templates.md
 - Load as needed: applicability-guide.md (for tier decisions)
 - Load for comprehensive: llmprog.md + pattern-catalog.md (when gaps are complex)
+- Load before presenting proposal: approval-templates.md
+- Load before writing final report: output-templates.md
 
 **Structure-Only Improvements:**
 Patterns add reliability structure (inputs, contracts, validation) without changing the target's core intent or behavior. When patterns are added, remove any original prose content that duplicates or is superseded by the structured patterns to eliminate redundancy.

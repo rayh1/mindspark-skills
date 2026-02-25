@@ -33,6 +33,9 @@ This output demonstrates understanding and catches misalignment early.
 **Derived (automatic):**
 - `artifact_type`: Determined by type_detection logic (skill or prompt)
 
+**Optional:**
+- `max_cycles`: Maximum post-fix review-fix cycles (default: 2, upper bound: 5)
+
 **Validation:**
 - Conversation contains artifact execution or discussion
 - Target file exists and is readable
@@ -51,7 +54,15 @@ This output demonstrates understanding and catches misalignment early.
 4. **Present proposal** → show Learnings (with severity), Recommendations (with impact/risk/standard/confidence), Filtered items
 5. **User approval gate** → [approve all] | [select subset: R-1, R-3...] | [analysis only]
 6. **Apply chosen recommendations** → edit artifact file (skip if analysis only)
-7. **Verify** → two-tier review (structural + semantic + pattern structure)
+7. **Post-fix review-fix cycle** (bounded by `max_cycles`, default 2):
+   a. Re-read modified artifact fully
+   b. Run regression checks:
+      - Structural: XML tags balanced, YAML frontmatter valid, markdown structure intact, no duplicate sections
+      - Semantic: each applied recommendation addresses its linked learning, no regressions in existing patterns, new content integrates coherently
+      - Pattern structure: quality gates follow consistent format, steps maintain sequence integrity
+   c. If issues found and cycle < max_cycles → fix issues, increment cycle, go to (a)
+   d. If no issues found → report PASS with verification results per recommendation
+   e. If max_cycles reached with issues remaining → report remaining issues in summary
 </step_contract>
 
 <decision_points>
@@ -195,9 +206,10 @@ On analysis only: skip Steps 6-7, report analysis results without file edits
 - Each recommendation cites a quality standard
 - All severity/impact/risk assignments present
 
-**G4 (after Step 7): Applied changes validated?**
-- See <review_step> for detailed validation method (structural + semantic + pattern structure)
-- Verify all quality checks pass before completion
+**G4 (after Step 7): Applied changes validated through review-fix cycles?**
+- See <review_step> for iterative validation method (structural + semantic + pattern structure per cycle)
+- Per cycle: all checks pass or issues fixed
+- Final status: PASS (all clean) or REMAINING_ISSUES (at max_cycles with unresolved issues reported)
 
 If gate fails: filter out low-quality items → re-check; else report issue
 </quality_gates>
@@ -279,7 +291,11 @@ Report findings from each lens with severity before extracting learnings. Findin
 </scope_fence>
 
 <review_step>
-**Tier 1 - Structural (max_cycles: 1):**
+**Post-fix review-fix cycle** (bounded by `max_cycles`, default 2):
+
+**Per cycle — check all criteria:**
+
+*Structural:*
 - Applied changes don't break XML tags or markdown structure
 - Type-specific structure valid:
   - Skills: YAML frontmatter has name + description
@@ -287,26 +303,35 @@ Report findings from each lens with severity before extracting learnings. Findin
 - Recommendations integrate coherently with existing content
 - No duplicate sections added
 
-**Tier 2 - Semantic (after tier_1 passes):**
+*Semantic:*
 - Each applied recommendation addresses its linked learning
 - If learning was about a failure, verify fix would prevent it
 - New patterns align with existing artifact conventions
 - No regressions introduced (existing patterns still work)
 - Completeness: all parts of recommendation implemented
 
-**Validation method:**
+*Pattern structure:*
+- Quality gates follow consistent format as existing gates
+- Steps maintain sequence integrity (no gaps, no out-of-order references)
+- Pattern sections use canonical labels and structure
+
+*Validation method:*
 - Cross-reference: [R-1] addresses [L-1]? Check that L-1's problem is solved
 - Consistency: new quality gates follow same format as other patterns
 - Simulation: if L-1 was "failed when X", would new code catch X?
 - Type-specific checks: YAML valid for skills, headings correct for prompts
 
-**Exit conditions:**
-- tier_1 passes + tier_2 passes → done
-- max_cycles: 2 (1 fix attempt per tier)
-- If issues remain: report in summary with recommendation status
+**Cycle flow:**
+1. Re-read modified artifact fully
+2. Run all checks (structural + semantic + pattern structure)
+3. If issues found and cycle < max_cycles → fix issues, increment cycle, go to (1)
+4. If no issues found → PASS
+5. If max_cycles reached with issues remaining → report remaining issues
 
 **Output in summary:**
 - verification_results: `[R-1] ✓ solves L-1 | [R-2] ⚠️ partial (needs X)`
+- cycle_count: number of cycles used
+- status: PASS | REMAINING_ISSUES
 </review_step>
 
 <addressable_output>
