@@ -13,6 +13,8 @@ Universal checks applicable to both skills and prompts.
 7. [Writing Voice](#7-writing-voice)
 8. [Context Efficiency](#8-context-efficiency)
 9. [Domain Correctness](#9-domain-correctness)
+10. [Model Agnosticism](#10-model-agnosticism)
+11. [Determinism Analysis](#11-determinism-analysis)
 
 ---
 
@@ -364,3 +366,70 @@ Verify the artifact's instructions are semantically correct for its stated purpo
     - "All Z are reviewed" → confirm no Z is silently excluded
   - **MEDIUM** severity if scope claim contradicts implementation (misleading to both users and the executing LLM)
   - **LOW** severity if scope claim is imprecise but not outright wrong
+
+---
+
+## 10. MODEL AGNOSTICISM
+
+Verify the artifact does not hardcode references to specific LLM models when referring to the executing agent:
+
+- [D-116] **Literal LLM name references:**
+  - Scan all artifact text for literal model/vendor names used to refer to the executing model:
+    - Brand names: "Claude", "ChatGPT", "GPT", "Gemini", "Copilot", "LLaMA", "Mistral", "Grok"
+    - Vendor names as model reference: "Anthropic", "OpenAI" (when referring to the executing model, not as factual context)
+  - For each occurrence, check context:
+    - Referring to the executing model (e.g., "Ask Claude to...", "Claude will...") → **flag**
+    - Factual or comparative context (e.g., "compatible with Claude and GPT") → acceptable
+    - Product names (e.g., "Claude Code" the CLI tool) → acceptable
+    - Co-Authored-By attribution lines → acceptable
+    - Skills explicitly about a specific LLM API (e.g., a skill for calling the Claude API) → acceptable
+  - Recommended replacements:
+    - "Claude" / "ChatGPT" → "the model", "the LLM", "the assistant"
+    - "Ask Claude to..." → "Ask the model to..."
+    - "Claude will analyze..." → "The model will analyze..."
+  - **MEDIUM** severity per occurrence (portability/coupling issue)
+  - **HIGH** if 5+ occurrences in the same artifact (systematic coupling)
+  - Rationale: Skills should be model-agnostic to remain portable across LLM backends
+
+---
+
+## 11. DETERMINISM ANALYSIS
+
+Identify workflow steps that are deterministic (output fully predictable from input) and would be more reliable, faster, and cheaper as scripts rather than LLM instructions.
+
+- [D-117] **Step-level determinism scan:**
+  - For each numbered step in the step_contract (or equivalent workflow), classify as:
+    - **LLM-dependent**: requires judgment, interpretation, generation, synthesis, or world knowledge
+    - **Deterministic**: output is fully predictable from input without requiring judgment
+  - Deterministic indicators:
+    - Fixed file operations (mkdir, cp, mv, chmod, file creation from templates)
+    - Template substitution with known variables
+    - grep/sed/awk pipelines with fixed patterns
+    - JSON/YAML/CSV reshaping with known schemas
+    - API calls with fixed parameters (no judgment needed)
+    - String formatting, path construction, concatenation
+    - Conditional logic with objectively computable conditions (file existence, string matching)
+  - Report: list each step with its classification
+
+- [D-118] **Partially deterministic skill (script extraction opportunity):**
+  - If some steps are deterministic but others require LLM reasoning:
+    - Count deterministic vs LLM-dependent steps
+    - For each deterministic step, recommend extraction to a companion script in scripts/
+    - The skill's step_contract should call the script via Bash instead of describing the deterministic operation in prose
+  - **MEDIUM** severity if 3+ deterministic steps could be extracted to scripts
+  - **LOW** severity if 1-2 deterministic steps could be extracted
+  - Benefits: faster execution, zero hallucination risk on mechanical steps, lower token cost
+
+- [D-119] **Fully deterministic skill (should be a script):**
+  - If ALL steps are deterministic (no step requires LLM judgment):
+    - The entire skill should be rewritten as a shell script or Python script
+    - A skill wrapper around purely deterministic logic wastes tokens and adds hallucination risk for zero benefit
+  - **HIGH** severity — the artifact is fundamentally the wrong tool for the job
+  - Recommendation: "Rewrite as a script. This workflow requires no LLM reasoning."
+
+- [D-119b] **Near-deterministic skill (minimal LLM dependency):**
+  - If only 1 step requires LLM reasoning and 4+ steps are deterministic:
+    - Flag as near-deterministic
+    - Consider whether the single LLM step justifies the overhead of a full skill
+    - Alternative: write a script that calls the LLM API for just that one step
+  - **MEDIUM** severity — borderline case worth flagging for user judgment

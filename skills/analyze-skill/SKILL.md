@@ -45,20 +45,21 @@ Analyze skills comprehensively: evaluate their value using a 7-dimension framewo
 **For text descriptions (proposed skills):**
 1. Parse input → identify as text description
 2. Reformulate understanding → present to user, wait for confirmation
-3. Evaluate 7 dimensions → score each 0/1/2 with rationale
-4. Calculate total & verdict → sum scores, determine Build/Consider/Skip
-5. Generate initial improvements → suggestions to increase score
-6. Compile report → scoring table, verdict, recommendations
-7. Review → verify arithmetic, consistency
-8. Enhancement exploration → systematic exploration using 5 vectors [if verdict ≠ skip]
-9. Offer specification → interactive or auto-save if --output [if verdict ≠ skip]
+3. **Determinism screen** → apply Script Test (see evaluation_framework). If fully deterministic → Skip verdict with "Write a script" recommendation, stop. If partially deterministic → note which parts are deterministic, score only LLM-dependent parts in step 4.
+4. Evaluate 7 dimensions → score each 0/1/2 with rationale
+5. Calculate total & verdict → sum scores, determine Build/Consider/Skip
+6. Generate initial improvements → suggestions to increase score (include "extract to script" for any deterministic steps found in step 3)
+7. Compile report → scoring table, verdict, recommendations
+8. Review → verify arithmetic, consistency
+9. Enhancement exploration → systematic exploration using 5 vectors [if verdict ≠ skip]
+10. Offer specification → interactive or auto-save if --output [if verdict ≠ skip]
 
 **For existing skills (SKILL.md):**
 1. Parse input → identify as path/name, load file
 2. Skip confirmation → content is unambiguous
-3-7. Same as above (evaluate current state)
-8. Enhanced exploration → more thorough analysis using 5 vectors + existing capability mapping
-9. Same as above
+3-8. Same as above (determinism screen, evaluate, compile, review)
+9. Enhanced exploration → more thorough analysis using 5 vectors + existing capability mapping
+10. Same as above
 
 **For --enhancements-only mode:**
 1. Load existing skill
@@ -70,20 +71,25 @@ Analyze skills comprehensively: evaluate their value using a 7-dimension framewo
 
 <decision_points>
 **D1: Input routing**
-- Text description → Steps 1-9 with confirmation at Step 2
-- Existing skill → Steps 1-9, skip Step 2 confirmation
+- Text description → Steps 1-10 with confirmation at Step 2
+- Existing skill → Steps 1-10, skip Step 2 confirmation
 - --enhancements-only → abbreviated flow (exploration only)
 
-**D2: Verdict-based flow**
-- Skip (0-5) → Stop after Step 7, include improvement suggestions
-- Consider (6-9) → Continue to Steps 8-9
-- Build (10-14) → Continue to Steps 8-9
+**D2: Determinism routing (after Step 3)**
+- Fully deterministic → Skip verdict, recommend script, stop
+- Partially deterministic → Note deterministic steps, continue with reduced scoring
+- Not deterministic → Continue normally
 
-**D3: Enhancement depth**
+**D3: Verdict-based flow**
+- Skip (0-5) → Stop after Step 8, include improvement suggestions
+- Consider (6-9) → Continue to Steps 9-10
+- Build (10-14) → Continue to Steps 9-10
+
+**D4: Enhancement depth**
 - New skills → focus on "what would increase score"
 - Existing skills → comprehensive capability expansion using all 5 vectors
 
-**D4: Specification generation**
+**D5: Specification generation**
 - --output flag → auto-generate, validate, save, exit
 - No flag → offer interactively, let user select enhancements to include
 </decision_points>
@@ -109,6 +115,13 @@ See references/evaluation-framework.md for complete scoring criteria.
 **Acid Test:** "Could I get 80% of this value by just asking Claude directly?"
 - YES → Likely redundant
 - NO → Genuinely new capability
+
+**Script Test:** "Could a shell script or Python script do 80% of this work?"
+- YES (fully deterministic) → Skip verdict. Recommend writing a script instead of a skill.
+- PARTIALLY → Flag deterministic steps for extraction into companion scripts (scripts/ directory). Score the remaining LLM-dependent steps only.
+- NO → Genuine LLM skill. Proceed normally.
+
+Deterministic indicators: fixed file operations, template substitution, mkdir/cp/mv sequences, grep-and-transform pipelines, JSON/YAML reshaping with known schemas, any step where the output is fully predictable from the input without judgment.
 </evaluation_framework>
 
 <enhancement_vectors>
@@ -131,12 +144,13 @@ See references/enhancement-vectors.md for detailed exploration prompts.
 </enhancement_vectors>
 
 <quality_gates>
-**G1 (after Step 3):** All 7 dimensions scored (0/1/2) with rationales
-**G2 (after Step 4):** Total = sum of dimensions; verdict matches score range
-**G3 (after Step 6):** All required sections present; improvements use [I-N] format
-**G4 (after Step 7):** Arithmetic correct; rationales don't contradict
-**G5 (after Step 8):** If verdict ≠ skip, enhancements explored using all 5 vectors
-**G6 (if spec generated):** Format valid; metadata correct; sections complete; length <300 lines (warn >300, fail >500); focuses on WHAT not HOW; doesn't duplicate large portions of original artifact
+**G1 (after Step 3):** Determinism screen applied; if fully deterministic, Skip verdict issued with script recommendation
+**G2 (after Step 4):** All 7 dimensions scored (0/1/2) with rationales
+**G3 (after Step 5):** Total = sum of dimensions; verdict matches score range
+**G4 (after Step 7):** All required sections present; improvements use [I-N] format
+**G5 (after Step 8):** Arithmetic correct; rationales don't contradict
+**G6 (after Step 9):** If verdict ≠ skip, enhancements explored using all 5 vectors
+**G7 (if spec generated):** Format valid; metadata correct; sections complete; length <300 lines (warn >300, fail >500); focuses on WHAT not HOW; doesn't duplicate large portions of original artifact
 
 If gate fails → fix once → re-check; else report issue
 </quality_gates>
@@ -252,11 +266,13 @@ If gate fails → fix once → re-check; else report issue
 **Complete when:**
 - All quality gates passed
 - Required steps executed based on verdict
-- If verdict ≠ skip: Steps 8-9 executed
+- If fully deterministic: stopped after Step 3 with script recommendation
+- If verdict ≠ skip: Steps 9-10 executed
 
 **Never:**
+- Skip determinism screen (Step 3)
 - Skip confirmation for text descriptions
-- Skip Steps 8-9 when verdict is Build/Consider
+- Skip Steps 9-10 when verdict is Build/Consider
 - Provide implementation code in evaluation report
 </stop_conditions>
 

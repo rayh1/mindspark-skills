@@ -313,6 +313,10 @@ Recommendation:
 - [ ] Instructions use imperative form
 - [ ] Consistent voice throughout
 
+**Model Agnosticism:**
+- [ ] No literal LLM names used to refer to the executing model
+- [ ] Generic terms used instead ("the model", "the LLM", "the assistant")
+
 ### Severity Assignment Principles
 
 **Assign severity based on impact:**

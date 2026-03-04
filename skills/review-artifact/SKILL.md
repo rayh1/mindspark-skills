@@ -138,12 +138,13 @@ Follow this exact sequence:
 2. For each artifact:
    a. Detect artifact type using type_detection logic
    b. Run appropriate analysis framework:
-      - All types: run all 9 shared checks from references/analysis-framework-shared.md (Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness)
+      - All types: run all 11 shared checks from references/analysis-framework-shared.md (Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness, Model Agnosticism, Determinism Analysis)
       - If skill: also run skill-specific checks from references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check, Skill Category & MCP-Specific Checks)
       - If prompt: also run prompt-specific checks from references/prompt-specific-checks.md (P-01 to P-20)
+      - All types: run [D-126] tag validation on the main artifact file — check for orphaned/stray XML tags. **Mandatory boundary verification applies** (see D-126 in step 2c for full procedure).
    c. For skills with reference files, analyze each reference file individually (**per-file tracking required**):
       - Enumerate all reference files. For EACH file, report results for:
-        - [D-126] Tag validation: check for orphaned/stray XML tags (opening without closing, closing without opening). **Disambiguation warning:** the Read tool wraps its output in XML-like tags — a `</output>` appearing after the last line of a file is the Read tool's output wrapper, not file content. Before flagging any suspected orphaned tag at a file boundary, re-read the file with an offset to confirm the tag exists in the actual file content.
+        - [D-126] Tag validation: check for orphaned/stray XML tags (opening without closing, closing without opening). **Mandatory boundary verification:** the Read tool wraps its output in `</output>` — this appears after the last line of every file and is NOT file content. Before reporting ANY suspected orphaned tag on the last line of a file: (1) run `wc -l` to get actual line count, (2) run `tail -3` to see actual final lines. Only report if the tag appears in the verified output. Tags not on the last line do not require this verification.
         - [D-127] Internal consistency: verify TOC line numbers match actual heading locations, section ordering within the file matches any ordering the file describes
         - Contradiction Detection (D-73b intra-file) applied to this file
         - Domain Correctness (D-115 logical preemption) across this file and SKILL.md
@@ -160,8 +161,13 @@ Follow this exact sequence:
    b. Confirm all selected actions applied correctly
    c. Run regression checks:
       - Structural: YAML frontmatter valid, XML tags balanced, markdown structure intact
-      - Semantic: no new contradictions introduced, content coherence preserved, cross-references valid
+      - Semantic: no new contradictions introduced, content coherence preserved
       - Integration: fixes don't conflict with unchanged sections
+      - Echo propagation: for each applied fix, search the full artifact for the same pattern (term, label, formulation) in other locations not covered by the fix. If the same pattern appears elsewhere, propagate the fix to all instances. Report each as a separate finding.
+      - Example staleness: check if examples (quick_start, inline templates, code blocks) still demonstrate old behavior after a fix changed the underlying functionality. Distinct from echo — catches illustrative content using different wording.
+      - Ordering disruption: if a fix restructured, merged, split, or reordered sections, trace the dependency chain — does every step/section still have its prerequisites before it? Especially relevant for step_contract and flow-dependent sections.
+      - Reference integrity: verify all cross-references still resolve — section links, file paths in reference_index, IDs in addressable_output, line numbers in reports. Check both intra-file and inter-file (SKILL.md ↔ reference files) references.
+      - Constraint satisfaction: re-read the artifact's own stated constraints (line limits, required sections, naming rules, format specifications) and verify each still holds after fixes.
    d. If issues found and cycle < max_cycles → fix issues, increment cycle, go to (a)
    e. If no issues found → report PASS with cycle count
    f. If max_cycles reached with issues remaining → report remaining issues in summary
@@ -175,6 +181,7 @@ Follow this exact sequence:
 **Skill-specific:**
 - **Skill exceeds 500 lines** → Propose split into references/, keep SKILL.md as executive workflow
 - **Multiple skills reviewed** → Keep findings separated by skill name/path; do not merge directives across skills
+- **Implicit contract between skills** → When reviewing a skill, check if its output format (headings, data shape, section structure) is consumed by other skills without explicit documentation. If found, flag as HIGH: undocumented contracts break silently when either side changes. Recommend documenting the contract in both skills.
 
 **Prompt-specific:**
 - **Prompt exceeds 300 lines** → Flag as MEDIUM, suggest condensing or restructuring
@@ -232,6 +239,9 @@ Before finalizing the report and chat summary, verify all gates:
   - Per-file results reported: tag validation, TOC accuracy (if applicable), intra-file contradictions
   - If any reference file was not analyzed → gate fails
   - If the artifact has no reference files, G10 is automatically satisfied
+
+**Tag Validation Accuracy Gate:**
+- **G11 Tag Boundary Gate:** No orphaned-tag finding referencing the last line of a file may appear in the report without independent verification (`wc -l` + `tail`). If any such unverified finding exists → gate fails.
 
 Evidence capture guidance (for G2/G3):
 - Capture file + line number for each directive and quoted evidence
@@ -304,7 +314,7 @@ After completing all steps, perform holistic validation:
 **Criteria:**
 - All steps in step_contract completed
 - Report file(s) written to correct location(s)
-- All quality gates (G1-G10) passed
+- All quality gates (G1-G11) passed
 - All identified issues tagged with severity ([CRITICAL], [HIGH], [MEDIUM], [LOW])
 - Health score calculated correctly using severity_framework formula
 - Chat summary includes: artifact type, file path, health score, action list
@@ -345,12 +355,12 @@ Assign severity to every identified issue based on impact.
 Load and apply checks systematically based on detected artifact type.
 
 **Skills:**
-- Shared: references/analysis-framework-shared.md (all 9 sections: Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness)
+- Shared: references/analysis-framework-shared.md (all 11 sections: Directive Extraction, Contradiction Detection, Temporal Analysis, Flow Mapping, Freedom Calibration, Dead Code Identification, Writing Voice, Context Efficiency, Domain Correctness, Model Agnosticism, Determinism Analysis)
 - Skill-specific: references/skill-specific-checks.md (Structure Analysis, Trigger & Description Review, Cross-File Redundancy, Progressive Disclosure Check, Skill Category & MCP-Specific Checks)
 - Standards: references/skill-quality-standards.md
 
 **Prompts:**
-- Shared: references/analysis-framework-shared.md (all 9 sections)
+- Shared: references/analysis-framework-shared.md (all 11 sections)
 - Prompt-specific: references/prompt-specific-checks.md (P-01 to P-20)
 - Standards: references/prompt-quality-standards.md
 
@@ -365,8 +375,9 @@ Load and apply checks systematically based on detected artifact type.
 | Temporal Analysis | Outdated Content |
 | Flow Mapping, Freedom Calibration | Unclear Flows |
 | Structure Analysis, Trigger & Description Review, Progressive Disclosure, Skill Category & MCP-Specific Checks | Type-Specific Issues |
-| Dead Code Identification, Writing Voice | Line-by-Line Issues |
+| Dead Code Identification, Writing Voice, Model Agnosticism | Line-by-Line Issues |
 | Domain Correctness | Critical Issues + Unclear Flows |
+| Determinism Analysis | Type-Specific Issues + Recommendations |
 
 Work through frameworks systematically, documenting findings per references/output-format.md structure.
 </analysis_framework>
@@ -376,7 +387,7 @@ Work through frameworks systematically, documenting findings per references/outp
 - Step Contract complete for all targets
 - All targets analyzed through the appropriate framework
 - Output artifacts + chat summary produced per `output_schema`
-- All Quality Gates pass (G1-G10)
+- All Quality Gates pass (G1-G11)
 - Final Deliverable section produced
 - User has been asked which actions to execute
 - Selected actions have been executed and verified (if any)

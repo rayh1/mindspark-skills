@@ -2,9 +2,10 @@
 
 ## Table of Contents
 
-- [The 7 Dimensions](#the-7-dimensions-0-2-points-each) - Lines 15-95
-- [Scoring Interpretation](#scoring-interpretation) - Lines 97-103
-- [The Acid Test](#the-acid-test) - Lines 105-112
+- [The 7 Dimensions](#the-7-dimensions-0-2-points-each)
+- [Scoring Interpretation](#scoring-interpretation)
+- [The Acid Test](#the-acid-test)
+- [The Script Test](#the-script-test)
 
 ---
 
@@ -18,6 +19,8 @@
 | 2 | Domain-specific databases, proprietary frameworks, niche methodologies, current data beyond training cutoff |
 | 1 | Synthesizes existing knowledge in a novel way |
 | 0 | General knowledge already available to Claude |
+
+**Determinism check:** If the skill scores 0 here AND the workflow is fully deterministic (fixed file ops, template filling, data reshaping with known schemas), it is a strong signal to write a script instead. See § The Script Test below.
 
 **Enhancement connection:** V-5 (Domain Depth) improvements typically increase this score.
 
@@ -117,4 +120,33 @@ Simple question: **"Could I get 80% of this value by just asking Claude directly
 
 - **YES** → Likely redundant (lean toward Skip)
 - **NO** → Genuinely new capability (lean toward Build)
+
+---
+
+## The Script Test
+
+Simple question: **"Could a shell script or Python script do 80% of this work?"**
+
+- **YES** → Don't build a skill. Write a script. Verdict: Skip (deterministic).
+- **PARTIALLY** → Extract deterministic steps into companion scripts (scripts/ directory). Evaluate only the LLM-dependent remainder as the skill. Flag deterministic steps in the improvement suggestions as "extract to script."
+- **NO** → Genuine LLM skill. Proceed normally.
+
+**Deterministic indicators** (steps where output is fully predictable from input):
+- Fixed file operations (mkdir, cp, mv, chmod)
+- Template substitution with known variables
+- grep/sed/awk pipelines with fixed patterns
+- JSON/YAML/CSV reshaping with known schemas
+- API calls with fixed parameters (no judgment needed)
+- String formatting, path construction, concatenation
+- Conditional logic with objective, computable conditions
+
+**LLM-dependent indicators** (steps requiring judgment):
+- Analyzing content quality or meaning
+- Generating natural language text
+- Making subjective decisions (naming, prioritization, tone)
+- Interpreting ambiguous input
+- Synthesizing information from multiple sources
+- Classification requiring world knowledge
+
+**When partially deterministic:** The skill should call scripts via Bash for its deterministic steps and use LLM reasoning only where judgment is needed. This makes the skill faster, cheaper, and more reliable.
 

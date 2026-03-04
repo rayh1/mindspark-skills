@@ -169,6 +169,16 @@ Constraints:
 - each step must produce a **visible deliverable** (a list, a file section, a decision)
 - steps must be checkable
 
+**Determinism classification — for each step, classify as:**
+- **LLM step**: requires judgment, interpretation, generation, or synthesis → stays as a skill instruction
+- **Deterministic step**: output is fully predictable from input (file ops, template substitution, grep pipelines, JSON reshaping, path construction) → extract into a companion script in scripts/
+
+**If ALL steps are deterministic:** stop and tell the user this should be a shell script or Python script, not a skill. Offer to write the script instead.
+
+**If SOME steps are deterministic:** create companion scripts in scripts/ for those steps. The skill's step contract calls them via Bash. This makes the skill faster, cheaper, and more reliable — the LLM focuses only on the parts that need judgment.
+
+**Deterministic indicators:** fixed mkdir/cp/mv, template filling with known variables, sed/awk/grep with fixed patterns, API calls with fixed parameters, conditional logic with objectively computable conditions, data format conversion with known schemas.
+
 See `validation-checklists.md` for recommended guidelines.
 
 ---
