@@ -4,8 +4,23 @@ A collection of pattern-guided skills for building, improving, and analyzing AI 
 
 ## 📦 Skills Included
 
-### 1. [apply-patterns](skills/apply-patterns/)
-Adds reliability patterns to existing prompts or skills using a tiered pattern system.
+### 1. [analyze-skill](skills/analyze-skill/)
+Comprehensively analyzes a skill idea or existing skill: evaluates value with a 7-dimension scoring framework (0-14 points), explores enhancement opportunities across 5 vectors, and optionally generates a design specification.
+
+Works for both proposed skills (pre-build decision) and existing skills (post-build audit). Outputs a scored table with rationales, a clear verdict (Build / Consider / Skip), and a ranked set of enhancement opportunities.
+
+**Use when:** Deciding if a skill is worth building, auditing existing skills for value and growth potential, or generating specifications for new or enhanced skills.
+
+**Quick start:**
+```
+analyze-skill "A skill that helps users create morning routines"
+analyze-skill path/to/SKILL.md
+analyze-skill pdf
+analyze-skill pdf --output enhanced-pdf.skill-design.md
+```
+
+### 2. [apply-patterns](skills/apply-patterns/)
+Adds reliability patterns to existing prompts or skills using gap-driven analysis.
 
 It reads your target file, identifies high-leverage reliability gaps (inputs, scope, output contracts, validation), and proposes a small set of tier-appropriate pattern insertions. Nothing is changed until you explicitly approve the proposed edits.
 
@@ -19,10 +34,10 @@ apply-patterns path/to/file.md
 # "Tier 1 only" or "include Tier 2 if clearly justified".
 ```
 
-### 2. [build-with-patterns](skills/build-with-patterns/)
-Builds skills and prompts from scratch using a structured, example-driven approach.
+### 3. [build-with-patterns](skills/build-with-patterns/)
+Builds skills and prompts from scratch using a spec-by-tightening methodology.
 
-It starts from one concrete “happy path” example, tightens that into a testable output contract, and then produces an executable step sequence (typically 4–6 steps). Use it when you want repeatable results, clear acceptance criteria, and fewer ambiguous instructions.
+It starts from one concrete "happy path" example, tightens that into a testable output contract, and then produces an executable step sequence (typically 4-6 steps). Use it when you want repeatable results, clear acceptance criteria, and fewer ambiguous instructions.
 
 **Use when:** Creating new skills or prompts with a focus on testable outputs and clear execution steps.
 
@@ -30,35 +45,74 @@ It starts from one concrete “happy path” example, tightens that into a testa
 ```
 build-with-patterns
 # Follow interactive prompts to build a skill or prompt
+
+build-with-patterns --from-design path/to/file.skill-design.md
+# Build from a design file (e.g. produced by analyze-skill)
 ```
 
-### 3. [assess-skill-value](skills/assess-skill-value/)
-Evaluates whether a proposed skill is worth building using a 7-dimension scoring framework (0-14 points).
+### 4. [decide](skills/decide/)
+Provides structured decision-making using 9 frameworks that prevent "agreeable LLM" spirals - where the model agrees with every option the user proposes.
 
-It outputs a scored table with rationales, a clear verdict (Build / Consider / Skip), and concrete improvement suggestions to increase uniqueness or reduce redundancy.
+It analyzes options systematically using explicit criteria, locks recommendations, and requires new information before allowing reversals.
 
-**Use when:** You want to avoid building redundant skills and focus effort on ideas that add real capability.
+**Use when:** Comparing 2+ alternatives, making high-stakes architectural or vendor decisions, or needing rigorous risk/failure-mode analysis.
 
 **Quick start:**
 ```
-assess-skill-value "A skill that helps users create morning routines"
-assess-skill-value path/to/SKILL.md
-assess-skill-value pdf
+decide "Should I use PostgreSQL or MongoDB for this use case?"
+decide --framework matrix  # force Decision Matrix framework
 ```
 
-### 4. [examine-artifact](skills/examine-artifact/)
-Analyzes skill files and standalone prompts for problems, contradictions, redundancies, structural issues, and outdated content. Automatically detects artifact type (skill vs prompt).
+### 5. [delpher-newspaper-analyst](skills/delpher-newspaper-analyst/)
+Deep-dives into historical Dutch newspaper pages from Delpher.nl. Given a newspaper image and OCR text, it produces a structured 9-section report: curious facts, advertisement analysis, cross-article patterns, OCR error flags, themed research questions with clickable Delpher search URLs, gaps, and ranked research paths.
 
-It produces a written examination report (not just chat notes), with specific issues and actionable fixes, so you can confidently refactor or prepare a skill for pattern application.
+Persists findings to Joplin and can hand off context to `delpher-research-assistant` for multi-session projects. All output is in Dutch.
 
-**Use when:** Auditing skills, reviewing quality, or preparing for improvements.
+**Use when:** Analyzing a Delpher newspaper scan, finding interesting dates to research, or generating search strategies from historical newspaper content.
 
 **Quick start:**
 ```
-examine-artifact path/to/SKILL.md
-# Produces EXAMINATION-REPORT.md with detailed findings
+# Paste a Delpher newspaper image + OCR text -> single-page analysis
+# Paste 2-3 images/OCR blocks -> batch/comparison mode
+delpher-newspaper-analyst  # no input -> Discovery mode: suggests 3 historically interesting dates
 ```
 
+### 6. [delpher-research-assistant](skills/delpher-research-assistant/)
+Enables rigorous multi-session historical research using Delpher.nl (Dutch newspaper archive, 1618-1995) through a 5-phase workflow: Planning -> Analysis -> Synthesis -> Gap Analysis -> Journaling, with built-in review-fix cycles and an optional Final Consolidation phase.
+
+You manually search and paste article content; the skill analyzes, synthesizes, tracks citations, and identifies research gaps. All output is in Dutch.
+
+**Use when:** Conducting systematic historical research with Delpher, building timelines from primary sources, or doing biographical/event research in Dutch archives.
+
+**Quick start:**
+```
+delpher-research-assistant "De watersnoodramp van 1953"
+# Describe topic -> receive search strategy -> paste articles -> get analysis + gaps
+```
+
+### 7. [evolve-artifact](skills/evolve-artifact/)
+Evolves SKILL.md files and prompt files by analyzing the current conversation to extract learnings and generate type-appropriate improvement recommendations. Automatically detects artifact type (skill vs prompt) and applies the relevant quality standards.
+
+**Use when:** A skill or prompt was just used in conversation and improvements are evident, or after testing to consolidate learnings.
+
+**Quick start:**
+```
+evolve-artifact path/to/SKILL.md
+# Analyzes the current conversation and proposes targeted improvements
+```
+
+### 8. [review-artifact](skills/review-artifact/)
+Reviews SKILL.md files and standalone prompts for contradictions, redundancies, structural issues, and outdated content. Automatically detects artifact type via YAML frontmatter and applies the appropriate quality standards.
+
+Produces a detailed report with severity-tagged issues and prioritized, actionable recommendations.
+
+**Use when:** Auditing skills before deployment, validating structure against quality standards, or preparing artifacts for refactoring.
+
+**Quick start:**
+```
+review-artifact path/to/SKILL.md
+# Produces a detailed review report with severity-tagged findings
+```
 ## 🚀 Installation
 
 ### For Claude Desktop
@@ -95,10 +149,12 @@ Each skill includes:
 
 Common workflow for using these skills together:
 
-1. **Build** a new skill or prompt (`build-with-patterns`)
-2. **Examine** it for issues (`examine-artifact`)
-3. **Apply** reliability patterns (`apply-patterns`)
-4. Iterate as needed
+1. **Analyze** a skill idea (`analyze-skill`) to decide if it's worth building and optionally generate a design spec
+2. **Build** the skill or prompt (`build-with-patterns`), optionally from the design spec
+3. **Review** it for structural issues (`review-artifact`)
+4. **Apply** reliability patterns (`apply-patterns`)
+5. **Evolve** after real-world use (`evolve-artifact`) to consolidate learnings
+6. Use **decide** whenever you need structured comparison between options at any step
 
 ## 📋 Requirements
 
@@ -129,5 +185,5 @@ For issues, questions, or suggestions:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** February 2026
+**Version:** 1.1.0  
+**Last Updated:** March 2026
